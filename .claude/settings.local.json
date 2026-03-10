@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx prisma init:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma dev:*)",
+      "Bash(timeout:*)",
+      "Bash(npm run seed:*)",
+      "WebSearch",
+      "Bash(npm uninstall:*)"
+    ]
+  }
+}

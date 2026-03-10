@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  image     String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Skill {
+  id          String   @id @default(uuid())
+  title       String
+  image       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("skills")
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  thumbnail   String
+  link        String?
+  info        String?
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  images ProjectImage[]
+
+  @@map("projects")
+}
+
+model ProjectImage {
+  id        String   @id @default(uuid())
+  name      String
+  project_id String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@map("project_images")
+}
+
+model Info {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  info        String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("info")
+}
