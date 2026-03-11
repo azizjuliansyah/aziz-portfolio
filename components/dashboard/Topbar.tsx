@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, Menu } from "lucide-react";
+import Link from "next/link";
 
 interface TopbarProps {
   title: string;
@@ -26,7 +27,7 @@ export function Topbar({ title, user }: TopbarProps) {
           <Bell className="w-5 h-5" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></span>
         </button>
-        <div className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-gray-700">
+        <Link href="/dashboard/settings" className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-gray-700 hover:opacity-80 transition-opacity">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name || "User"}</p>
             <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email || "email@example.com"}</p>
@@ -38,7 +39,7 @@ export function Topbar({ title, user }: TopbarProps) {
               user?.name?.charAt(0) || "U"
             )}
           </div>
-        </div>
+        </Link>
       </div>
     </header>
   );

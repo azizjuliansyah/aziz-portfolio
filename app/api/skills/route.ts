@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/config/db";
+import { supabase } from "@/config/db";
 import { saveFile } from "@/lib/storage";
 
 export async function GET() {
   try {
-    const skills = await prisma.skill.findMany({
-      orderBy: { order: "asc" },
-    });
+    const { data: skills, error } = await supabase
+      .from("skills")
+      .select("*")
+      .order("order", { ascending: true });
+
+    if (error) throw error;
+    
     return NextResponse.json(skills);
   } catch (error) {
     console.error("Failed to fetch skills:", error);
@@ -30,19 +34,29 @@ export async function POST(request: Request) {
       imagePath = await saveFile(file, "skills");
     }
 
-    const maxOrder = await prisma.skill.aggregate({
-      _max: { order: true },
-    });
-    const nextOrder = (maxOrder._max.order ?? -1) + 1;
+    const { data: maxOrderData, error: maxOrderError } = await supabase
+      .from("skills")
+      .select("order")
+      .order("order", { ascending: false })
+      .limit(1);
 
-    const skill = await prisma.skill.create({
-      data: {
+    if (maxOrderError) throw maxOrderError;
+
+    const maxOrderValue = maxOrderData?.[0]?.order ?? -1;
+    const nextOrder = maxOrderValue + 1;
+
+    const { data: skill, error: insertError } = await supabase
+      .from("skills")
+      .insert({
         title,
         image: imagePath,
         description,
         order: nextOrder,
-      },
-    });
+      })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
 
     return NextResponse.json(skill, { status: 201 });
   } catch (error) {

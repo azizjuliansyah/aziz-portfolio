@@ -1,30 +1,6 @@
-// DB Config initialization
-import "dotenv/config";
-import { PrismaClient } from "../app/generated/prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { createClient } from "@supabase/supabase-js";
 
-const connectionConfig = {
-  host: process.env.DB_HOST || "127.0.0.1",
-  port: Number(process.env.DB_PORT) || 3306,
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "portfolio_aziz",
-  ssl: false,
-  allowPublicKeyRetrieval: true,
-  connectionLimit: 10,
-  connectTimeout: 10000,
-};
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-
-let prisma: PrismaClient;
-
-if (!globalForPrisma.prisma) {
-  const adapter = new PrismaMariaDb(connectionConfig);
-  prisma = new PrismaClient({ adapter: adapter as never });
-  if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-} else {
-  prisma = globalForPrisma.prisma;
-}
-
-export { prisma };
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

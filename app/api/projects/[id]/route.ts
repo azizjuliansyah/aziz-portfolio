@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/config/db";
+import { supabase } from "@/config/db";
 import { saveFile, deleteFile } from "@/lib/storage";
 
 export async function PUT(
@@ -17,14 +17,20 @@ export async function PUT(
     const galleryFiles = formData.getAll("images") as File[];
     const removedImages = formData.getAll("removedImages") as string[];
 
-    const currentProject = await prisma.project.findUnique({
-      where: { id },
-      include: { images: true },
-    });
+    const { data: currentProjectData, error: fetchError } = await supabase
+      .from("projects")
+      .select("*, project_images(*)")
+      .eq("id", id)
+      .single();
 
-    if (!currentProject) {
+    if (fetchError || !currentProjectData) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
+    
+    const currentProject = {
+      ...currentProjectData,
+      images: currentProjectData.project_images || []
+    };
 
     let thumbnailPath = currentProject.thumbnail;
     if (thumbnailFile && thumbnailFile.size > 0 && typeof thumbnailFile !== "string") {
@@ -38,9 +44,11 @@ export async function PUT(
     if (removedImages.length > 0) {
       for (const imagePath of removedImages) {
         await deleteFile(imagePath);
-        await prisma.projectImage.deleteMany({
-          where: { name: imagePath, project_id: id },
-        });
+        await supabase
+          .from("project_images")
+          .delete()
+          .eq("name", imagePath)
+          .eq("project_id", id);
       }
     }
 
@@ -58,23 +66,31 @@ export async function PUT(
       }
 
       if (galleryData.length > 0) {
-        await prisma.projectImage.createMany({
-          data: galleryData,
-        });
+        await supabase
+          .from("project_images")
+          .insert(galleryData);
       }
     }
 
-    const updatedProject = await prisma.project.update({
-      where: { id },
-      data: {
+    const { data: updatedProjectRaw, error: updateError } = await supabase
+      .from("projects")
+      .update({
         title,
         info,
         link,
         description,
         thumbnail: thumbnailPath,
-      },
-      include: { images: true },
-    });
+      })
+      .eq("id", id)
+      .select("*, project_images(*)")
+      .single();
+
+    if (updateError) throw updateError;
+    
+    const updatedProject = {
+      ...updatedProjectRaw,
+      images: updatedProjectRaw.project_images || []
+    };
 
     return NextResponse.json(updatedProject);
   } catch (error) {
@@ -88,16 +104,22 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
-    const project = await prisma.project.findUnique({
-      where: { id },
-      include: { images: true },
-    });
+    const { data: projectData, error: fetchError } = await supabase
+      .from("projects")
+      .select("*, project_images(*)")
+      .eq("id", id)
+      .single();
 
-    if (!project) {
+    if (fetchError || !projectData) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
+    
+    const project = {
+      ...projectData,
+      images: projectData.project_images || []
+    };
 
     // Delete thumbnail
     if (project.thumbnail) {
@@ -109,9 +131,12 @@ export async function DELETE(
       await deleteFile(image.name);
     }
 
-    await prisma.project.delete({
-      where: { id },
-    });
+    const { error: deleteError } = await supabase
+      .from("projects")
+      .delete()
+      .eq("id", id);
+      
+    if (deleteError) throw deleteError;
 
     return NextResponse.json({ message: "Project deleted successfully" });
   } catch (error) {

@@ -21,13 +21,12 @@ export function Sidebar({ onLogout }: SidebarProps) {
       <nav className="flex-1 p-4 space-y-1">
         <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Main</div>
         <NavLink icon={LayoutDashboard} label="Dashboard" href="/dashboard" active={pathname === "/dashboard"} />
+        <NavLink icon={User} label="Public Profile" href="/dashboard/profile" active={pathname === "/dashboard/profile"} />
         <NavLink icon={Code} label="Skills" href="/dashboard/skills" active={pathname === "/dashboard/skills"} />
         <NavLink icon={Briefcase} label="Projects" href="/dashboard/projects" active={pathname === "/dashboard/projects"} />
-        <NavLink icon={Info} label="General Info" href="/dashboard/info" active={pathname === "/dashboard/info"} />
         
         <div className="px-2 py-2 pt-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Account</div>
-        <NavLink icon={User} label="Profile" href="/profile" active={pathname === "/profile"} />
-        <NavLink icon={Settings} label="Settings" href="/dashboard/settings" active={pathname === "/dashboard/settings"} />
+        <NavLink icon={Settings} label="Admin Settings" href="/dashboard/settings" active={pathname === "/dashboard/settings"} />
       </nav>
 
       <div className="p-4 border-t border-gray-100 dark:border-gray-800">

@@ -1,0 +1,33 @@
+import { useState, useEffect } from "react";
+import { dashboardService } from "@/services/dashboardService";
+import { useToast } from "@/hooks/useToast";
+
+export interface DashboardStats {
+  totalProjects: number;
+  totalSkills: number;
+}
+
+export const useDashboard = () => {
+  const [stats, setStats] = useState<DashboardStats>({ totalProjects: 0, totalSkills: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+  const toast = useToast();
+
+  useEffect(() => {
+    const getStats = async () => {
+      try {
+        const data = await dashboardService.fetchStats();
+        setStats(data);
+      } catch (error: any) {
+        toast.error(error.message || "Failed to load dashboard stats");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getStats();
+  }, [toast]);
+
+  return {
+    stats,
+    isLoading,
+  };
+};

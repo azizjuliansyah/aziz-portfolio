@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/config/db";
+import { supabase } from "@/config/db";
 
 export async function PUT(request: Request) {
   try {
@@ -9,14 +9,15 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Invalid items" }, { status: 400 });
     }
 
-    await prisma.$transaction(
-      items.map((item: { id: string; order: number }) =>
-        prisma.project.update({
-          where: { id: item.id },
-          data: { order: item.order },
-        })
-      )
-    );
+    // Update orders sequentially
+    for (const item of items) {
+      const { error } = await supabase
+        .from("projects")
+        .update({ order: item.order })
+        .eq("id", item.id);
+        
+      if (error) throw error;
+    }
 
     return NextResponse.json({ message: "Reordered successfully" });
   } catch (error) {

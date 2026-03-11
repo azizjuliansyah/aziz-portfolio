@@ -8,6 +8,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: LucideIcon;
   className?: string;
   containerClassName?: string;
+  helperText?: React.ReactNode;
 }
 
 export function Input({
@@ -15,6 +16,7 @@ export function Input({
   icon: Icon,
   className = "",
   containerClassName = "",
+  helperText,
   id,
   ...props
 }: InputProps) {
@@ -43,6 +45,11 @@ export function Input({
           {...props}
         />
       </div>
+      {helperText && (
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 ml-1 leading-relaxed">
+          {helperText}
+        </p>
+      )}
     </div>
   );
 }

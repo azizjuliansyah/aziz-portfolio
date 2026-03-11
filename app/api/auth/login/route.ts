@@ -1,6 +1,5 @@
-
 import { NextResponse } from "next/server";
-import { prisma } from "@/config/db";
+import { supabase } from "@/config/db";
 import * as bcrypt from "bcrypt";
 import { SignJWT } from "jose";
 
@@ -15,11 +14,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const { data: user, error: fetchError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .single();
 
-    if (!user) {
+    if (fetchError || !user) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 

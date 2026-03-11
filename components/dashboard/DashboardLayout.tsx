@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
+import { useTheme } from "../ThemeProvider";
 
 interface User {
   id: string;

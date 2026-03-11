@@ -1,16 +1,23 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/config/db";
+import { supabase } from "@/config/db";
 import { saveFile } from "@/lib/storage";
 
 export async function GET() {
   try {
-    const projects = await prisma.project.findMany({
-      include: {
-        images: true,
-      },
-      orderBy: { order: "asc" },
-    });
-    return NextResponse.json(projects);
+    const { data: projects, error } = await supabase
+      .from("projects")
+      .select("*, project_images(*)")
+      .order("order", { ascending: true });
+
+    if (error) throw error;
+    
+    // Map project_images to images to match previous prisma shape
+    const formattedProjects = projects?.map(p => ({
+      ...p,
+      images: p.project_images
+    })) || [];
+    
+    return NextResponse.json(formattedProjects);
   } catch (error) {
     console.error("Failed to fetch projects:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -36,23 +43,34 @@ export async function POST(request: Request) {
       thumbnailPath = await saveFile(thumbnailFile, "projects");
     }
 
-    const maxOrder = await prisma.project.aggregate({
-      _max: { order: true },
-    });
-    const nextOrder = (maxOrder._max?.order ?? -1) + 1;
+    const { data: maxOrderData, error: maxOrderError } = await supabase
+      .from("projects")
+      .select("order")
+      .order("order", { ascending: false })
+      .limit(1);
 
-    const project = await prisma.project.create({
-      data: {
+    if (maxOrderError) throw maxOrderError;
+
+    const maxOrderValue = maxOrderData?.[0]?.order ?? -1;
+    const nextOrder = maxOrderValue + 1;
+
+    const { data: project, error: insertError } = await supabase
+      .from("projects")
+      .insert({
         title,
         info,
         link,
         description,
         thumbnail: thumbnailPath,
         order: nextOrder,
-      },
-    });
+      })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
 
     // Handle gallery images
+    let images = [];
     if (galleryFiles.length > 0) {
       const galleryData = [];
       for (const file of galleryFiles) {
@@ -66,16 +84,17 @@ export async function POST(request: Request) {
       }
 
       if (galleryData.length > 0) {
-        await prisma.projectImage.createMany({
-          data: galleryData,
-        });
+        const { data: insertedImages, error: imagesError } = await supabase
+          .from("project_images")
+          .insert(galleryData)
+          .select();
+          
+        if (imagesError) throw imagesError;
+        images = insertedImages || [];
       }
     }
 
-    const finalProject = await prisma.project.findUnique({
-      where: { id: project.id },
-      include: { images: true },
-    });
+    const finalProject = { ...project, images };
 
     return NextResponse.json(finalProject, { status: 201 });
   } catch (error) {

@@ -1,7 +1,7 @@
-
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { supabase } from "@/config/db";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "super-secret-key-change-me");
 
@@ -16,12 +16,23 @@ export async function GET() {
   try {
     const { payload } = await jwtVerify(token, SECRET_KEY);
     
+    // Fetch fresh user data from DB to ensure profile updates (avatar/name) persist
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("id, email, name, image")
+      .eq("id", payload.id)
+      .single();
+
+    if (error || !user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     return NextResponse.json({
       user: {
-        id: payload.id,
-        email: payload.email,
-        name: payload.name,
-        image: payload.image,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        image: user.image,
       },
     });
   } catch {

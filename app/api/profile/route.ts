@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/config/db";
+import { supabase } from "@/config/db";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import * as bcrypt from "bcrypt";
-import { saveFile } from "@/lib/storage";
+import { saveFile, deleteFile } from "@/lib/storage";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "super-secret-key-change-me");
 
@@ -32,6 +32,17 @@ export async function POST(request: Request) {
     const password = formData.get("password") as string;
     const image = formData.get("image") as File | null;
 
+    // Fetch current user to get old image path
+    const { data: currentUser, error: fetchError } = await supabase
+      .from("users")
+      .select("image")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError || !currentUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const updateData: any = {};
     if (name) updateData.name = name;
     
@@ -49,14 +60,26 @@ export async function POST(request: Request) {
     }
 
     if (image) {
+      // Delete old image if it exists
+      if (currentUser.image) {
+        await deleteFile(currentUser.image);
+      }
+      
       const imagePath = await saveFile(image, "profiles");
       updateData.image = imagePath;
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-    });
+    const { data: updatedUser, error: updateError } = await supabase
+      .from("users")
+      .update(updateData)
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (updateError || !updatedUser) {
+      console.error(updateError);
+      throw new Error("Failed to update user");
+    }
 
     const response = NextResponse.json({
       message: "Profile updated successfully",

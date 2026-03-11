@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/config/db";
+import { supabase } from "@/config/db";
 import { saveFile, deleteFile } from "@/lib/storage";
 
 export async function PUT(
@@ -14,8 +14,13 @@ export async function PUT(
     const file = formData.get("image") as File | null;
 
     // Fetch current skill to check for old image
-    const currentSkill = await prisma.skill.findUnique({ where: { id } });
-    if (!currentSkill) {
+    const { data: currentSkill, error: fetchError } = await supabase
+      .from("skills")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !currentSkill) {
       return NextResponse.json({ error: "Skill not found" }, { status: 404 });
     }
 
@@ -27,17 +32,21 @@ export async function PUT(
       if (currentSkill.image) {
         await deleteFile(currentSkill.image);
       }
-      imagePath = await saveFile(file);
+      imagePath = await saveFile(file, "skills");
     }
 
-    const skill = await prisma.skill.update({
-      where: { id },
-      data: {
+    const { data: skill, error: updateError } = await supabase
+      .from("skills")
+      .update({
         title,
         image: imagePath,
         description,
-      },
-    });
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (updateError) throw updateError;
 
     return NextResponse.json(skill);
   } catch (error) {
@@ -54,14 +63,23 @@ export async function DELETE(
     const { id } = await params;
     
     // Fetch skill to get image path for deletion
-    const skill = await prisma.skill.findUnique({ where: { id } });
-    if (skill?.image) {
+    const { data: skill, error: fetchError } = await supabase
+      .from("skills")
+      .select("image")
+      .eq("id", id)
+      .single();
+
+    if (!fetchError && skill?.image) {
       await deleteFile(skill.image);
     }
 
-    await prisma.skill.delete({
-      where: { id },
-    });
+    const { error: deleteError } = await supabase
+      .from("skills")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) throw deleteError;
+
     return NextResponse.json({ message: "Skill deleted successfully" });
   } catch (error) {
     console.error("Failed to delete skill:", error);
