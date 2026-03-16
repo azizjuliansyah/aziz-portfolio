@@ -2,7 +2,7 @@ import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
-export async function saveFile(file: File, folder: "profiles" | "skills" | "projects"): Promise<string> {
+export async function saveFile(file: File, folder: "profiles" | "skills" | "projects" | "social-links"): Promise<string> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { supabase } from "@/config/db";
+import { supabaseAdmin as supabase } from "@/config/db";
+
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "super-secret-key-change-me");
 

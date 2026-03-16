@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/config/db";
+import { supabaseAdmin as supabase } from "@/config/db";
 import { saveFile, deleteFile } from "@/lib/storage";
 
 export async function GET(

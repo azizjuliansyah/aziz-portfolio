@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const profileId = searchParams.get("profileId");
 
     let query = supabase
-      .from("skills")
+      .from("social_links")
       .select("*")
       .order("order", { ascending: true });
 
@@ -16,13 +16,13 @@ export async function GET(request: Request) {
       query = query.eq("profile_id", profileId);
     }
 
-    const { data: skills, error } = await query;
+    const { data: socialLinks, error } = await query;
 
     if (error) throw error;
     
-    return NextResponse.json(skills);
+    return NextResponse.json(socialLinks);
   } catch (error) {
-    console.error("Failed to fetch skills:", error);
+    console.error("Failed to fetch social links:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -30,22 +30,22 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
+    const name = formData.get("name") as string;
+    const link = formData.get("link") as string;
     const profileId = formData.get("profileId") as string;
     const file = formData.get("image") as File | null;
 
-    if (!title || !description) {
-      return NextResponse.json({ error: "Title and description are required" }, { status: 400 });
+    if (!name || !link) {
+      return NextResponse.json({ error: "Name and link are required" }, { status: 400 });
     }
 
     let imagePath = "";
     if (file && file.size > 0) {
-      imagePath = await saveFile(file, "skills");
+      imagePath = await saveFile(file, "social-links");
     }
 
     const { data: maxOrderData, error: maxOrderError } = await supabase
-      .from("skills")
+      .from("social_links")
       .select("order")
       .order("order", { ascending: false })
       .limit(1);
@@ -55,12 +55,12 @@ export async function POST(request: Request) {
     const maxOrderValue = maxOrderData?.[0]?.order ?? -1;
     const nextOrder = maxOrderValue + 1;
 
-    const { data: skill, error: insertError } = await supabase
-      .from("skills")
+    const { data: socialLink, error: insertError } = await supabase
+      .from("social_links")
       .insert({
-        title,
+        name,
         image: imagePath,
-        description,
+        link,
         order: nextOrder,
         profile_id: profileId || null,
       })
@@ -69,9 +69,9 @@ export async function POST(request: Request) {
 
     if (insertError) throw insertError;
 
-    return NextResponse.json(skill, { status: 201 });
+    return NextResponse.json(socialLink, { status: 201 });
   } catch (error) {
-    console.error("Failed to create skill:", error);
+    console.error("Failed to create social link:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

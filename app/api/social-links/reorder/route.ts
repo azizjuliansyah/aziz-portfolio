@@ -9,10 +9,9 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Invalid items" }, { status: 400 });
     }
 
-    // Update orders sequentially
     for (const item of items) {
       const { error } = await supabase
-        .from("projects")
+        .from("social_links")
         .update({ order: item.order })
         .eq("id", item.id);
         
@@ -21,7 +20,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ message: "Reordered successfully" });
   } catch (error) {
-    console.error("Failed to reorder projects:", error);
+    console.error("Failed to reorder social links:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

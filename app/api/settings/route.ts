@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/config/db";
+import { supabaseAdmin as supabase } from "@/config/db";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 

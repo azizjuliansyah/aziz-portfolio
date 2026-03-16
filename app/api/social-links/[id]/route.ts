@@ -9,38 +9,35 @@ export async function PUT(
   try {
     const { id } = await params;
     const formData = await request.formData();
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
+    const name = formData.get("name") as string;
+    const link = formData.get("link") as string;
     const file = formData.get("image") as File | null;
 
-    // Fetch current skill to check for old image
-    const { data: currentSkill, error: fetchError } = await supabase
-      .from("skills")
+    const { data: currentLink, error: fetchError } = await supabase
+      .from("social_links")
       .select("*")
       .eq("id", id)
       .single();
 
-    if (fetchError || !currentSkill) {
-      return NextResponse.json({ error: "Skill not found" }, { status: 404 });
+    if (fetchError || !currentLink) {
+      return NextResponse.json({ error: "Social link not found" }, { status: 404 });
     }
 
-    let imagePath = currentSkill.image;
+    let imagePath = currentLink.image;
 
-    // If a new file is uploaded
     if (file && file.size > 0 && typeof file !== "string") {
-      // Delete old file if it exists
-      if (currentSkill.image) {
-        await deleteFile(currentSkill.image);
+      if (currentLink.image) {
+        await deleteFile(currentLink.image);
       }
-      imagePath = await saveFile(file, "skills");
+      imagePath = await saveFile(file, "social-links");
     }
 
-    const { data: skill, error: updateError } = await supabase
-      .from("skills")
+    const { data: socialLink, error: updateError } = await supabase
+      .from("social_links")
       .update({
-        title,
+        name,
         image: imagePath,
-        description,
+        link,
       })
       .eq("id", id)
       .select()
@@ -48,9 +45,9 @@ export async function PUT(
 
     if (updateError) throw updateError;
 
-    return NextResponse.json(skill);
+    return NextResponse.json(socialLink);
   } catch (error) {
-    console.error("Failed to update skill:", error);
+    console.error("Failed to update social link:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -62,27 +59,26 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    // Fetch skill to get image path for deletion
-    const { data: skill, error: fetchError } = await supabase
-      .from("skills")
+    const { data: socialLink, error: fetchError } = await supabase
+      .from("social_links")
       .select("image")
       .eq("id", id)
       .single();
 
-    if (!fetchError && skill?.image) {
-      await deleteFile(skill.image);
+    if (!fetchError && socialLink?.image) {
+      await deleteFile(socialLink.image);
     }
 
     const { error: deleteError } = await supabase
-      .from("skills")
+      .from("social_links")
       .delete()
       .eq("id", id);
 
     if (deleteError) throw deleteError;
 
-    return NextResponse.json({ message: "Skill deleted successfully" });
+    return NextResponse.json({ message: "Social link deleted successfully" });
   } catch (error) {
-    console.error("Failed to delete skill:", error);
+    console.error("Failed to delete social link:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

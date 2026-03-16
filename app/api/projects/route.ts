@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/config/db";
+import { supabaseAdmin as supabase } from "@/config/db";
 import { saveFile } from "@/lib/storage";
 
 export async function GET(request: Request) {
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     if (error) throw error;
     
     // Map project_images to images to match previous prisma shape
-    const formattedProjects = projects?.map(p => ({
+    const formattedProjects = projects?.map((p: any) => ({
       ...p,
       images: p.project_images
     })) || [];

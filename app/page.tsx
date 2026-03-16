@@ -269,14 +269,34 @@ export default function Home() {
                       <MapPin className="w-4 h-4 text-blue-500" /> Based in {profile.location}
                     </div>
                   )}
-                  <div className="space-y-3">
-                    <p className="text-xs text-gray-400 font-bold uppercase tracking-tighter">Follow my updates</p>
-                    <div className="flex gap-2">
-                       {profile.instagram && <a href={profile.instagram} className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-400 hover:text-pink-600 transition-colors"><Instagram className="w-4 h-4" /></a>}
-                       {profile.twitter && <a href={profile.twitter} className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-400 hover:text-blue-400 transition-colors"><Twitter className="w-4 h-4" /></a>}
+                    <div className="space-y-3">
+                      <p className="text-xs text-gray-400 font-bold uppercase tracking-tighter">Follow my updates</p>
+                      <div className="flex flex-wrap gap-2">
+                         {profile.instagram && <a href={profile.instagram} className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-400 hover:text-pink-600 transition-colors" title="Instagram"><Instagram className="w-4 h-4" /></a>}
+                         {profile.twitter && <a href={profile.twitter} className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-400 hover:text-blue-400 transition-colors" title="Twitter"><Twitter className="w-4 h-4" /></a>}
+                         {profile.social_links?.map((link: any) => (
+                           <a 
+                             key={link.id} 
+                             href={link.link} 
+                             target="_blank" 
+                             rel="noopener noreferrer" 
+                             className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-400 hover:text-blue-600 transition-colors flex items-center gap-2 group"
+                             title={link.name}
+                           >
+                             {link.image ? (
+                               <img src={link.image} alt={link.name} className="w-4 h-4 object-contain grayscale group-hover:grayscale-0 transition-all" />
+                             ) : (
+                               <Globe className="w-4 h-4" />
+                             )}
+                             <span className="sr-only">{link.name}</span>
+                           </a>
+                         ))}
+                      </div>
+                      {(!profile.instagram && !profile.twitter && (!profile.social_links || profile.social_links.length === 0)) && (
+                        <p className="text-xs text-gray-400 italic">No social links provided.</p>
+                      )}
                     </div>
-                  </div>
-               </div>
+                </div>
             </div>
           </div>
         </div>

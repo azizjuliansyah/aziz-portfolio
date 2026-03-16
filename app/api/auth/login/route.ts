@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/config/db";
+import { supabaseAdmin as supabase } from "@/config/db";
 import * as bcrypt from "bcrypt";
 import { SignJWT } from "jose";
 

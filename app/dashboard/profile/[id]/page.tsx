@@ -21,6 +21,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { useSkills } from "@/hooks/useSkills";
 import { useProjects } from "@/hooks/useProjects";
+import { useSocialLinks } from "@/hooks/useSocialLinks";
 
 // Dnd Kit Imports
 import { 
@@ -43,8 +44,10 @@ import { SkillCard } from "@/components/dashboard/skills/SkillCard";
 import { SkillModal } from "@/components/dashboard/skills/SkillModal";
 import { ProjectCard } from "@/components/dashboard/projects/ProjectCard";
 import { ProjectModal } from "@/components/dashboard/projects/ProjectModal";
+import { SocialLinkCard } from "@/components/dashboard/social-links/SocialLinkCard";
+import { SocialLinkModal } from "@/components/dashboard/social-links/SocialLinkModal";
 
-type ProfileTab = "basic" | "skills" | "projects";
+type ProfileTab = "basic" | "skills" | "projects" | "social-links";
 
 export default function ProfileDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -69,6 +72,16 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
     updateProject, 
     deleteProject 
   } = useProjects(id);
+  const { 
+    socialLinks, 
+    isLoading: isSocialLinksLoading, 
+    isSubmitting: isSocialLinkSubmitting, 
+    isDeleting: isSocialLinkDeleting,
+    reorderSocialLinks, 
+    createSocialLink, 
+    updateSocialLink, 
+    deleteSocialLink 
+  } = useSocialLinks(id);
   
   const { logout } = useAuth();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -154,6 +167,8 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
       success = await deleteSkill(deleteTargetId);
     } else if (activeTab === "projects") {
       success = await deleteProject(deleteTargetId);
+    } else if (activeTab === "social-links") {
+      success = await deleteSocialLink(deleteTargetId);
     }
     
     if (success) {
@@ -185,9 +200,19 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
+  const onSocialLinkSubmit = async (formData: FormData) => {
+    if (activeTab !== "social-links") return false;
+    if (currentEntry?.id) {
+      return await updateSocialLink(currentEntry.id, formData);
+    } else {
+      if (id) formData.append("profileId", id);
+      return await createSocialLink(formData);
+    }
+  };
+
   const cvUrl = cv ? (typeof cv === "string" ? cv : URL.createObjectURL(cv)) : null;
 
-  if (isProfileLoading || (activeTab === "skills" && isSkillsLoading) || (activeTab === "projects" && isProjectsLoading)) {
+  if (isProfileLoading || (activeTab === "skills" && isSkillsLoading) || (activeTab === "projects" && isProjectsLoading) || (activeTab === "social-links" && isSocialLinksLoading)) {
     return (
       <DashboardLayout user={user} onLogout={logout} title="Admin Settings">
         <div className="space-y-6">
@@ -241,9 +266,9 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
               </span>
             </div>
           </div>
-          {(activeTab === "skills" || activeTab === "projects") && (
+          {(activeTab === "skills" || activeTab === "projects" || activeTab === "social-links") && (
             <Button onClick={() => handleOpenEntryModal()} leftIcon={Plus} className="shadow-lg shadow-blue-500/20">
-              {activeTab === "skills" ? "Add Skill" : "Add Project"}
+              {activeTab === "skills" ? "Add Skill" : activeTab === "projects" ? "Add Project" : "Add Social Link"}
             </Button>
           )}
         </div>
@@ -328,6 +353,19 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
                   <div className="flex items-center gap-2">
                     <Briefcase className="w-4 h-4" />
                     Projects
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("social-links")}
+                  className={`pb-4 px-4 text-sm font-medium transition-colors border-b-2 relative whitespace-nowrap ${activeTab === "social-links"
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                    }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    Social Links
                   </div>
                 </button>
               </div>
@@ -463,6 +501,36 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                 )}
 
+                {/* Social Links Tab */}
+                {activeTab === "social-links" && (
+                  <div className="animate-in fade-in duration-300">
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={reorderSocialLinks}
+                    >
+                      <SortableContext items={socialLinks.map(s => s.id)} strategy={rectSortingStrategy}>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {socialLinks.map((link, index) => (
+                            <SocialLinkCard 
+                              key={link.id} 
+                              socialLink={link} 
+                              index={index}
+                              onEdit={() => handleOpenEntryModal(link)}
+                              onDelete={() => openDeleteModal(link.id)}
+                            />
+                          ))}
+                          {socialLinks.length === 0 && (
+                            <div className="col-span-full py-12 text-center bg-gray-50 dark:bg-gray-800/10 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
+                              <p className="text-gray-500">No social links added yet.</p>
+                            </div>
+                          )}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  </div>
+                )}
+
               </div>
             </Card>
           </div>
@@ -516,13 +584,21 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
           isLoading={isProjectSubmitting}
         />
 
+        <SocialLinkModal 
+          isOpen={isEntryModalOpen && activeTab === "social-links"} 
+          onClose={handleCloseEntryModal}
+          onSubmit={onSocialLinkSubmit}
+          currentLink={currentEntry}
+          isLoading={isSocialLinkSubmitting}
+        />
+
         <DeleteConfirmModal 
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={onConfirmDelete}
-          isLoading={activeTab === "skills" ? isSkillDeleting : isProjectDeleting}
-          title={`Delete ${activeTab === 'skills' ? 'Skill' : 'Project'}`}
-          message={`Are you sure you want to delete this ${activeTab === 'skills' ? 'skill' : 'project'}?`}
+          isLoading={activeTab === "skills" ? isSkillDeleting : activeTab === "projects" ? isProjectDeleting : isSocialLinkDeleting}
+          title={`Delete ${activeTab === 'skills' ? 'Skill' : activeTab === 'projects' ? 'Project' : 'Social Link'}`}
+          message={`Are you sure you want to delete this ${activeTab === 'skills' ? 'skill' : activeTab === 'projects' ? 'project' : 'social link'}?`}
         />
 
       </div>
