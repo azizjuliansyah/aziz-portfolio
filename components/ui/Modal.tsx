@@ -53,15 +53,15 @@ export function Modal({
     >
       <div 
         ref={modalRef}
-        className={`bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full ${maxWidth} overflow-hidden animate-in zoom-in-95 duration-200`}
+        className={`bg-surface rounded-2xl shadow-xl w-full ${maxWidth} overflow-hidden animate-in zoom-in-95 duration-200 border border-outline-variant/15`}
       >
         {(title || showCloseButton) && (
-          <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
-            {title && <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>}
+          <div className="p-6 border-b border-outline-variant/15 flex justify-between items-center">
+            {title && <h2 className="text-xl font-headline font-bold text-on-surface">{title}</h2>}
             {showCloseButton && (
               <button 
                 onClick={onClose} 
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                className="text-outline hover:text-on-surface transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>

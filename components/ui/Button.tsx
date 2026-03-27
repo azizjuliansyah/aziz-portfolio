@@ -22,14 +22,14 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = "flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-label font-bold rounded-xl transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "text-white bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-lg hover:shadow-blue-600/20 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-    danger: "text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10",
-    secondary: "bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700",
-    ghost: "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800",
-    outline: "bg-transparent text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800",
+    primary: "text-on-primary bg-primary hover:bg-primary-dim shadow-sm hover:shadow-lg hover:shadow-primary/20 focus:ring-2 focus:ring-primary focus:ring-offset-2",
+    danger: "text-error hover:bg-error-container/10",
+    secondary: "bg-surface-container-low text-on-surface hover:bg-surface-container border border-outline-variant/15",
+    ghost: "text-on-surface-variant hover:bg-surface-container-low",
+    outline: "bg-transparent text-on-surface border-2 border-outline-variant/30 hover:border-outline hover:bg-surface-container-low",
   };
 
   return (

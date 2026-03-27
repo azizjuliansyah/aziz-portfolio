@@ -31,12 +31,11 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
     const profileId = formData.get("profileId") as string;
     const file = formData.get("image") as File | null;
 
-    if (!title || !description) {
-      return NextResponse.json({ error: "Title and description are required" }, { status: 400 });
+    if (!title) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
     let imagePath = "";
@@ -60,7 +59,7 @@ export async function POST(request: Request) {
       .insert({
         title,
         image: imagePath,
-        description,
+        description: "",
         order: nextOrder,
         profile_id: profileId || null,
       })

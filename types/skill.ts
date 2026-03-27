@@ -2,7 +2,6 @@ export interface Skill {
   id: string;
   title: string;
   image: string | File;
-  description: string;
   order: number;
 }
 

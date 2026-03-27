@@ -13,6 +13,7 @@ export function SessionManager({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const toast = useToast();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { toasts } = useSelector((state: RootState) => state.toast);
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
@@ -54,18 +55,24 @@ export function SessionManager({ children }: { children: React.ReactNode }) {
     if (isInitializing) return;
 
     if (!isAuthenticated && pathname.startsWith("/dashboard")) {
-      toast.error("Please login to access the dashboard");
+      const hasLogoutToast = toasts.some(t => t.message === "Logged out successfully");
+      if (!hasLogoutToast) {
+        toast.error("Please login to access the dashboard");
+      }
       router.push("/login");
     } else if (isAuthenticated && pathname === "/login") {
-      toast.info("You are already logged in");
+      const hasLoginToast = toasts.some(t => t.message === "Welcome back!");
+      if (!hasLoginToast) {
+        toast.info("You are already logged in");
+      }
       router.replace("/dashboard");
     }
-  }, [isInitializing, isAuthenticated, pathname, router, toast]);
+  }, [isInitializing, isAuthenticated, pathname, router, toast, toasts]);
 
   if (isInitializing && pathname.startsWith("/dashboard")) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }

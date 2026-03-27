@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Profile } from "@/types/profile";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { 
-  Mail, Phone, MapPin, Globe, Github, Linkedin, Instagram, Twitter, 
-  FileText, Briefcase, Eye, Download, ExternalLink, Code, User, Calendar
+  Mail, Phone, MapPin, Download, ExternalLink, Github, Linkedin, Twitter, 
+  Terminal, Layers, Database, Cloud, Palette, Shield, Info, ArrowRight
 } from "lucide-react";
+
+const skillIconMap: Record<string, any> = {
+  "Core Systems": Terminal,
+  "Frontend Craft": Layers,
+  "Data Persistence": Database,
+  "Infrastructure": Cloud,
+  "UI/UX Systems": Palette,
+  "Cyber Security": Shield,
+};
 
 export default function Home() {
   const [profile, setProfile] = useState<any>(null);
@@ -33,17 +40,10 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black p-8">
-        <div className="w-full max-w-4xl space-y-12">
-          <div className="space-y-4">
-            <Skeleton width={120} height={20} />
-            <Skeleton className="w-full max-w-lg" height={48} />
-            <Skeleton className="w-full max-w-md" height={24} />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Skeleton className="md:col-span-2 h-64 rounded-3xl" />
-            <Skeleton className="h-64 rounded-3xl" />
-          </div>
+      <div className="flex min-h-screen items-center justify-center bg-surface">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="w-12 h-12 bg-surface-container-high rounded-full"></div>
+          <div className="h-4 w-32 bg-surface-container-high rounded"></div>
         </div>
       </div>
     );
@@ -51,13 +51,10 @@ export default function Home() {
 
   if (!profile) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
-        <div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800 animate-in zoom-in duration-500">
-          <div className="w-16 h-16 bg-gray-50 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Globe className="w-8 h-8 text-gray-300" />
-          </div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">No portfolio is currently live</h1>
-          <p className="text-gray-500 mt-2 text-sm max-w-xs mx-auto">Please set a profile as active in your dashboard to display it here.</p>
+      <div className="flex min-h-screen items-center justify-center bg-surface">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-headline font-bold text-on-surface">No profile is currently live</h1>
+          <p className="text-on-surface-variant mt-2 font-body italic">Please set a profile as active in your dashboard.</p>
         </div>
       </div>
     );
@@ -66,254 +63,236 @@ export default function Home() {
   const cvUrl = profile.cv ? (typeof profile.cv === "string" ? profile.cv : URL.createObjectURL(profile.cv)) : null;
 
   return (
-    <div className="min-h-screen bg-zinc-50 font-sans dark:bg-black p-4 md:p-8 selection:bg-blue-100 dark:selection:bg-blue-900/40">
-      <main className="max-w-5xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        
-        {/* Header Section */}
-        <section className="bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800">
-          <div className="relative h-40 md:h-64 bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-800">
-             {/* Decorative element */}
-             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
-             
-             <div className="absolute -bottom-20 left-8 md:left-16">
-                <div className="relative w-36 h-36 md:w-48 h-48 rounded-3xl overflow-hidden border-[6px] border-white dark:border-zinc-900 shadow-2xl bg-gray-100 dark:bg-zinc-800 transition-transform hover:scale-[1.02] duration-500">
-                  {profile.avatar ? (
-                    <img
-                      src={profile.avatar as string}
-                      alt={profile.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-zinc-800">
-                      <span className="text-5xl text-gray-300 font-black">{profile.name.charAt(0)}</span>
-                    </div>
-                  )}
-                </div>
-             </div>
-          </div>
+    <div className="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container font-body">
+      {/* TopAppBar */}
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl rounded-2xl bg-surface/80 backdrop-blur-xl shadow-xl z-50 flex justify-between items-center px-8 py-4 border border-outline-variant/10">
+        <div className="text-2xl font-bold text-on-surface italic font-headline tracking-tighter">
+          Studio.Dev
+        </div>
+        <div className="hidden md:flex items-center space-x-8">
+          <a className="text-primary font-bold underline decoration-2 underline-offset-8 font-label text-sm transition-colors duration-300" href="#home">Home</a>
+          <a className="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-label text-sm" href="#bio">Bio</a>
+          <a className="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-label text-sm" href="#skills">Skills</a>
+          <a className="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-label text-sm" href="#projects">Projects</a>
+        </div>
+        <a 
+          href={`mailto:${profile.email}`}
+          className="bg-primary hover:bg-primary-dim text-on-primary px-5 py-2.5 rounded-xl font-label text-sm font-bold transition-all active:scale-95 shadow-lg shadow-primary/20"
+        >
+          Get in Touch
+        </a>
+      </nav>
 
-          <div className="pt-24 pb-12 px-8 md:px-16">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-              <div className="space-y-3">
-                <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
-                  {profile.name}
-                </h1>
-                <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  {profile.title}
-                </p>
-                
-                <div className="flex flex-wrap gap-4 pt-2 text-sm text-gray-500 dark:text-gray-400 font-medium">
-                  {profile.location && (
-                    <div className="flex items-center gap-2 group transition-colors">
-                      <MapPin className="w-4 h-4 text-blue-500" /> 
-                      <span>{profile.location}</span>
-                    </div>
-                  )}
-                  {profile.email && (
-                    <div className="flex items-center gap-2">
-                       <Mail className="w-4 h-4 text-blue-500" />
-                       <a href={`mailto:${profile.email}`} className="hover:text-blue-600 transition-colors underline decoration-blue-500/30 underline-offset-4">{profile.email}</a>
-                    </div>
-                  )}
+      {/* Hero Section */}
+      <header className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 md:px-20 pt-24 overflow-hidden" id="home">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-surface-container-low -z-10 transition-all"></div>
+        <div className="w-full max-w-7xl mx-auto grid md:grid-cols-12 gap-12 items-center">
+          <div className="md:col-span-7 z-10">
+            <p className="font-label uppercase tracking-widest text-primary font-bold mb-4 opacity-80 animate-in fade-in slide-in-from-left-4 duration-700">
+              Architecture of Code
+            </p>
+            <h1 className="font-headline text-6xl md:text-8xl font-bold tracking-tighter text-on-surface leading-[0.9] mb-8 animate-in fade-in slide-in-from-left-8 duration-1000">
+              {profile.name.split(' ')[0]}<br />
+              <span className="text-outline">{profile.name.split(' ').slice(1).join(' ')}</span>
+            </h1>
+            <h2 className="font-body italic text-2xl md:text-4xl text-on-surface-variant max-w-xl animate-in fade-in slide-in-from-left-12 duration-1000 delay-200">
+              {profile.title}
+            </h2>
+          </div>
+          <div className="md:col-span-5 relative animate-in fade-in zoom-in duration-1000">
+            <div className="aspect-[4/5] bg-surface-container rounded-lg overflow-hidden shadow-[0_20px_40px_rgba(18,74,240,0.06)] transform rotate-2 hover:rotate-0 transition-transform duration-700">
+              {profile.avatar ? (
+                <img 
+                  alt={profile.name}
+                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                  src={profile.avatar}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-surface-container-high">
+                  <span className="text-8xl text-outline opacity-20 font-headline">{profile.name.charAt(0)}</span>
                 </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-3">
-                {profile.cv && (
-                  <Button 
-                    onClick={() => setIsCvModalOpen(true)} 
-                    variant="outline" 
-                    leftIcon={FileText}
-                    className="rounded-2xl border-2 hover:bg-gray-50 dark:hover:bg-zinc-800"
-                  >
-                    View Curriculum Vitae
-                  </Button>
+              )}
+            </div>
+            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-3xl -z-10"></div>
+          </div>
+        </div>
+      </header>
+
+      {/* Bio & Social Section */}
+      <section className="py-24 bg-surface-container-low" id="bio">
+        <div className="max-w-7xl mx-auto px-6 md:px-20 grid md:grid-cols-12 gap-16">
+          <div className="md:col-span-4 space-y-12">
+            <div className="space-y-6">
+              <h3 className="font-label text-xs uppercase tracking-[0.3em] text-outline">Contact Details</h3>
+              <ul className="space-y-4 font-label text-sm font-semibold">
+                {profile.email && (
+                  <li className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-primary" />
+                    {profile.email}
+                  </li>
                 )}
-                <div className="flex gap-2">
-                  {profile.github && (
-                    <a href={profile.github} target="_blank" rel="noopener noreferrer" className="p-3 rounded-2xl bg-gray-900 text-white hover:bg-black transition-all hover:-translate-y-1 shadow-md" title="GitHub">
-                      <Github className="w-5 h-5" />
-                    </a>
-                  )}
-                  {profile.linkedin && (
-                    <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-3 rounded-2xl bg-[#0077b5] text-white hover:brightness-110 transition-all hover:-translate-y-1 shadow-md" title="LinkedIn">
-                      <Linkedin className="w-5 h-5" />
-                    </a>
-                  )}
-                </div>
+                {profile.phone && (
+                  <li className="flex items-center gap-3">
+                    <Phone className="w-5 h-5 text-primary" />
+                    {profile.phone}
+                  </li>
+                )}
+                {profile.location && (
+                  <li className="flex items-center gap-3">
+                    <MapPin className="w-5 h-5 text-primary" />
+                    {profile.location}
+                  </li>
+                )}
+              </ul>
+            </div>
+            <div className="space-y-6">
+              <h3 className="font-label text-xs uppercase tracking-[0.3em] text-outline">Social Graph</h3>
+              <div className="flex flex-wrap gap-4">
+                {profile.social_links?.map((social: any) => (
+                  <a 
+                    key={social.id} 
+                    href={social.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    title={social.name}
+                    className="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 shadow-sm overflow-hidden p-2 group hover:-translate-y-1 hover:shadow-md"
+                  >
+                    {social.image ? (
+                      <img 
+                        src={social.image} 
+                        alt={social.name} 
+                        className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110" 
+                      />
+                    ) : (
+                      <span className="font-bold text-lg">{social.name.charAt(0).toUpperCase()}</span>
+                    )}
+                  </a>
+                ))}
+                {!profile.social_links?.length && (
+                  <span className="text-sm text-outline italic">No social links provided.</span>
+                )}
               </div>
             </div>
+            {profile.cv && (
+              <button 
+                onClick={() => setIsCvModalOpen(true)}
+                className="inline-flex items-center gap-3 font-label text-sm font-bold text-primary px-5 py-3 rounded-xl hover:bg-primary/10 transition-colors group border border-transparent hover:border-primary/20"
+              >
+                <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+                Preview Curriculum Vitae
+                <span className="w-8 h-px bg-primary group-hover:w-16 transition-all duration-300 ml-2"></span>
+              </button>
+            )}
           </div>
-        </section>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-16">
-            
-            {/* About Section */}
-            <section className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                  <User className="w-5 h-5 text-blue-600" />
-                </div>
-                <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-wider text-sm">Background</h2>
-              </div>
-              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-medium font-serif italic border-l-4 border-blue-500 pl-6 py-2">
-                {profile.bio || "No background story provided yet. Stay tuned for updates!"}
+          <div className="md:col-span-8">
+            <h3 className="font-headline text-4xl mb-8 leading-tight">
+              Crafting the <span className="italic font-body">unseen infrastructure</span> of modern digital monographs.
+            </h3>
+            <div className="space-y-6 font-body text-xl text-on-surface-variant leading-relaxed">
+              <p className="whitespace-pre-wrap">
+                {profile.bio || "With over a decade of experience, I approach software through the lens of architectural minimalism. I believe a codebase should be as intentional as a structural blueprint, prioritizing longevity over ephemeral trends."}
               </p>
-            </section>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Skills Section */}
-            {profile.skills && profile.skills.length > 0 && (
-              <section className="space-y-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
-                    <Code className="w-5 h-5 text-indigo-600" />
+      {/* Skills Section */}
+      <section className="py-24 bg-surface" id="skills">
+        <div className="max-w-7xl mx-auto px-6 md:px-20">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+            <h2 className="font-headline text-5xl font-bold tracking-tight">The Toolkit</h2>
+            <p className="font-label text-sm text-outline max-w-xs text-right">A curated selection of technologies utilized to build robust digital foundations.</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-y-16 gap-x-8 md:gap-x-12 lg:gap-x-16 pt-12">
+            {profile.skills?.map((skill: any) => {
+              const Icon = skillIconMap[skill.title] || Terminal;
+              return (
+                <div key={skill.id} className="flex flex-col items-center justify-end w-[80px] md:w-[100px] group cursor-default">
+                  <div className="w-14 h-14 md:w-[72px] md:h-[72px] flex items-center justify-center transition-all duration-300 group-hover:-translate-y-2 group-hover:scale-110 mb-4">
+                    {skill.image ? (
+                      <img 
+                        src={skill.image} 
+                        alt={skill.title} 
+                        className="w-full h-full object-contain filter drop-shadow-sm group-hover:drop-shadow-lg transition-all duration-300" 
+                      />
+                    ) : (
+                      <Icon className="w-10 h-10 md:w-12 md:h-12 text-on-surface-variant group-hover:text-primary transition-colors duration-300" />
+                    )}
                   </div>
-                  <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-wider text-sm">Expertise</h2>
+                  <h4 className="font-label text-xs md:text-sm font-bold text-outline group-hover:text-on-surface transition-colors duration-300 text-center w-full truncate">
+                    {skill.title}
+                  </h4>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {profile.skills.map((skill: any) => (
-                    <div key={skill.id} className="group p-5 bg-white dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-gray-800 hover:border-blue-500/30 transition-all hover:shadow-lg hover:shadow-blue-500/5">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-50 dark:bg-zinc-800 p-1">
-                          <img src={skill.image} alt={skill.title} className="w-full h-full object-cover rounded-xl" />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="font-extrabold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">{skill.title}</h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{skill.description}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Projects Section */}
-            {profile.projects && profile.projects.length > 0 && (
-              <section className="space-y-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
-                    <Briefcase className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-wider text-sm">Featured Work</h2>
-                </div>
-                <div className="grid grid-cols-1 gap-8">
-                  {profile.projects.map((project: any) => (
-                    <div key={project.id} className="group bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-2xl transition-all duration-500">
-                      <div className="grid md:grid-cols-5 gap-0">
-                        <div className="md:col-span-2 relative aspect-[4/3] md:aspect-auto overflow-hidden">
-                          <img src={project.thumbnail} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                            <span className="text-white text-xs font-bold uppercase tracking-widest">{project.info || "Visual Case Study"}</span>
-                          </div>
-                        </div>
-                        <div className="md:col-span-3 p-8 md:p-10 flex flex-col justify-between space-y-4">
-                          <div className="space-y-3">
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">{project.title}</h3>
-                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3 font-medium">
-                              {project.description}
-                            </p>
-                          </div>
-                          <div className="flex items-center justify-between pt-4 border-t border-gray-50 dark:border-zinc-800">
-                            <div className="flex items-center gap-2 text-xs font-bold text-gray-400 dark:text-gray-500">
-                              <Calendar className="w-3.5 h-3.5" /> 
-                              {new Date(project.created_at).getFullYear()}
-                            </div>
-                            {project.link && (
-                              <a href={project.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-gray-50 dark:bg-zinc-800 hover:bg-blue-600 hover:text-white text-gray-900 dark:text-white rounded-2xl transition-all font-bold text-sm">
-                                Explore Live <ExternalLink className="w-4 h-4" />
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
+              );
+            })}
+            {!profile.skills?.length && (
+              <div className="w-full py-12 text-center text-outline italic font-body">No skills documented yet.</div>
             )}
           </div>
+        </div>
+      </section>
 
-          {/* Sidebar Area */}
-          <div className="space-y-8">
-            {/* Contact Card */}
-            <div className="p-8 bg-gradient-to-br from-indigo-900 to-blue-900 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
-               <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000"></div>
-               <div className="relative z-10 space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-black">Let's build something exceptional together.</h3>
-                    <p className="text-indigo-100/70 font-medium leading-relaxed">
-                      Always open to discussing new projects, creative ideas or opportunities to be part of your vision.
+      {/* Projects Section */}
+      <section className="py-24 bg-surface-container" id="projects">
+        <div className="max-w-7xl mx-auto px-6 md:px-20">
+          <h2 className="font-headline text-5xl font-bold mb-16">Selected Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+            {profile.projects?.map((project: any, index: number) => {
+              const isLarge = index === 0 || index === 3;
+              const colSpan = isLarge ? "md:col-span-8" : "md:col-span-4";
+              const height = isLarge ? "h-[500px]" : "h-[500px]"; // Adjusted to match design
+              
+              if (index > 3) return null; // Limit to 4 for the bento grid
+
+              return (
+                <div 
+                  key={project.id}
+                  className={`${colSpan} group relative overflow-hidden bg-surface-container-lowest rounded-lg ${height} shadow-sm hover:shadow-xl transition-all duration-500`}
+                >
+                  <img 
+                    alt={project.title}
+                    className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-1000"
+                    src={project.thumbnail}
+                  />
+                  <div className="absolute inset-0 p-12 flex flex-col justify-end bg-gradient-to-t from-surface-container via-transparent/20 to-transparent">
+                    <p className="font-label text-xs font-bold uppercase tracking-widest text-primary mb-2">
+                      {project.info || "Visual Case Study"}
                     </p>
-                  </div>
-                  <div className="space-y-3">
-                    <a href={`mailto:${profile.email}`} className="flex items-center justify-center w-full py-4 bg-white text-blue-900 rounded-2xl transition-all font-extrabold shadow-xl hover:-translate-y-1 active:scale-95">
-                      Get In Touch
+                    <h3 className="font-headline text-4xl font-bold mb-4">{project.title}</h3>
+                    <p className="font-body text-lg text-on-surface-variant max-w-md mb-6 line-clamp-2">
+                      {project.description}
+                    </p>
+                    <a className="text-on-surface font-label font-bold flex items-center gap-2 group/link" href={`/projects/${project.id}`}>
+                      Case Study
+                      <ArrowRight className="w-5 h-5 text-primary group-hover/link:translate-x-1 transition-transform" />
                     </a>
                   </div>
-               </div>
-            </div>
-
-            {/* Quick Summary / Status */}
-            <div className="p-8 bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 space-y-6">
-               <h4 className="text-sm font-black uppercase tracking-widest text-gray-400">Current Status</h4>
-               <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span className="text-sm font-bold text-gray-700 dark:text-gray-200">Available for Freelance</span>
-                  </div>
-                  {profile.location && (
-                    <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 font-medium pb-4 border-b border-gray-50 dark:border-zinc-800">
-                      <MapPin className="w-4 h-4 text-blue-500" /> Based in {profile.location}
-                    </div>
-                  )}
-                    <div className="space-y-3">
-                      <p className="text-xs text-gray-400 font-bold uppercase tracking-tighter">Follow my updates</p>
-                      <div className="flex flex-wrap gap-2">
-                         {profile.instagram && <a href={profile.instagram} className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-400 hover:text-pink-600 transition-colors" title="Instagram"><Instagram className="w-4 h-4" /></a>}
-                         {profile.twitter && <a href={profile.twitter} className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-400 hover:text-blue-400 transition-colors" title="Twitter"><Twitter className="w-4 h-4" /></a>}
-                         {profile.social_links?.map((link: any) => (
-                           <a 
-                             key={link.id} 
-                             href={link.link} 
-                             target="_blank" 
-                             rel="noopener noreferrer" 
-                             className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-400 hover:text-blue-600 transition-colors flex items-center gap-2 group"
-                             title={link.name}
-                           >
-                             {link.image ? (
-                               <img src={link.image} alt={link.name} className="w-4 h-4 object-contain grayscale group-hover:grayscale-0 transition-all" />
-                             ) : (
-                               <Globe className="w-4 h-4" />
-                             )}
-                             <span className="sr-only">{link.name}</span>
-                           </a>
-                         ))}
-                      </div>
-                      {(!profile.instagram && !profile.twitter && (!profile.social_links || profile.social_links.length === 0)) && (
-                        <p className="text-xs text-gray-400 italic">No social links provided.</p>
-                      )}
-                    </div>
                 </div>
-            </div>
+              );
+            })}
           </div>
         </div>
-      </main>
+      </section>
 
-      <footer className="mt-24 pb-12 border-t border-gray-100 dark:border-zinc-900 pt-12 flex flex-col items-center gap-6 max-w-5xl mx-auto">
-        <div className="flex gap-8 text-sm font-black uppercase tracking-widest text-gray-400">
-          <a href="#" className="hover:text-blue-600 transition-colors">About</a>
-          <a href="#" className="hover:text-blue-600 transition-colors">Projects</a>
-          <a href="#" className="hover:text-blue-600 transition-colors">Contact</a>
+      {/* Footer */}
+      <footer className="bg-surface-container-low w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-outline-variant/15">
+        <div className="font-label text-xs uppercase tracking-widest text-outline">
+          © {new Date().getFullYear()} Monograph Studio. Built with Intent.
         </div>
-        <div className="flex flex-col items-center gap-3">
-          <p className="text-gray-400 text-sm font-medium italic">© {new Date().getFullYear()} {profile.name}. Handcrafted with precision.</p>
-          <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/10 px-4 py-2 rounded-full border border-emerald-100 dark:border-emerald-800/30">
-             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-             <span className="text-[10px] uppercase font-black tracking-widest text-emerald-700 dark:text-emerald-400">Live Production Profile</span>
-          </div>
+        <div className="flex flex-wrap gap-6 md:gap-8 justify-center">
+          {profile.social_links?.map((social: any) => (
+            <a 
+              key={social.id} 
+              className="font-label text-xs uppercase tracking-widest text-outline hover:text-on-surface transition-all" 
+              href={social.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {social.name}
+            </a>
+          ))}
+          <a className="font-label text-xs uppercase tracking-widest text-outline hover:text-on-surface transition-all" href="#">Source</a>
         </div>
       </footer>
 
@@ -326,24 +305,24 @@ export default function Home() {
       >
         <div className="space-y-6">
           {cvUrl && (
-            <div className="w-full aspect-[1/1.4] sm:aspect-[1/1.2] md:aspect-video rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-zinc-900 flex items-center justify-center shadow-inner">
-              {cvUrl.toLowerCase().endsWith('.pdf') || (profile.cv instanceof File && profile.cv.type === 'application/pdf') ? (
-                <iframe src={cvUrl} className="w-full h-[60vh] md:h-[70vh]" title="CV Preview" />
+            <div className="w-full h-[50vh] md:h-[65vh] rounded-3xl overflow-hidden border border-outline-variant/15 bg-surface-container-low relative shadow-inner">
+              {cvUrl.toLowerCase().endsWith('.pdf') ? (
+                <iframe src={cvUrl} className="w-full h-full object-fill absolute inset-0 border-none" title="CV Preview" />
               ) : (
-                <img src={cvUrl} alt="CV Preview" className="max-w-full max-h-[60vh] md:max-h-[70vh] object-contain shadow-2xl" />
+                <img src={cvUrl} alt="CV Preview" className="w-full h-full object-contain p-4 shadow-2xl absolute inset-0" />
               )}
             </div>
           )}
-          <div className="flex justify-between items-center pt-6 border-t border-gray-100 dark:border-zinc-800">
-            <p className="text-sm text-gray-500 font-medium">Reviewing {profile.name}'s professional history</p>
+          <div className="flex justify-between items-center pt-6 border-t border-outline-variant/15">
+            <p className="text-sm text-on-surface-variant font-medium">Reviewing {profile.name}'s professional history</p>
             <div className="flex gap-3">
-              <Button type="button" variant="secondary" onClick={() => setIsCvModalOpen(false)} className="rounded-xl">
+              <Button type="button" variant="outline" onClick={() => setIsCvModalOpen(false)} className="rounded-xl">
                 Close
               </Button>
               {cvUrl && (
                 <a href={cvUrl} download={`CV_${profile.name.replace(/\s+/g, '_')}`}>
-                   <Button type="button" leftIcon={Download} className="rounded-xl shadow-lg shadow-blue-500/20">
-                     Download PDF
+                   <Button type="button" className="rounded-xl shadow-lg shadow-primary/20">
+                     <Download className="w-4 h-4 mr-2" /> Download Document
                    </Button>
                 </a>
               )}

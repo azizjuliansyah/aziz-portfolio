@@ -10,7 +10,6 @@ export async function PUT(
     const { id } = await params;
     const formData = await request.formData();
     const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
     const file = formData.get("image") as File | null;
 
     // Fetch current skill to check for old image
@@ -40,7 +39,7 @@ export async function PUT(
       .update({
         title,
         image: imagePath,
-        description,
+        description: "",
       })
       .eq("id", id)
       .select()

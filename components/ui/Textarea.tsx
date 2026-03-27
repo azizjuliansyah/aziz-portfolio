@@ -21,7 +21,7 @@ export function Textarea({
       {label && (
         <label 
           htmlFor={textareaId}
-          className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1 block"
+          className="text-sm font-semibold text-on-surface/80 ml-1 block"
         >
           {label}
         </label>
@@ -29,19 +29,19 @@ export function Textarea({
       <textarea
         id={textareaId}
         className={`
-          w-full rounded-xl border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 
-          focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all 
-          text-sm p-3 outline-none border min-h-[120px] resize-y
-          placeholder:text-gray-400 dark:placeholder:text-gray-600
-          ${error ? "border-red-500 focus:border-red-500 focus:ring-red-500/10" : ""}
+          w-full rounded-xl border border-outline/10 bg-surface-container-low 
+          focus:border-primary focus:ring-primary focus:ring-offset-0 transition-all 
+          text-sm p-3 outline-none min-h-[120px] resize-y
+          text-on-surface placeholder:text-on-surface/30
+          ${error ? "border-error focus:border-error focus:ring-error focus:ring-offset-0" : ""}
           ${className}
         `}
         {...props}
       />
       {error ? (
-        <p className="text-xs text-red-500 ml-1">{error}</p>
+        <p className="text-xs text-error ml-1 font-medium">{error}</p>
       ) : helperText ? (
-        <p className="text-xs text-gray-500 ml-1">{helperText}</p>
+        <p className="text-xs text-on-surface/60 ml-1 italic">{helperText}</p>
       ) : null}
     </div>
   );

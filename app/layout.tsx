@@ -3,9 +3,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "./store/ReduxProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { supabase } from "@/config/db";
+import { supabaseAdmin as supabase } from "@/config/db";
 import { ToastContainer } from "@/components/ui/Toast";
 import { SessionManager } from "@/components/auth/SessionManager";
+import { headers } from "next/headers";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,24 +37,18 @@ export default async function RootLayout({
     const { data: settings } = await supabase
       .from("app_settings")
       .select("theme, enable_global_theme")
-      .limit(1)
-      .single();
+      .maybeSingle(); // Better than single() if row might not exist
       
-    if (settings) {
-      if (settings.enable_global_theme && settings.theme) {
-        globalTheme = settings.theme;
-      } else {
-        globalTheme = "system";
-      }
+    if (settings?.theme) {
+      globalTheme = settings.theme;
     }
-  } catch (err) {
+  } catch (err: any) {
     // Fail silently, use system default
+    globalTheme = "system";
   }
 
   // Pre-calculate class to prevent flicker
-  let htmlClass = "";
-  if (globalTheme === "dark") htmlClass = "dark";
-  if (globalTheme === "light") htmlClass = "light";
+  let htmlClass = globalTheme === "system" ? "" : globalTheme;
   
   return (
     <html lang="en" suppressHydrationWarning className={htmlClass}>

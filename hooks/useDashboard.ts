@@ -5,10 +5,19 @@ import { useToast } from "@/hooks/useToast";
 export interface DashboardStats {
   totalProjects: number;
   totalSkills: number;
+  totalSocialLinks: number;
+  activeProfileName: string;
+  activeProfileId: string | null;
 }
 
 export const useDashboard = () => {
-  const [stats, setStats] = useState<DashboardStats>({ totalProjects: 0, totalSkills: 0 });
+  const [stats, setStats] = useState<DashboardStats>({ 
+    totalProjects: 0, 
+    totalSkills: 0, 
+    totalSocialLinks: 0,
+    activeProfileName: "Loading...",
+    activeProfileId: null
+  });
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
 

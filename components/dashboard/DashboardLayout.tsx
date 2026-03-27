@@ -19,7 +19,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, title = "Dashboard", user, onLogout }: DashboardLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex font-sans">
+    <div className="min-h-screen bg-surface flex font-label text-on-surface">
       <Sidebar onLogout={onLogout} />
       <main className="flex-1 md:ml-64 transition-all">
         <Topbar title={title} user={user} />

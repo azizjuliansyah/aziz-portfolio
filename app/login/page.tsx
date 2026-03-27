@@ -18,14 +18,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface p-4 font-label">
       <Card className="w-full max-w-md" noPadding>
         <CardHeader>
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-600/20">
             <Lock className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">Sign in to access your dashboard</p>
+          <h2 className="text-2xl font-bold text-on-surface">Welcome Back</h2>
+          <p className="text-on-surface/60 mt-2 text-sm">Sign in to access your dashboard</p>
         </CardHeader>
 
         <div className="p-8">

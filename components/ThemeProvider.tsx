@@ -15,29 +15,40 @@ export function ThemeProvider({ children, defaultTheme = "system" }: { children:
   const [theme, setTheme] = useState<Theme>(defaultTheme);
   const [mounted, setMounted] = useState(false);
 
+  // Sync state with prop if server-side value changes (e.g. on navigation)
+  useEffect(() => {
+    setTheme(defaultTheme);
+  }, [defaultTheme]);
+
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
-    if (savedTheme) {
+    
+    // CRITICAL: Only use localStorage if the server says 'system' (meaning no global override in DB)
+    // Or if there's no default theme at all.
+    if (defaultTheme === "system" && savedTheme) {
       setTheme(savedTheme);
+    } else {
+      setTheme(defaultTheme);
     }
     setMounted(true);
-  }, []);
+  }, [defaultTheme]); // Re-sync if defaultTheme changes
 
   useEffect(() => {
     if (!mounted) return;
 
     const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-
+    
+    // Determine effective theme
     const effectiveTheme = theme === "system" 
       ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
       : theme;
 
+    // Apply classes
+    root.classList.remove("light", "dark");
     root.classList.add(effectiveTheme);
     
-    // Also add the explicit theme class if not system
+    // Persist if not system
     if (theme !== "system") {
-      root.classList.add(theme);
       localStorage.setItem("theme", theme);
     } else {
       localStorage.removeItem("theme");

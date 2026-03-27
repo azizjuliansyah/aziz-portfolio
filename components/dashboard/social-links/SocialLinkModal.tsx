@@ -18,6 +18,7 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
   const [name, setName] = useState("");
   const [link, setLink] = useState("");
   const [image, setImage] = useState<File | string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (currentLink) {
@@ -47,6 +48,25 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
     if (success) onClose();
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      setImage(file);
+    }
+  };
+
   return (
     <Modal 
       isOpen={isOpen} 
@@ -64,8 +84,17 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
         
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Icon / Image</label>
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gray-50 dark:bg-gray-950 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-400 overflow-hidden">
+          <div 
+            className={`flex items-center gap-4 p-4 rounded-xl border-2 border-dashed transition-colors ${
+              isDragging 
+                ? "border-primary bg-primary/5" 
+                : "border-outline/20 bg-surface-container-low hover:bg-surface-container"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="w-16 h-16 bg-surface rounded-xl border border-outline/10 flex items-center justify-center text-on-surface/40 overflow-hidden shadow-sm flex-shrink-0">
               {image ? (
                   <Image 
                     src={typeof image === "string" ? image : URL.createObjectURL(image)} 
@@ -97,7 +126,7 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
                 <ImageIcon className="w-4 h-4" />
                 Choose File
               </label>
-              <p className="text-xs text-gray-500 mt-1">PNG, JPG, SVG up to 2MB</p>
+              <p className="text-xs text-on-surface/50 mt-1">Drag & drop or select PNG, JPG, SVG up to 2MB</p>
             </div>
           </div>
         </div>

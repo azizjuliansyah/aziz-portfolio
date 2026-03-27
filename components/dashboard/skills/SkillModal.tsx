@@ -16,17 +16,15 @@ interface SkillModalProps {
 
 export const SkillModal = ({ isOpen, onClose, onSubmit, currentSkill, isLoading }: SkillModalProps) => {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [image, setImage] = useState<File | string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (currentSkill) {
       setTitle(currentSkill.title || "");
-      setDescription(currentSkill.description || "");
       setImage(currentSkill.image || null);
     } else {
       setTitle("");
-      setDescription("");
       setImage(null);
     }
   }, [currentSkill, isOpen]);
@@ -35,7 +33,6 @@ export const SkillModal = ({ isOpen, onClose, onSubmit, currentSkill, isLoading 
     e.preventDefault();
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("description", description);
     
     if (image instanceof File) {
       formData.append("image", image);
@@ -45,6 +42,25 @@ export const SkillModal = ({ isOpen, onClose, onSubmit, currentSkill, isLoading 
 
     const success = await onSubmit(formData);
     if (success) onClose();
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      setImage(file);
+    }
   };
 
   return (
@@ -64,8 +80,17 @@ export const SkillModal = ({ isOpen, onClose, onSubmit, currentSkill, isLoading 
         
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Icon / Image</label>
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gray-50 dark:bg-gray-950 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-400 overflow-hidden">
+          <div 
+            className={`flex items-center gap-4 p-4 rounded-xl border-2 border-dashed transition-colors ${
+              isDragging 
+                ? "border-primary bg-primary/5" 
+                : "border-outline/20 bg-surface-container-low hover:bg-surface-container"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="w-16 h-16 bg-surface rounded-xl border border-outline/10 flex items-center justify-center text-on-surface/40 overflow-hidden shadow-sm flex-shrink-0">
               {image ? (
                   <Image 
                     src={typeof image === "string" ? image : URL.createObjectURL(image)} 
@@ -97,21 +122,12 @@ export const SkillModal = ({ isOpen, onClose, onSubmit, currentSkill, isLoading 
                 <ImageIcon className="w-4 h-4" />
                 Choose File
               </label>
-              <p className="text-xs text-gray-500 mt-1">PNG, JPG, SVG up to 2MB</p>
+              <p className="text-xs text-on-surface/50 mt-1">Drag & drop or select PNG, JPG, SVG up to 2MB</p>
             </div>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Description</label>
-          <textarea
-            className="w-full rounded-xl border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 focus:border-blue-500 focus:ring-blue-500 transition-all text-sm p-3 outline-none border min-h-[100px]"
-            placeholder="Describe your proficiency..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </div>
+
         <div className="flex gap-3 pt-2">
           <Button variant="secondary" onClick={onClose} className="flex-1" type="button">
             Cancel

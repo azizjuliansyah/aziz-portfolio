@@ -10,7 +10,7 @@ interface SkeletonProps {
 export const Skeleton = ({ className = "", width, height, circle = false }: SkeletonProps) => {
   return (
     <div
-      className={`bg-gray-200 dark:bg-gray-800 animate-pulse ${
+      className={`bg-surface-container-high animate-pulse ${
         circle ? "rounded-full" : "rounded-lg"
       } ${className}`}
       style={{

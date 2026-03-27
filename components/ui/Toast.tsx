@@ -35,9 +35,9 @@ function ToastItem({ toast, onRemove }: { toast: any; onRemove: () => void }) {
   };
 
   const bgStyles = {
-    success: "bg-white dark:bg-gray-800 border-green-100 dark:border-green-900/30",
-    error: "bg-white dark:bg-gray-800 border-red-100 dark:border-red-900/30",
-    info: "bg-white dark:bg-gray-800 border-blue-100 dark:border-blue-900/30",
+    success: "bg-surface-container-high border-success/20",
+    error: "bg-surface-container-high border-error/20",
+    info: "bg-surface-container-high border-primary/20",
   };
 
   return (
@@ -49,7 +49,7 @@ function ToastItem({ toast, onRemove }: { toast: any; onRemove: () => void }) {
       `}
     >
       <div className="flex-shrink-0">{icons[toast.type as keyof typeof icons]}</div>
-      <div className="flex-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+      <div className="flex-1 text-sm font-medium text-on-surface">
         {toast.message}
       </div>
       <button

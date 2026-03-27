@@ -61,7 +61,7 @@ export function ImageInput({
   return (
     <div className={`space-y-2 ${className}`}>
       {label && (
-        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1 block">
+        <label className="text-sm font-semibold text-on-surface/80 ml-1 block">
           {label}
         </label>
       )}
@@ -73,8 +73,8 @@ export function ImageInput({
           ${isCircle ? "rounded-full" : "rounded-2xl"}
           border-2 border-dashed transition-all duration-300
           ${isDragging 
-            ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 scale-[1.02]" 
-            : "border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 hover:border-blue-400 dark:hover:border-blue-800"}
+            ? "border-primary bg-primary/5 scale-[1.02]" 
+            : "border-outline/10 bg-surface-container-low hover:border-primary/50"}
           overflow-hidden
         `}
         onDragOver={handleDragOver}
@@ -112,8 +112,8 @@ export function ImageInput({
             <div className={`
               flex items-center justify-center transition-colors
               ${isCircle ? "p-2 rounded-full" : "p-3 rounded-xl"}
-              bg-gray-100 dark:bg-gray-800
-              ${isDragging ? "bg-blue-100 dark:bg-blue-900 text-blue-500" : ""}
+              bg-surface-container-high
+              ${isDragging ? "bg-primary/20 text-primary" : ""}
             `}>
               {placeholder === "user" ? (
                 <User className={isCircle ? "w-6 h-6" : "w-8 h-8"} />
@@ -122,11 +122,11 @@ export function ImageInput({
               )}
             </div>
             <div className="text-center">
-              <p className={`font-bold text-gray-900 dark:text-gray-100 ${isCircle ? "text-[10px]" : "text-xs"}`}>
+              <p className={`font-bold text-on-surface ${isCircle ? "text-[10px]" : "text-xs"}`}>
                 {isCircle ? "Tap / Drop" : "Click or Drop Image"}
               </p>
               {!isCircle && (
-                <p className="text-[10px] mt-1 text-gray-500">
+                <p className="text-[10px] mt-1 text-on-surface/50">
                   PNG, JPG or WebP
                 </p>
               )}
@@ -136,8 +136,8 @@ export function ImageInput({
 
         {/* Drag Overlay */}
         {isDragging && (
-          <div className="absolute inset-0 bg-blue-500/10 backdrop-blur-[2px] pointer-events-none border-2 border-blue-500 flex items-center justify-center">
-            <Upload className="w-8 h-8 text-blue-500 animate-bounce" />
+          <div className="absolute inset-0 bg-primary/5 backdrop-blur-[2px] pointer-events-none border-2 border-primary flex items-center justify-center">
+            <Upload className="w-8 h-8 text-primary animate-bounce" />
           </div>
         )}
       </div>
@@ -150,7 +150,7 @@ export function ImageInput({
             e.stopPropagation();
             onChange(null);
           }}
-          className="relative z-10 flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-600 hover:underline transition-all cursor-pointer ml-1 py-1"
+          className="relative z-10 flex items-center gap-1.5 text-xs font-semibold text-error hover:text-error/80 hover:underline transition-all cursor-pointer ml-1 py-1"
         >
           <Trash2 className="w-3.5 h-3.5" />
           Remove Image

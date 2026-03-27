@@ -1,39 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+
 @import "tailwindcss";
 
+:root {
+  /* Default Light Mode Variables */
+  --background-raw: #ffffff;
+  --foreground-raw: #171717;
+
+  --primary-raw: #124af0;
+  --primary-dim-raw: #003eda;
+  --on-primary-raw: #f9f6ff;
+  --primary-container-raw: #dde1ff;
+  --on-primary-container-raw: #003dd8;
+  
+  --secondary-raw: #605f5f;
+  --on-secondary-raw: #fbf8f8;
+  --secondary-container-raw: #e5e2e1;
+  --on-secondary-container-raw: #525151;
+  
+  --tertiary-raw: #645b77;
+  --on-tertiary-raw: #fdf7ff;
+  --tertiary-container-raw: #e7dafc;
+  --on-tertiary-container-raw: #544c67;
+  
+  --surface-raw: #f8f9fa;
+  --on-surface-raw: #2b3437;
+  --surface-variant-raw: #dbe4e7;
+  --on-surface-variant-raw: #586064;
+  
+  --surface-container-lowest-raw: #ffffff;
+  --surface-container-low-raw: #f1f4f6;
+  --surface-container-raw: #eaeff1;
+  --surface-container-high-raw: #e3e9ec;
+  --surface-container-highest-raw: #dbe4e7;
+  
+  --outline-raw: #737c7f;
+  --outline-variant-raw: #abb3b7;
+  
+  --error-raw: #9e3f4e;
+  --on-error-raw: #fff7f7;
+  --error-container-raw: #ff8b9a;
+  --on-error-container-raw: #782232;
+}
+
+/* Explicit Light Mode Force */
+.light {
+  --background-raw: #ffffff;
+  --foreground-raw: #171717;
+
+  --primary-raw: #124af0;
+  --primary-dim-raw: #003eda;
+  --on-primary-raw: #f9f6ff;
+  --primary-container-raw: #dde1ff;
+  --on-primary-container-raw: #003dd8;
+  
+  --secondary-raw: #605f5f;
+  --on-secondary-raw: #fbf8f8;
+  --secondary-container-raw: #e5e2e1;
+  --on-secondary-container-raw: #525151;
+  
+  --tertiary-raw: #645b77;
+  --on-tertiary-raw: #fdf7ff;
+  --tertiary-container-raw: #e7dafc;
+  --on-tertiary-container-raw: #544c67;
+  
+  --surface-raw: #f8f9fa;
+  --on-surface-raw: #2b3437;
+  --surface-variant-raw: #dbe4e7;
+  --on-surface-variant-raw: #586064;
+  
+  --surface-container-lowest-raw: #ffffff;
+  --surface-container-low-raw: #f1f4f6;
+  --surface-container-raw: #eaeff1;
+  --surface-container-high-raw: #e3e9ec;
+  --surface-container-highest-raw: #dbe4e7;
+  
+  --outline-raw: #737c7f;
+  --outline-variant-raw: #abb3b7;
+  
+  --error-raw: #9e3f4e;
+  --on-error-raw: #fff7f7;
+  --error-container-raw: #ff8b9a;
+  --on-error-container-raw: #782232;
+}
+
+/* Explicit Dark Mode Force */
+.dark {
+  --background-raw: #0a0a0a;
+  --foreground-raw: #ededed;
+
+  --primary-raw: #b8c4ff;
+  --primary-dim-raw: #adc0ff;
+  --on-primary-raw: #00297a;
+  --primary-container-raw: #003dd8;
+  --on-primary-container-raw: #dde1ff;
+  
+  --secondary-raw: #c9c5c4;
+  --on-secondary-raw: #313030;
+  --secondary-container-raw: #484646;
+  --on-secondary-container-raw: #e5e2e1;
+  
+  --tertiary-raw: #cfc0e8;
+  --on-tertiary-raw: #352d47;
+  --tertiary-container-raw: #4c445e;
+  --on-tertiary-container-raw: #e7dafc;
+  
+  --surface-raw: #121314;
+  --on-surface-raw: #e1e2e4;
+  --surface-variant-raw: #444749;
+  --on-surface-variant-raw: #c4c7c9;
+  
+  --surface-container-lowest-raw: #0c0e0f;
+  --surface-container-low-raw: #1a1c1e;
+  --surface-container-raw: #1e2022;
+  --surface-container-high-raw: #282a2c;
+  --surface-container-highest-raw: #333537;
+  
+  --outline-raw: #8e9193;
+  --outline-variant-raw: #444749;
+  
+  --error-raw: #ffb4ab;
+  --on-error-raw: #690005;
+  --error-container-raw: #93000a;
+  --on-error-container-raw: #ffdad6;
+}
+
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-background: var(--background-raw);
+  --color-foreground: var(--foreground-raw);
+  --font-sans: "Newsreader", serif;
   --font-mono: var(--font-geist-mono);
   
-  /* Specification for dark mode in Tailwind v4 */
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-body: "Newsreader", serif;
+  --font-label: "Manrope", sans-serif;
+
+  /* Custom Colors from root.html */
+  --color-primary: var(--primary-raw);
+  --color-primary-dim: var(--primary-dim-raw);
+  --color-on-primary: var(--on-primary-raw);
+  --color-primary-container: var(--primary-container-raw);
+  --color-on-primary-container: var(--on-primary-container-raw);
+  
+  --color-secondary: var(--secondary-raw);
+  --color-on-secondary: var(--on-secondary-raw);
+  --color-secondary-container: var(--secondary-container-raw);
+  --color-on-secondary-container: var(--on-secondary-container-raw);
+  
+  --color-tertiary: var(--tertiary-raw);
+  --color-on-tertiary: var(--on-tertiary-raw);
+  --color-tertiary-container: var(--tertiary-container-raw);
+  --color-on-tertiary-container: var(--on-tertiary-container-raw);
+  
+  --color-surface: var(--surface-raw);
+  --color-on-surface: var(--on-surface-raw);
+  --color-surface-variant: var(--surface-variant-raw);
+  --color-on-surface-variant: var(--on-surface-variant-raw);
+  
+  --color-surface-container-lowest: var(--surface-container-lowest-raw);
+  --color-surface-container-low: var(--surface-container-low-raw);
+  --color-surface-container: var(--surface-container-raw);
+  --color-surface-container-high: var(--surface-container-high-raw);
+  --color-surface-container-highest: var(--surface-container-highest-raw);
+  
+  --color-outline: var(--outline-raw);
+  --color-outline-variant: var(--outline-variant-raw);
+  
+  --color-error: var(--error-raw);
+  --color-on-error: var(--on-error-raw);
+  --color-error-container: var(--error-container-raw);
+  --color-on-error-container: var(--on-error-container-raw);
+
+  /* Specify dark mode as selector for compatibility */
   --dark-mode: selector;
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-/* Force Light Mode variables when .light class is present */
-.light {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-/* Force Dark Mode variables when .dark class is present */
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
 /* 
-  If no explicit class is present, we follow the system preference.
+  Media query fallback - only if NO explicit class is present.
 */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --color-primary: #b8c4ff;
+    --color-primary-dim: #adc0ff;
+    --color-on-primary: #00297a;
+    --color-primary-container: #003dd8;
+    --color-on-primary-container: #dde1ff;
+    
+    --color-secondary: #c9c5c4;
+    --color-on-secondary: #313030;
+    --color-secondary-container: #484646;
+    --color-on-secondary-container: #e5e2e1;
+    
+    --color-tertiary: #cfc0e8;
+    --color-on-tertiary: #352d47;
+    --color-tertiary-container: #4c445e;
+    --color-on-tertiary-container: #e7dafc;
+    
+    --color-surface: #121314;
+    --color-on-surface: #e1e2e4;
+    --color-surface-variant: #444749;
+    --color-on-surface-variant: #c4c7c9;
+    
+    --color-surface-container-lowest: #0c0e0f;
+    --color-surface-container-low: #1a1c1e;
+    --color-surface-container: #1e2022;
+    --color-surface-container-high: #282a2c;
+    --color-surface-container-highest: #333537;
+    
+    --color-outline: #8e9193;
+    --color-outline-variant: #444749;
+    
+    --color-error: #ffb4ab;
+    --color-on-error: #690005;
+    --color-error-container: #93000a;
+    --color-on-error-container: #ffdad6;
   }
 }
 
@@ -56,53 +241,46 @@ button, a, input, textarea {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
 }
 
-/* Tailwind v4 dark variant fallback */
-@variant dark (&:where(.dark, .dark *));
+/* Tailwind v4 built-in dark variant is used with --dark-mode: selector */
 
-/* Premium Border Beam Animation */
-@property --border-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
+/* Premium Border Beam Animation - Disabled due to potential parsing issues */
 
-@keyframes border-rotate {
-  from { --border-angle: 0deg; }
-  to { --border-angle: 360deg; }
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .animate-border-beam {
-  animation: border-rotate 4s linear infinite;
+  position: relative !important;
+  z-index: 0 !important;
+  overflow: hidden !important;
+  border: 1.5px solid transparent !important;
 }
 
-.border-beam-active {
-  position: relative;
-  z-index: 0;
-}
-
-.border-beam-active::before {
+.animate-border-beam::before {
   content: "";
   position: absolute;
-  inset: -4px;
-  z-index: -1;
+  z-index: -2;
+  inset: -200%;
   background: conic-gradient(
-    from var(--border-angle),
-    transparent 70%,
-    #3b82f6 85%,
-    #60a5fa 100%
+    from 0deg,
+    transparent 0%,
+    transparent 80%,
+    var(--color-primary) 90%,
+    var(--color-primary) 100%
   );
-  border-radius: inherit;
-  animation: border-rotate 3s linear infinite;
+  animation: rotate-slow 4s linear infinite;
 }
 
-.border-beam-active::after {
+.animate-border-beam::after {
   content: "";
   position: absolute;
-  inset: 2px;
-  background: inherit;
-  border-radius: inherit;
   z-index: -1;
+  inset: 2px;
+  background-color: var(--color-surface-container);
+  border-radius: inherit;
 }
