@@ -51,7 +51,7 @@ export default async function RootLayout({
   let htmlClass = globalTheme === "system" ? "" : globalTheme;
   
   return (
-    <html lang="en" suppressHydrationWarning className={htmlClass}>
+    <html lang="en" suppressHydrationWarning className={htmlClass} style={{ scrollBehavior: 'smooth' }}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

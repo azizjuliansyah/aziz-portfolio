@@ -74,11 +74,9 @@ export const ProjectCard = ({ project, index, onEdit, onDelete }: ProjectCardPro
         <div className="p-6 flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-lg font-bold text-on-surface truncate">{project.title}</h3>
-            {project.link && (
-              <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary-dim">
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            )}
+            <a href={`/projects/${project.id}`} className="text-primary hover:text-primary-dim">
+              <ExternalLink className="w-4 h-4" />
+            </a>
           </div>
           <p className="text-primary text-[10px] font-bold uppercase tracking-wider mb-2 truncate">
             {project.info || "Personal Project"}
