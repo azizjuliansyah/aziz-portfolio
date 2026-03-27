@@ -72,6 +72,7 @@ export default function Home() {
         <div className="hidden md:flex items-center space-x-8">
           <a className="text-primary font-bold underline decoration-2 underline-offset-8 font-label text-sm transition-colors duration-300" href="#home">Home</a>
           <a className="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-label text-sm" href="#bio">Bio</a>
+          <a className="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-label text-sm" href="#experience">Experience</a>
           <a className="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-label text-sm" href="#skills">Skills</a>
           <a className="text-on-surface/70 font-medium hover:text-primary transition-colors duration-300 font-label text-sm" href="#projects">Projects</a>
         </div>
@@ -197,8 +198,53 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Experience Section */}
+      <section className="py-24 bg-surface" id="experience">
+        <div className="max-w-7xl mx-auto px-6 md:px-20">
+          <div className="flex justify-between items-end mb-12">
+            <h2 className="font-headline text-4xl md:text-5xl font-bold tracking-tight">Professional History</h2>
+          </div>
+          
+          <div className="max-w-4xl space-y-8 border-l border-outline-variant/30 pl-8 ml-4 relative">
+            {profile.work_experience?.map((exp: any, i: number) => (
+              <div key={exp.id} className="relative group/exp">
+                {/* Timeline Dot */}
+                <span className="absolute -left-[41px] top-6 w-5 h-5 rounded-full bg-surface border-[4px] border-primary group-hover/exp:scale-125 transition-transform duration-300 z-10 shadow-[0_0_0_4px_rgba(var(--surface-container-low))]"></span>
+                
+                <div className="bg-surface-container-low rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
+                    <div>
+                      <h3 className="font-headline text-2xl font-bold text-on-surface mb-1">{exp.position}</h3>
+                      <p className="font-label text-base text-primary font-bold">{exp.company_name}</p>
+                    </div>
+                    <div className="text-on-surface-variant font-label text-xs font-semibold whitespace-nowrap bg-surface-container-high px-3 py-1.5 rounded-lg inline-block self-start w-fit shadow-sm border border-outline/5">
+                      {exp.start_date} — {exp.end_date}
+                    </div>
+                  </div>
+                  
+                  {exp.responsibilities && exp.responsibilities.length > 0 && (
+                    <ul className="space-y-2.5 font-body text-base text-on-surface-variant leading-relaxed list-none">
+                      {exp.responsibilities.map((res: any) => (
+                        <li key={res.id} className="flex items-start gap-3 hover:text-on-surface transition-colors duration-200">
+                          <span className="text-primary/60 mt-1.5 flex-shrink-0"><ArrowRight className="w-4 h-4"/></span>
+                          <span>{res.responsibility}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            ))}
+            
+            {!profile.work_experience?.length && (
+              <div className="py-12 text-outline italic font-body">Professional history will be documented soon.</div>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Skills Section */}
-      <section className="py-24 bg-surface" id="skills">
+      <section className="py-24 bg-surface-container-low" id="skills">
         <div className="max-w-7xl mx-auto px-6 md:px-20">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
             <h2 className="font-headline text-5xl font-bold tracking-tight">The Toolkit</h2>
@@ -234,7 +280,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section className="py-24 bg-surface-container" id="projects">
+      <section className="py-24 bg-surface" id="projects">
         <div className="max-w-7xl mx-auto px-6 md:px-20">
           <h2 className="font-headline text-5xl font-bold mb-16">Selected Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8">

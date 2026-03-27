@@ -11,6 +11,8 @@ DROP TABLE IF EXISTS skills;
 DROP TABLE IF EXISTS info;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS app_settings;
+DROP TABLE IF EXISTS work_experience_responsibilities;
+DROP TABLE IF EXISTS work_experience;
 DROP TABLE IF EXISTS portfolio_profile;
 
 
@@ -101,6 +103,27 @@ CREATE TABLE info (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- Work Experience table
+CREATE TABLE work_experience (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  profile_id UUID REFERENCES portfolio_profile(id) ON DELETE CASCADE,
+  company_name TEXT NOT NULL,
+  position TEXT NOT NULL,
+  start_date TEXT NOT NULL,
+  end_date TEXT NOT NULL,
+  "order" INTEGER DEFAULT 0 NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Work Experience Responsibilities
+CREATE TABLE work_experience_responsibilities (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  experience_id UUID REFERENCES work_experience(id) ON DELETE CASCADE,
+  responsibility TEXT NOT NULL,
+  "order" INTEGER DEFAULT 0 NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- Application Settings table
 CREATE TABLE app_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -149,6 +172,8 @@ ALTER TABLE project_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE social_links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE info ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE work_experience ENABLE ROW LEVEL SECURITY;
+ALTER TABLE work_experience_responsibilities ENABLE ROW LEVEL SECURITY;
 
 -- Define Security Policies
 
@@ -158,6 +183,8 @@ CREATE POLICY "Skills are viewable by everyone" ON skills FOR SELECT USING (true
 CREATE POLICY "Projects are viewable by everyone" ON projects FOR SELECT USING (true);
 CREATE POLICY "Project images are viewable by everyone" ON project_images FOR SELECT USING (true);
 CREATE POLICY "Social links are viewable by everyone" ON social_links FOR SELECT USING (true);
+CREATE POLICY "Work experience is viewable by everyone" ON work_experience FOR SELECT USING (true);
+CREATE POLICY "Work experience responsibilities are viewable by everyone" ON work_experience_responsibilities FOR SELECT USING (true);
 
 -- Note: Tables like 'users' and 'app_settings' stay locked (no public SELECT policy).
 -- Access is granted only via 'service_role' key in backend APIs.

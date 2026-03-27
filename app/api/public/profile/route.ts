@@ -9,7 +9,8 @@ export async function GET() {
         *,
         skills (*),
         projects (*),
-        social_links (*)
+        social_links (*),
+        work_experience (*, responsibilities:work_experience_responsibilities(*))
       `)
       .eq("is_active", true)
       .single();
@@ -28,6 +29,14 @@ export async function GET() {
     }
     if (profile.social_links) {
       profile.social_links.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+    }
+    if (profile.work_experience) {
+      profile.work_experience.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      profile.work_experience.forEach((exp: any) => {
+        if (exp.responsibilities) {
+          exp.responsibilities.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+        }
+      });
     }
 
     return NextResponse.json(profile);

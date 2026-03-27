@@ -22,6 +22,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSkills } from "@/hooks/useSkills";
 import { useProjects } from "@/hooks/useProjects";
 import { useSocialLinks } from "@/hooks/useSocialLinks";
+import { useExperience } from "@/hooks/useExperience";
 
 // Dnd Kit Imports
 import { 
@@ -46,8 +47,11 @@ import { ProjectCard } from "@/components/dashboard/projects/ProjectCard";
 import { ProjectModal } from "@/components/dashboard/projects/ProjectModal";
 import { SocialLinkCard } from "@/components/dashboard/social-links/SocialLinkCard";
 import { SocialLinkModal } from "@/components/dashboard/social-links/SocialLinkModal";
+import { ExperienceCard } from "@/components/dashboard/experience/ExperienceCard";
+import { ExperienceModal } from "@/components/dashboard/experience/ExperienceModal";
+import { ExperienceDetailModal } from "@/components/dashboard/experience/ExperienceDetailModal";
 
-type ProfileTab = "basic" | "skills" | "projects" | "social-links";
+type ProfileTab = "basic" | "experience" | "skills" | "projects" | "social-links";
 
 export default function ProfileDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -82,6 +86,16 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
     updateSocialLink, 
     deleteSocialLink 
   } = useSocialLinks(id);
+  const {
+    experiences,
+    isLoading: isExperiencesLoading,
+    isSubmitting: isExperienceSubmitting,
+    isDeleting: isExperienceDeleting,
+    reorderExperiences,
+    createExperience,
+    updateExperience,
+    deleteExperience
+  } = useExperience(id);
   
   const { logout } = useAuth();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -93,7 +107,7 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
 
   // Update tab when query param changes
   useEffect(() => {
-    if (tabParam && ["basic", "skills", "projects", "social-links"].includes(tabParam)) {
+    if (tabParam && ["basic", "experience", "skills", "projects", "social-links"].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [tabParam]);
@@ -111,6 +125,7 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
 
   // Skills & Projects Common States
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [currentEntry, setCurrentEntry] = useState<any>(null);
@@ -158,6 +173,11 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
     setIsEntryModalOpen(true);
   };
 
+  const handleOpenDetailModal = (entry: any = null) => {
+    setCurrentEntry(entry);
+    setIsDetailModalOpen(true);
+  };
+
   const handleCloseEntryModal = () => {
     setIsEntryModalOpen(false);
     setCurrentEntry(null);
@@ -178,6 +198,8 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
       success = await deleteProject(deleteTargetId);
     } else if (activeTab === "social-links") {
       success = await deleteSocialLink(deleteTargetId);
+    } else if (activeTab === "experience") {
+      success = await deleteExperience(deleteTargetId);
     }
     
     if (success) {
@@ -219,9 +241,23 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
+  const onExperienceSubmit = async (data: any) => {
+    if (activeTab !== "experience") return false;
+    
+    // Convert to appropriate API format, add profileId if creating
+    const payload = { ...data };
+    
+    if (currentEntry?.id) {
+      return await updateExperience(currentEntry.id, payload);
+    } else {
+      if (id) payload.profileId = id;
+      return await createExperience(payload);
+    }
+  };
+
   const cvUrl = cv ? (typeof cv === "string" ? cv : URL.createObjectURL(cv)) : null;
 
-  if (isProfileLoading || (activeTab === "skills" && isSkillsLoading) || (activeTab === "projects" && isProjectsLoading) || (activeTab === "social-links" && isSocialLinksLoading)) {
+  if (isProfileLoading || (activeTab === "skills" && isSkillsLoading) || (activeTab === "projects" && isProjectsLoading) || (activeTab === "social-links" && isSocialLinksLoading) || (activeTab === "experience" && isExperiencesLoading)) {
     return (
       <DashboardLayout user={user} onLogout={logout} title="Admin Settings">
         <div className="space-y-6">
@@ -275,9 +311,9 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
               </span>
             </div>
           </div>
-          {(activeTab === "skills" || activeTab === "projects" || activeTab === "social-links") && (
+          {(activeTab === "skills" || activeTab === "projects" || activeTab === "social-links" || activeTab === "experience") && (
             <Button onClick={() => handleOpenEntryModal()} leftIcon={Plus} className="shadow-lg shadow-blue-500/20">
-              {activeTab === "skills" ? "Add Skill" : activeTab === "projects" ? "Add Project" : "Add Social Link"}
+              {activeTab === "skills" ? "Add Skill" : activeTab === "projects" ? "Add Project" : activeTab === "social-links" ? "Add Social Link" : "Add Experience"}
             </Button>
           )}
         </div>
@@ -336,6 +372,19 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4" />
                     Basic Info
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("experience")}
+                  className={`pb-4 px-4 text-sm font-medium transition-colors border-b-2 relative whitespace-nowrap ${activeTab === "experience"
+                      ? "border-primary text-primary"
+                      : "border-transparent text-on-surface/50 hover:text-on-surface"
+                    }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-4 h-4" />
+                    Experience
                   </div>
                 </button>
                 <button
@@ -448,6 +497,37 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
                       </Button>
                     </div>
                   </form>
+                )}
+
+                {/* Experience Tab */}
+                {activeTab === "experience" && (
+                  <div className="animate-in fade-in duration-300">
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={reorderExperiences}
+                    >
+                      <SortableContext items={experiences.map(e => e.id)} strategy={rectSortingStrategy}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {experiences.map((exp, index) => (
+                            <ExperienceCard 
+                              key={exp.id} 
+                              experience={exp} 
+                              index={index}
+                              onView={() => handleOpenDetailModal(exp)}
+                              onEdit={() => handleOpenEntryModal(exp)}
+                              onDelete={() => openDeleteModal(exp.id)}
+                            />
+                          ))}
+                          {experiences.length === 0 && (
+                            <div className="col-span-full py-12 text-center bg-surface-container-low border-outline/20">
+                              <p className="text-on-surface/50">No experiences added yet.</p>
+                            </div>
+                          )}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  </div>
                 )}
 
                 {/* Skills Tab */}
@@ -601,13 +681,30 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
           isLoading={isSocialLinkSubmitting}
         />
 
+        <ExperienceModal
+          isOpen={isEntryModalOpen && activeTab === "experience"}
+          onClose={handleCloseEntryModal}
+          onSubmit={onExperienceSubmit}
+          currentExperience={currentEntry}
+          isLoading={isExperienceSubmitting}
+        />
+
+        <ExperienceDetailModal
+          isOpen={isDetailModalOpen}
+          onClose={() => {
+            setIsDetailModalOpen(false);
+            setCurrentEntry(null);
+          }}
+          experience={currentEntry}
+        />
+
         <DeleteConfirmModal 
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={onConfirmDelete}
-          isLoading={activeTab === "skills" ? isSkillDeleting : activeTab === "projects" ? isProjectDeleting : isSocialLinkDeleting}
-          title={`Delete ${activeTab === 'skills' ? 'Skill' : activeTab === 'projects' ? 'Project' : 'Social Link'}`}
-          message={`Are you sure you want to delete this ${activeTab === 'skills' ? 'skill' : activeTab === 'projects' ? 'project' : 'social link'}?`}
+          isLoading={activeTab === "skills" ? isSkillDeleting : activeTab === "projects" ? isProjectDeleting : activeTab === "social-links" ? isSocialLinkDeleting : isExperienceDeleting}
+          title={`Delete ${activeTab === 'skills' ? 'Skill' : activeTab === 'projects' ? 'Project' : activeTab === 'social-links' ? 'Social Link' : 'Experience'}`}
+          message={`Are you sure you want to delete this ${activeTab === 'skills' ? 'skill' : activeTab === 'projects' ? 'project' : activeTab === 'social-links' ? 'social link' : 'experience'}?`}
         />
 
       </div>
