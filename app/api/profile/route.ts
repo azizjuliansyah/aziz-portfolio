@@ -4,6 +4,7 @@ import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import * as bcrypt from "bcrypt";
 import { saveFile, deleteFile } from "@/lib/storage";
+import { handleApiError, errorResponses, successResponse } from "@/utils/apiErrorHandler";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "super-secret-key-change-me");
 
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
     const token = cookieStore.get("auth_token")?.value;
 
     if (!token) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      return errorResponses.unauthorized();
     }
 
     let payload;
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
       const verified = await jwtVerify(token, SECRET_KEY);
       payload = verified.payload;
     } catch {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      return errorResponses.unauthorized("Invalid token");
     }
 
     const userId = payload.id as string;
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
       .single();
 
     if (fetchError || !currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return errorResponses.notFound("User not found");
     }
 
     const updateData: any = {};
@@ -78,10 +79,10 @@ export async function POST(request: Request) {
 
     if (updateError || !updatedUser) {
       console.error(updateError);
-      throw new Error("Failed to update user");
+      return errorResponses.internalServerError("Failed to update user");
     }
 
-    const response = NextResponse.json({
+    const responseData = {
       message: "Profile updated successfully",
       user: {
         id: updatedUser.id,
@@ -90,7 +91,9 @@ export async function POST(request: Request) {
         image: updatedUser.image,
       },
       logoutRequired: emailChanged || passwordChanged,
-    });
+    };
+
+    const response = successResponse(responseData);
 
     if (emailChanged || passwordChanged) {
       response.cookies.set("auth_token", "", {
@@ -103,7 +106,6 @@ export async function POST(request: Request) {
     return response;
 
   } catch (error) {
-    console.error("Profile update error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 }

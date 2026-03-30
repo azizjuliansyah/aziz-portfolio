@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Settings, UpdateSettingsInput } from "@/types/settings";
 import { settingsService } from "@/services/settingsService";
 import { useToast } from "@/hooks/useToast";
+import { getErrorMessage } from "@/types/error";
 
 export const useSettings = () => {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -18,8 +19,8 @@ export const useSettings = () => {
     try {
       const data = await settingsService.fetchSettings();
       setSettings(data);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to fetch settings");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to fetch settings");
     } finally {
       setIsLoading(false);
     }
@@ -32,8 +33,8 @@ export const useSettings = () => {
       setSettings(updated);
       toast.success("Settings updated successfully");
       return true;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update settings");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to update settings");
       return false;
     } finally {
       setIsSubmitting(false);

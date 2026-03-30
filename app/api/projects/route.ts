@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import { saveFile } from "@/lib/storage";
+import { validateOrRespond, validateRequest } from "@/lib/validationMiddleware";
+import { projectSchema } from "@/lib/validation";
 
 export async function GET(request: Request) {
   try {
@@ -36,17 +38,18 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const title = formData.get("title") as string;
-    const info = formData.get("info") as string;
-    const link = formData.get("link") as string;
-    const description = formData.get("description") as string;
+
+    // Validate request data
+    const validated = await validateOrRespond(formData, projectSchema);
+    if (validated instanceof NextResponse) {
+      return validated; // Return validation error response
+    }
+
+    // Extract validated data
+    const { title, info, link, description, thumbnail } = validated;
     const profileId = formData.get("profileId") as string;
     const thumbnailFile = formData.get("thumbnail") as File | null;
     const galleryFiles = formData.getAll("images") as File[];
-
-    if (!title || !description) {
-      return NextResponse.json({ error: "Title and description are required" }, { status: 400 });
-    }
 
     let thumbnailPath = "";
     if (thumbnailFile && thumbnailFile.size > 0 && typeof thumbnailFile !== "string") {

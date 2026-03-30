@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { WorkExperience } from "@/types/experience";
 import { Plus, X, Briefcase, Calendar, Building2 } from "lucide-react";
+import { useModalForm } from "@/hooks/useModalForm";
 
 interface ExperienceModalProps {
   isOpen: boolean;
@@ -14,27 +15,23 @@ interface ExperienceModalProps {
 }
 
 export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, isLoading }: ExperienceModalProps) => {
-  const [companyName, setCompanyName] = useState("");
-  const [position, setPosition] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [responsibilities, setResponsibilities] = useState<{ id?: string, responsibility: string }[]>([]);
 
-  useEffect(() => {
-    if (currentExperience) {
-      setCompanyName(currentExperience.company_name || "");
-      setPosition(currentExperience.position || "");
-      setStartDate(currentExperience.start_date || "");
-      setEndDate(currentExperience.end_date || "");
-      setResponsibilities(currentExperience.responsibilities || []);
-    } else {
-      setCompanyName("");
-      setPosition("");
-      setStartDate("");
-      setEndDate("");
-      setResponsibilities([{ responsibility: "" }]);
-    }
-  }, [currentExperience, isOpen]);
+  const { formData, handleChange, reset } = useModalForm<{
+    company_name: string;
+    position: string;
+    start_date: string;
+    end_date: string;
+  }>({
+    initialValues: {
+      company_name: "",
+      position: "",
+      start_date: "",
+      end_date: "",
+    },
+    currentItem: currentExperience,
+    isOpen,
+  });
 
   const handleAddResponsibility = () => {
     setResponsibilities([...responsibilities, { responsibility: "" }]);
@@ -54,20 +51,34 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Filter out empty responsibilities
     const validResponsibilities = responsibilities.filter(r => r.responsibility.trim());
 
     const success = await onSubmit({
-      company_name: companyName,
-      position,
-      start_date: startDate,
-      end_date: endDate,
+      company_name: formData.company_name,
+      position: formData.position,
+      start_date: formData.start_date,
+      end_date: formData.end_date,
       responsibilities: validResponsibilities as any
     });
-    
-    if (success) onClose();
+
+    if (success) {
+      reset();
+      onClose();
+    }
   };
+
+  const modalFooter = (
+    <div className="flex gap-3 w-full">
+      <Button variant="secondary" onClick={onClose} className="flex-1" type="button">
+        Cancel
+      </Button>
+      <Button isLoading={isLoading} className="flex-1 shadow-lg shadow-primary/20" type="submit" form="experience-form">
+        {currentExperience?.id ? "Update Experience" : "Save Experience"}
+      </Button>
+    </div>
+  );
 
   return (
     <Modal 
@@ -75,23 +86,24 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
       onClose={onClose}
       title={currentExperience?.id ? "Edit Experience" : "Add New Experience"}
       maxWidth="max-w-2xl"
+      footer={modalFooter}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form id="experience-form" onSubmit={handleSubmit} className="space-y-4">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Company Name"
             placeholder="e.g. Google, Microsoft"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
+            value={formData.company_name}
+            onChange={(e) => handleChange("company_name", e.target.value)}
             icon={Building2}
             required
           />
           <Input
             label="Position"
             placeholder="e.g. Frontend Engineer"
-            value={position}
-            onChange={(e) => setPosition(e.target.value)}
+            value={formData.position}
+            onChange={(e) => handleChange("position", e.target.value)}
             icon={Briefcase}
             required
           />
@@ -101,16 +113,16 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
           <Input
             label="Start Date"
             placeholder="e.g. Jan 2020"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            value={formData.start_date}
+            onChange={(e) => handleChange("start_date", e.target.value)}
             icon={Calendar}
             required
           />
           <Input
             label="End Date"
             placeholder="e.g. Present, Dec 2022"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            value={formData.end_date}
+            onChange={(e) => handleChange("end_date", e.target.value)}
             icon={Calendar}
             required
           />
@@ -150,15 +162,6 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
             className="w-full sm:w-auto mt-2 text-sm"
           >
             Add Bullet Point
-          </Button>
-        </div>
-
-        <div className="flex gap-3 pt-6 mt-4 border-t border-outline/10">
-          <Button variant="secondary" onClick={onClose} className="flex-1" type="button">
-            Cancel
-          </Button>
-          <Button isLoading={isLoading} className="flex-1 shadow-lg shadow-primary/20" type="submit">
-            {currentExperience?.id ? "Update Experience" : "Save Experience"}
           </Button>
         </div>
       </form>

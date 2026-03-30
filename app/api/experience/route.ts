@@ -1,5 +1,13 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
+import { WorkExperience } from "@/types/experience";
+import { validateOrRespond } from "@/lib/validationMiddleware";
+import { workExperienceSchema } from "@/lib/validation";
+
+interface ResponsibilityInput {
+  responsibility: string;
+  id?: string;
+}
 
 export async function GET(request: Request) {
   try {
@@ -24,9 +32,9 @@ export async function GET(request: Request) {
     
     // Sort responsibilities by order
     if (experiences) {
-      experiences.forEach(exp => {
+      experiences.forEach((exp: WorkExperience) => {
         if (exp.responsibilities) {
-          exp.responsibilities.sort((a, b) => a.order - b.order);
+          exp.responsibilities.sort((a: { order?: number }, b: { order?: number }) => (a.order || 0) - (b.order || 0));
         }
       });
     }
@@ -41,11 +49,16 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { profileId, company_name, position, start_date, end_date, responsibilities } = body;
 
-    if (!company_name || !position) {
-      return NextResponse.json({ error: "Company name and position are required" }, { status: 400 });
+    // Validate request data
+    const validated = await validateOrRespond(body, workExperienceSchema);
+    if (validated instanceof NextResponse) {
+      return validated; // Return validation error response
     }
+
+    // Extract validated data
+    const { company_name, position, start_date, end_date, profile_id } = validated;
+    const { profileId, responsibilities } = body; // Keep these for backward compatibility
 
     const { data: maxOrderData, error: maxOrderError } = await supabase
       .from("work_experience")
@@ -66,7 +79,7 @@ export async function POST(request: Request) {
         start_date,
         end_date,
         order: nextOrder,
-        profile_id: profileId || null,
+        profile_id: profile_id || profileId || null,
       })
       .select()
       .single();
@@ -74,7 +87,7 @@ export async function POST(request: Request) {
     if (insertError) throw insertError;
 
     if (responsibilities && Array.isArray(responsibilities)) {
-      const respInserts = responsibilities.map((r: any, idx: number) => ({
+      const respInserts = responsibilities.map((r: ResponsibilityInput, idx: number) => ({
         experience_id: experience.id,
         responsibility: r.responsibility,
         order: idx

@@ -1,0 +1,16 @@
+export { PortfolioTopbar } from "./PortfolioTopbar";
+export { PortfolioFooter } from "./PortfolioFooter";
+export { HeroSection } from "./HeroSection";
+export { BioSection } from "./BioSection";
+export { ExperienceTimeline } from "./ExperienceTimeline";
+export { SkillsGrid } from "./SkillsGrid";
+export { ProjectsBentoGrid } from "./ProjectsBentoGrid";
+export { BackgroundDecorations } from "./BackgroundDecorations";
+export { CVPreviewModal } from "./CVPreviewModal";
+export { ProjectHero } from "./ProjectHero";
+export { ProjectFeaturedImage } from "./ProjectFeaturedImage";
+export { ProjectDetails } from "./ProjectDetails";
+export { ProjectGallery } from "./ProjectGallery";
+export { ProjectLightbox } from "./ProjectLightbox";
+export { ScrollToTop } from "./ScrollToTop";
+export { CertificatesGrid } from "./CertificatesGrid";

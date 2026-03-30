@@ -1,18 +1,25 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import { saveFile, deleteFile } from "@/lib/storage";
+import { validateOrRespond } from "@/lib/validationMiddleware";
+import { projectSchema } from "@/lib/validation";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
     const formData = await request.formData();
-    const title = formData.get("title") as string;
-    const info = formData.get("info") as string;
-    const link = formData.get("link") as string;
-    const description = formData.get("description") as string;
+
+    // Validate request data (partial validation for update)
+    const validated = await validateOrRespond(formData, projectSchema.partial());
+    if (validated instanceof NextResponse) {
+      return validated; // Return validation error response
+    }
+
+    // Extract validated data
+    const { title, info, link, description, thumbnail } = validated;
     const thumbnailFile = formData.get("thumbnail") as File | null;
     const galleryFiles = formData.getAll("images") as File[];
     const removedImages = formData.getAll("removedImages") as string[];
@@ -101,7 +108,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;

@@ -1,11 +1,28 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
+import { validateOrRespond } from "@/lib/validationMiddleware";
+import { workExperienceUpdateSchema } from "@/lib/validation";
+
+interface ResponsibilityInput {
+  responsibility: string;
+  id?: string;
+}
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const resolvedParams = await params;
     const id = resolvedParams.id;
-    const { company_name, position, start_date, end_date, responsibilities } = await request.json();
+    const body = await request.json();
+
+    // Validate request data (partial validation for update)
+    const validated = await validateOrRespond(body, workExperienceUpdateSchema);
+    if (validated instanceof NextResponse) {
+      return validated; // Return validation error response
+    }
+
+    // Extract validated data
+    const { company_name, position, start_date, end_date } = validated;
+    const { responsibilities } = body; // Keep this for responsibilities handling
 
     const { data: experience, error: updateError } = await supabase
       .from("work_experience")
@@ -29,7 +46,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         .eq("experience_id", id);
       
       if (Array.isArray(responsibilities) && responsibilities.length > 0) {
-        const respInserts = responsibilities.map((r: any, idx: number) => ({
+        const respInserts = responsibilities.map((r: ResponsibilityInput, idx: number) => ({
           experience_id: id,
           responsibility: r.responsibility,
           order: idx
@@ -54,7 +71,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     // Sort responsibilities by order
     if (finalExp && finalExp.responsibilities) {
-      finalExp.responsibilities.sort((a: any, b: any) => a.order - b.order);
+      finalExp.responsibilities.sort((a: { order?: number }, b: { order?: number }) => (a.order || 0) - (b.order || 0));
     }
 
     return NextResponse.json(finalExp);

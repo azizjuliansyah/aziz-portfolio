@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { ImageInput } from "@/components/ui/ImageInput";
 import { Project } from "@/types/project";
+import { useModalForm } from "@/hooks/useModalForm";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -17,33 +18,38 @@ interface ProjectModalProps {
 }
 
 export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoading }: ProjectModalProps) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [link, setLink] = useState("");
-  const [info, setInfo] = useState("");
-  const [thumbnail, setThumbnail] = useState<File | string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<{ id?: string, file?: File, url: string }[]>([]);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
 
+  const { formData, handleChange, reset } = useModalForm<{
+    title: string;
+    description: string;
+    link: string;
+    info: string;
+    thumbnail: File | string | null;
+  }>({
+    initialValues: {
+      title: "",
+      description: "",
+      link: "",
+      info: "",
+      thumbnail: null,
+    },
+    currentItem: currentProject,
+    isOpen,
+  });
+
+  // Sync gallery previews separately because it's complex array logic
   useEffect(() => {
-    if (currentProject) {
-      setTitle(currentProject.title || "");
-      setDescription(currentProject.description || "");
-      setLink(currentProject.link || "");
-      setInfo(currentProject.info || "");
-      setThumbnail(currentProject.thumbnail || null);
-      setGalleryPreviews(currentProject.images?.map(img => ({ id: img.id, url: img.name })) || []);
-      setRemovedImages([]);
-    } else {
-      setTitle("");
-      setDescription("");
-      setLink("");
-      setInfo("");
-      setThumbnail(null);
-      setGalleryPreviews([]);
+    if (isOpen) {
+      if (currentProject?.images && currentProject.images.length > 0) {
+        setGalleryPreviews(currentProject.images.map(img => ({ id: img.id, url: img.name })));
+      } else {
+        setGalleryPreviews([]);
+      }
       setRemovedImages([]);
     }
-  }, [currentProject, isOpen]);
+  }, [isOpen, currentProject]);
 
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -68,31 +74,45 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("link", link);
-    formData.append("info", info);
-    
-    if (thumbnail instanceof File) {
-      formData.append("thumbnail", thumbnail);
-    } else if (typeof thumbnail === "string") {
-      formData.append("thumbnail", thumbnail);
+    const submitData = new FormData();
+    submitData.append("title", formData.title);
+    submitData.append("description", formData.description);
+    submitData.append("link", formData.link);
+    submitData.append("info", formData.info);
+
+    if (formData.thumbnail instanceof File) {
+      submitData.append("thumbnail", formData.thumbnail);
+    } else if (typeof formData.thumbnail === "string") {
+      submitData.append("thumbnail", formData.thumbnail);
     }
 
     galleryPreviews.forEach(preview => {
       if (preview.file) {
-        formData.append("images", preview.file);
+        submitData.append("images", preview.file);
       }
     });
 
     removedImages.forEach(path => {
-      formData.append("removedImages", path);
+      submitData.append("removedImages", path);
     });
 
-    const success = await onSubmit(formData);
-    if (success) onClose();
+    const success = await onSubmit(submitData);
+    if (success) {
+      reset();
+      onClose();
+    }
   };
+
+  const modalFooter = (
+    <div className="flex gap-3 w-full">
+      <Button variant="secondary" onClick={onClose} className="flex-1" type="button">
+        Cancel
+      </Button>
+      <Button isLoading={isLoading} className="flex-1" type="submit" form="project-form">
+        {currentProject?.id ? "Update Project" : "Save Project"}
+      </Button>
+    </div>
+  );
 
   return (
     <Modal 
@@ -100,36 +120,37 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
       onClose={onClose}
       title={currentProject?.id ? "Edit Project" : "Add New Project"}
       maxWidth="max-w-4xl"
+      footer={modalFooter}
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form id="project-form" onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Project Title"
             placeholder="Unique Project Name"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={formData.title}
+            onChange={(e) => handleChange("title", e.target.value)}
             required
           />
           <Input
             label="Project Link (Optional)"
             placeholder="https://example.com"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
+            value={formData.link}
+            onChange={(e) => handleChange("link", e.target.value)}
           />
         </div>
 
         <Input
           label="Additional Info (Short Tagline)"
           placeholder="e.g. Next.js • Tailwind • Supabase"
-          value={info}
-          onChange={(e) => setInfo(e.target.value)}
+          value={formData.info}
+          onChange={(e) => handleChange("info", e.target.value)}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ImageInput
             label="Thumbnail Image"
-            value={thumbnail}
-            onChange={(file) => setThumbnail(file)}
+            value={formData.thumbnail}
+            onChange={(file) => handleChange("thumbnail", file)}
             aspectRatio="aspect-video"
           />
 
@@ -172,19 +193,10 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
         <Textarea
           label="Description"
           placeholder="What makes this project special?"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={formData.description}
+          onChange={(e) => handleChange("description", e.target.value)}
           required
         />
-
-        <div className="flex gap-3 pt-2">
-          <Button variant="secondary" onClick={onClose} className="flex-1" type="button">
-            Cancel
-          </Button>
-          <Button isLoading={isLoading} className="flex-1" type="submit">
-            {currentProject?.id ? "Update Project" : "Save Project"}
-          </Button>
-        </div>
       </form>
     </Modal>
   );

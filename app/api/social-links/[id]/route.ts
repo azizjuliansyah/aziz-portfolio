@@ -1,16 +1,25 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import { saveFile, deleteFile } from "@/lib/storage";
+import { validateOrRespond } from "@/lib/validationMiddleware";
+import { socialLinkSchema } from "@/lib/validation";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
     const formData = await request.formData();
-    const name = formData.get("name") as string;
-    const link = formData.get("link") as string;
+
+    // Validate request data (partial validation for update)
+    const validated = await validateOrRespond(formData, socialLinkSchema.partial());
+    if (validated instanceof NextResponse) {
+      return validated; // Return validation error response
+    }
+
+    // Extract validated data
+    const { name, link, image } = validated;
     const file = formData.get("image") as File | null;
 
     const { data: currentLink, error: fetchError } = await supabase
@@ -54,7 +63,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;

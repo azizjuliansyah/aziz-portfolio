@@ -3,8 +3,9 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/app/store/store";
-import { removeToast } from "@/app/store/features/toastSlice";
+import { removeToast, Toast } from "@/app/store/features/toastSlice";
 import { CheckCircle, XCircle, Info, X } from "lucide-react";
+import { TOAST_DURATION } from "@/constants/config";
 
 export function ToastContainer() {
   const { toasts } = useSelector((state: RootState) => state.toast);
@@ -19,11 +20,11 @@ export function ToastContainer() {
   );
 }
 
-function ToastItem({ toast, onRemove }: { toast: any; onRemove: () => void }) {
+function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onRemove();
-    }, toast.duration || 5000);
+    }, toast.duration || TOAST_DURATION);
 
     return () => clearTimeout(timer);
   }, [toast.duration, onRemove]);
@@ -49,7 +50,7 @@ function ToastItem({ toast, onRemove }: { toast: any; onRemove: () => void }) {
       `}
     >
       <div className="flex-shrink-0">{icons[toast.type as keyof typeof icons]}</div>
-      <div className="flex-1 text-sm font-medium text-on-surface">
+      <div className="flex-1 text-[13px] font-label font-semibold text-on-surface">
         {toast.message}
       </div>
       <button

@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/config/db";
+import { Skill } from "@/types/skill";
+import { Project } from "@/types/project";
+import { SocialLink } from "@/types/socialLink";
+import { WorkExperience } from "@/types/experience";
 
 export async function GET() {
   try {
@@ -10,7 +14,8 @@ export async function GET() {
         skills (*),
         projects (*),
         social_links (*),
-        work_experience (*, responsibilities:work_experience_responsibilities(*))
+        work_experience (*, responsibilities:work_experience_responsibilities(*)),
+        certificates (*)
       `)
       .eq("is_active", true)
       .single();
@@ -22,21 +27,24 @@ export async function GET() {
 
     // Sort skills, projects and social links by order
     if (profile.skills) {
-      profile.skills.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      profile.skills.sort((a: Skill, b: Skill) => (a.order || 0) - (b.order || 0));
     }
     if (profile.projects) {
-      profile.projects.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      profile.projects.sort((a: Project, b: Project) => (a.order || 0) - (b.order || 0));
     }
     if (profile.social_links) {
-      profile.social_links.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      profile.social_links.sort((a: SocialLink, b: SocialLink) => (a.order || 0) - (b.order || 0));
     }
     if (profile.work_experience) {
-      profile.work_experience.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-      profile.work_experience.forEach((exp: any) => {
+      profile.work_experience.sort((a: WorkExperience, b: WorkExperience) => (a.order || 0) - (b.order || 0));
+      profile.work_experience.forEach((exp: WorkExperience) => {
         if (exp.responsibilities) {
-          exp.responsibilities.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+          exp.responsibilities.sort((a: { order?: number }, b: { order?: number }) => (a.order || 0) - (b.order || 0));
         }
       });
+    }
+    if (profile.certificates) {
+      profile.certificates.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
     }
 
     return NextResponse.json(profile);

@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS app_settings;
 DROP TABLE IF EXISTS work_experience_responsibilities;
 DROP TABLE IF EXISTS work_experience;
+DROP TABLE IF EXISTS certificates;
 DROP TABLE IF EXISTS portfolio_profile;
 
 
@@ -31,10 +32,6 @@ CREATE TABLE portfolio_profile (
   cv TEXT,
   phone TEXT,
   location TEXT,
-  github TEXT,
-  linkedin TEXT,
-  instagram TEXT,
-  twitter TEXT,
   is_active BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
@@ -115,6 +112,20 @@ CREATE TABLE work_experience (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- Certificates table
+CREATE TABLE certificates (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  profile_id UUID REFERENCES portfolio_profile(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  issuer TEXT NOT NULL,
+  date_issued TEXT NOT NULL,
+  credential_id TEXT,
+  credential_url TEXT,
+  image_url TEXT NOT NULL,
+  "order" INTEGER DEFAULT 0 NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- Work Experience Responsibilities
 CREATE TABLE work_experience_responsibilities (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -174,6 +185,7 @@ ALTER TABLE info ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE work_experience ENABLE ROW LEVEL SECURITY;
 ALTER TABLE work_experience_responsibilities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
 
 -- Define Security Policies
 
@@ -185,6 +197,7 @@ CREATE POLICY "Project images are viewable by everyone" ON project_images FOR SE
 CREATE POLICY "Social links are viewable by everyone" ON social_links FOR SELECT USING (true);
 CREATE POLICY "Work experience is viewable by everyone" ON work_experience FOR SELECT USING (true);
 CREATE POLICY "Work experience responsibilities are viewable by everyone" ON work_experience_responsibilities FOR SELECT USING (true);
+CREATE POLICY "Certificates are viewable by everyone" ON certificates FOR SELECT USING (true);
 
 -- Note: Tables like 'users' and 'app_settings' stay locked (no public SELECT policy).
 -- Access is granted only via 'service_role' key in backend APIs.

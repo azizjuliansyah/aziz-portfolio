@@ -4,6 +4,12 @@ import { useRouter } from "next/navigation";
 import { loginSuccess, logout as logoutAction } from "@/app/store/features/authSlice";
 import { authService } from "@/services/authService";
 import { useToast } from "@/hooks/useToast";
+import { getErrorMessage } from "@/types/error";
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +17,7 @@ export const useAuth = () => {
   const router = useRouter();
   const toast = useToast();
 
-  const login = async (credentials: any) => {
+  const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
       const data = await authService.login(credentials);
@@ -19,8 +25,8 @@ export const useAuth = () => {
       toast.success("Welcome back!");
       router.push("/dashboard");
       return true;
-    } catch (error: any) {
-      toast.error(error.message || "Login failed");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Login failed");
       return false;
     } finally {
       setIsLoading(false);
@@ -34,8 +40,8 @@ export const useAuth = () => {
       toast.success("Logged out successfully");
       router.push("/login");
       return true;
-    } catch (error: any) {
-      toast.error(error.message || "Logout failed");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Logout failed");
       return false;
     }
   };

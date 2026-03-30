@@ -1,15 +1,25 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import { saveFile, deleteFile } from "@/lib/storage";
+import { validateOrRespond } from "@/lib/validationMiddleware";
+import { skillSchema } from "@/lib/validation";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
     const formData = await request.formData();
-    const title = formData.get("title") as string;
+
+    // Validate request data (partial validation for update)
+    const validated = await validateOrRespond(formData, skillSchema.partial());
+    if (validated instanceof NextResponse) {
+      return validated; // Return validation error response
+    }
+
+    // Extract validated data
+    const { title, image } = validated;
     const file = formData.get("image") as File | null;
 
     // Fetch current skill to check for old image
@@ -56,7 +66,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;

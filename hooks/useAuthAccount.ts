@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useToast } from "@/hooks/useToast";
 import { updateUser } from "@/app/store/features/authSlice";
+import { getErrorMessage } from "@/types/error";
 
 export const useAuthAccount = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,8 +25,8 @@ export const useAuthAccount = () => {
       dispatch(updateUser(data.user));
       toast.success(data.message || "Account updated successfully");
       return data;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update account");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to update account");
       return null;
     } finally {
       setIsSubmitting(false);

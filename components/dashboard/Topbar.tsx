@@ -10,18 +10,23 @@ interface TopbarProps {
     email: string;
     image?: string | null;
   } | null;
+  onMenuClick?: () => void;
 }
 
-export function Topbar({ title, user }: TopbarProps) {
+export function Topbar({ title, user, onMenuClick }: TopbarProps) {
   return (
     <header className="bg-surface/80 backdrop-blur-md sticky top-0 z-20 border-b border-outline/10 px-6 py-4 flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <button className="md:hidden p-2 -ml-2 text-on-surface/60 rounded-lg hover:bg-surface-container-high transition-colors">
+        <button
+          onClick={onMenuClick}
+          className="md:hidden p-2 -ml-2 text-on-surface/60 rounded-lg hover:bg-surface-container-high transition-colors"
+          aria-label="Toggle menu"
+        >
           <Menu className="w-6 h-6" />
         </button>
         <h2 className="text-xl font-semibold text-on-surface">{title}</h2>
       </div>
-      
+
       <div className="flex items-center gap-4">
         <button className="p-2 text-on-surface/60 hover:bg-surface-container-high rounded-full transition-colors relative">
           <Bell className="w-5 h-5" />

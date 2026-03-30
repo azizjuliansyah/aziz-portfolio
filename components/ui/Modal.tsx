@@ -8,6 +8,7 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   children: ReactNode;
+  footer?: ReactNode;
   maxWidth?: string;
   showCloseButton?: boolean;
 }
@@ -17,6 +18,7 @@ export function Modal({
   onClose,
   title,
   children,
+  footer,
   maxWidth = "max-w-md",
   showCloseButton = true,
 }: ModalProps) {
@@ -53,10 +55,10 @@ export function Modal({
     >
       <div 
         ref={modalRef}
-        className={`bg-surface rounded-2xl shadow-xl w-full ${maxWidth} overflow-hidden animate-in zoom-in-95 duration-200 border border-outline-variant/15`}
+        className={`bg-surface rounded-2xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-outline-variant/15`}
       >
         {(title || showCloseButton) && (
-          <div className="p-6 border-b border-outline-variant/15 flex justify-between items-center">
+          <div className="px-6 py-4 border-b border-outline-variant/15 flex justify-between items-center shrink-0">
             {title && <h2 className="text-xl font-headline font-bold text-on-surface">{title}</h2>}
             {showCloseButton && (
               <button 
@@ -68,9 +70,14 @@ export function Modal({
             )}
           </div>
         )}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto w-full no-scrollbar flex-1">
           {children}
         </div>
+        {footer && (
+          <div className="px-6 py-4 border-t border-outline-variant/15 flex items-center justify-end gap-3 shrink-0 bg-surface">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

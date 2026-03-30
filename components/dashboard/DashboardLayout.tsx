@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
@@ -18,12 +21,22 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, title = "Dashboard", user, onLogout }: DashboardLayoutProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-surface flex font-label text-on-surface">
-      <Sidebar onLogout={onLogout} />
-      <main className="flex-1 md:ml-64 transition-all">
-        <Topbar title={title} user={user} />
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="h-screen bg-surface flex font-label text-on-surface overflow-hidden">
+      <Sidebar
+        onLogout={onLogout}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+      <main className="flex-1 flex flex-col overflow-hidden">
+        <Topbar
+          title={title}
+          user={user}
+          onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {children}
         </div>
       </main>

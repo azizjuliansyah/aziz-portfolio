@@ -8,13 +8,14 @@ export interface Profile {
   cv?: string | File;
   phone?: string;
   location?: string;
-  github?: string;
-  linkedin?: string;
-  instagram?: string;
-  twitter?: string;
   is_active?: boolean;
   created_at?: string;
   updated_at?: string;
+  skills?: any[];
+  projects?: any[];
+  social_links?: any[];
+  work_experience?: any[];
+  certificates?: import('./certificate').Certificate[];
 }
 
 export type UpdateProfileInput = Partial<Profile>;

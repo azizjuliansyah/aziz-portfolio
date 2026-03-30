@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Profile } from "@/types/profile";
 import { profileService } from "@/services/profileService";
 import { useToast } from "@/hooks/useToast";
+import { getErrorMessage } from "@/types/error";
 
 export const useProfile = (id?: string) => {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -22,8 +23,8 @@ export const useProfile = (id?: string) => {
     try {
       const data = await profileService.fetchProfile(profileId);
       setProfile(data);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to fetch profile");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to fetch profile");
     } finally {
       setIsLoading(false);
     }
@@ -37,8 +38,8 @@ export const useProfile = (id?: string) => {
       setProfile(updated);
       toast.success("Profile updated successfully");
       return true;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update profile");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to update profile");
       return false;
     } finally {
       setIsSubmitting(false);
@@ -70,8 +71,8 @@ export const useProfiles = () => {
     try {
       const data = await profileService.fetchProfiles();
       setProfiles(data);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to fetch profiles");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to fetch profiles");
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +85,8 @@ export const useProfiles = () => {
       toast.success("Profile created successfully");
       setProfiles(prev => [newProfile, ...prev]);
       return newProfile;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create profile");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to create profile");
       return null;
     } finally {
       setIsSubmitting(false);
@@ -99,8 +100,8 @@ export const useProfiles = () => {
       toast.success("Profile deleted successfully");
       setProfiles(prev => prev.filter(p => p.id !== id));
       return true;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete profile");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to delete profile");
       return false;
     } finally {
       setIsDeleting(false);
@@ -117,8 +118,8 @@ export const useProfiles = () => {
         is_active: p.id === id
       })));
       return true;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to set active profile");
+    } catch (error) {
+      toast.error(getErrorMessage(error) || "Failed to set active profile");
       return false;
     } finally {
       setIsSubmitting(false);

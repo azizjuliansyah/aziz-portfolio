@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import { saveFile } from "@/lib/storage";
+import { validateOrRespond } from "@/lib/validationMiddleware";
+import { skillSchema } from "@/lib/validation";
 
 export async function GET(request: Request) {
   try {
@@ -30,13 +32,17 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const title = formData.get("title") as string;
+
+    // Validate request data
+    const validated = await validateOrRespond(formData, skillSchema);
+    if (validated instanceof NextResponse) {
+      return validated; // Return validation error response
+    }
+
+    // Extract validated data
+    const { title, image } = validated;
     const profileId = formData.get("profileId") as string;
     const file = formData.get("image") as File | null;
-
-    if (!title) {
-      return NextResponse.json({ error: "Title is required" }, { status: 400 });
-    }
 
     let imagePath = "";
     if (file && file.size > 0) {

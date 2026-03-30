@@ -1,110 +1,25 @@
-import { useState, useEffect } from "react";
 import { Skill } from "@/types/skill";
 import { skillService } from "@/services/skillService";
-import { useToast } from "@/hooks/useToast";
-import { arrayMove } from "@dnd-kit/sortable";
-import { DragEndEvent } from "@dnd-kit/core";
+import { useCRUD } from "@/hooks/useCRUD";
 
+/**
+ * Skills CRUD hook
+ * Uses generic useCRUD hook with skill-specific configuration
+ */
 export const useSkills = (profileId?: string) => {
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const toast = useToast();
-
-  useEffect(() => {
-    fetchSkills();
-  }, [profileId]);
-
-  const fetchSkills = async () => {
-    setIsLoading(true);
-    try {
-      const data = await skillService.fetchSkills(profileId);
-      setSkills(data);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to fetch skills");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const reorderSkills = async (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = skills.findIndex((skill) => skill.id === active.id);
-      const newIndex = skills.findIndex((skill) => skill.id === over.id);
-
-      const newSkills = arrayMove(skills, oldIndex, newIndex);
-      const updatedSkills = newSkills.map((skill, index) => ({
-        ...skill,
-        order: index,
-      }));
-      
-      setSkills(updatedSkills);
-
-      try {
-        await skillService.reorderSkills(updatedSkills.map((s) => ({ id: s.id, order: s.order })));
-      } catch (error: any) {
-        toast.error(error.message || "Failed to save reorder");
-        fetchSkills(); // Revert
-      }
-    }
-  };
-
-  const createSkill = async (formData: FormData) => {
-    setIsSubmitting(true);
-    try {
-      await skillService.createSkill(formData);
-      toast.success("Skill created successfully");
-      fetchSkills();
-      return true;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create skill");
-      return false;
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const updateSkill = async (id: string, formData: FormData) => {
-    setIsSubmitting(true);
-    try {
-      await skillService.updateSkill(id, formData);
-      toast.success("Skill updated successfully");
-      fetchSkills();
-      return true;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update skill");
-      return false;
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const deleteSkill = async (id: string) => {
-    setIsDeleting(true);
-    try {
-      await skillService.deleteSkill(id);
-      toast.success("Skill deleted successfully");
-      setSkills(skills.filter((s) => s.id !== id));
-      return true;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete skill");
-      return false;
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+  const crud = useCRUD(skillService, {
+    entityName: "Skill",
+    profileId,
+  });
 
   return {
-    skills,
-    isLoading,
-    isSubmitting,
-    isDeleting,
-    reorderSkills,
-    createSkill,
-    updateSkill,
-    deleteSkill,
-    refreshSkills: fetchSkills,
+    ...crud,
+    // Rename generic properties to domain-specific names
+    skills: crud.items,
+    reorderSkills: crud.reorderItems,
+    createSkill: crud.createItem,
+    updateSkill: crud.updateItem,
+    deleteSkill: crud.deleteItem,
+    refreshSkills: crud.refreshItems,
   };
 };

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import { saveFile } from "@/lib/storage";
+import { validateOrRespond } from "@/lib/validationMiddleware";
+import { socialLinkSchema } from "@/lib/validation";
 
 export async function GET(request: Request) {
   try {
@@ -30,14 +32,17 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const name = formData.get("name") as string;
-    const link = formData.get("link") as string;
+
+    // Validate request data
+    const validated = await validateOrRespond(formData, socialLinkSchema);
+    if (validated instanceof NextResponse) {
+      return validated; // Return validation error response
+    }
+
+    // Extract validated data
+    const { name, link, image } = validated;
     const profileId = formData.get("profileId") as string;
     const file = formData.get("image") as File | null;
-
-    if (!name || !link) {
-      return NextResponse.json({ error: "Name and link are required" }, { status: 400 });
-    }
 
     let imagePath = "";
     if (file && file.size > 0) {

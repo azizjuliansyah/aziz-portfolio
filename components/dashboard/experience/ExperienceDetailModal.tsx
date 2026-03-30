@@ -13,12 +13,21 @@ interface ExperienceDetailModalProps {
 export const ExperienceDetailModal = ({ isOpen, onClose, experience }: ExperienceDetailModalProps) => {
   if (!experience) return null;
 
+  const modalFooter = (
+    <div className="flex justify-end w-full">
+      <Button variant="secondary" onClick={onClose} type="button">
+        Close
+      </Button>
+    </div>
+  );
+
   return (
     <Modal 
       isOpen={isOpen} 
       onClose={onClose}
       title="Experience Detail"
       maxWidth="max-w-2xl"
+      footer={modalFooter}
     >
       <div className="space-y-6">
         
@@ -67,13 +76,6 @@ export const ExperienceDetailModal = ({ isOpen, onClose, experience }: Experienc
               </p>
             )}
           </div>
-        </div>
-
-        {/* Footer Actions */}
-        <div className="flex justify-end pt-4 border-t border-outline/10">
-          <Button variant="secondary" onClick={onClose} type="button">
-            Close
-          </Button>
         </div>
 
       </div>
