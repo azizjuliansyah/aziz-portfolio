@@ -19,6 +19,7 @@ interface ProfileBasicFormProps {
   cv: File | string | null;
   isSubmitting: boolean;
   isCvModalOpen: boolean;
+  errors?: Record<string, string>;
   onChange: (field: string, value: any) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCvModalOpen: () => void;
@@ -36,6 +37,7 @@ export function ProfileBasicForm({
   cv,
   isSubmitting,
   isCvModalOpen,
+  errors = {},
   onChange,
   onSubmit,
   onCvModalOpen,
@@ -55,6 +57,7 @@ export function ProfileBasicForm({
                   value={avatar}
                   onChange={(file) => onChange("avatar", file)}
                   aspectRatio="aspect-square"
+                  error={errors.avatar}
                 />
               </div>
             </div>
@@ -63,14 +66,14 @@ export function ProfileBasicForm({
                 label="Full Name"
                 value={name}
                 onChange={(e) => onChange("name", e.target.value)}
-                required
+                error={errors.name}
               />
               <Input
                 label="Professional Title"
                 value={title}
                 onChange={(e) => onChange("title", e.target.value)}
                 icon={Briefcase}
-                required
+                error={errors.title}
               />
             </div>
             <div className="sm:col-span-12">
@@ -79,6 +82,7 @@ export function ProfileBasicForm({
                 type="email"
                 value={email}
                 onChange={(e) => onChange("email", e.target.value)}
+                error={errors.email}
               />
             </div>
             <div className="sm:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -87,12 +91,14 @@ export function ProfileBasicForm({
                 value={phone}
                 onChange={(e) => onChange("phone", e.target.value)}
                 icon={Phone}
+                error={errors.phone}
               />
               <Input
                 label="Location"
                 value={location}
                 onChange={(e) => onChange("location", e.target.value)}
                 icon={MapPin}
+                error={errors.location}
               />
             </div>
             <div className="sm:col-span-12">
@@ -101,6 +107,7 @@ export function ProfileBasicForm({
                 value={bio}
                 onChange={(e) => onChange("bio", e.target.value)}
                 rows={4}
+                error={errors.bio}
               />
             </div>
           </div>
@@ -128,6 +135,7 @@ export function ProfileBasicForm({
                 value={cv}
                 onChange={(file) => onChange("cv", file)}
                 helperText="Recommended: PDF under 5MB"
+                error={errors.cv}
               />
             </div>
           </div>

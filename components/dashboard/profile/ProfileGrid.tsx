@@ -153,7 +153,9 @@ export function ProfileGrid({
                   <Calendar className="w-3 h-3" />
                   {profile.updated_at ? new Date(profile.updated_at).toLocaleDateString() : 'Just now'}
                 </span>
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-primary" />
+                <div className="flex items-center gap-3">
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-primary" />
+                </div>
               </div>
             </div>
           </Card>

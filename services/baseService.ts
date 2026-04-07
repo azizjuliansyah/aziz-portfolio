@@ -1,3 +1,5 @@
+import { ValidationError } from "@/types/error";
+
 /**
  * BaseService - Abstract base class for all CRUD services
  * Eliminates code duplication across entity services
@@ -21,6 +23,25 @@ export abstract class BaseService<T> {
   protected contentType: "multipart/form-data" | "application/json" = "application/json";
 
   /**
+   * Helper untuk menangani generic API error & validasi Zod
+   */
+  protected async handleApiError(res: Response, defaultMessage: string): Promise<never> {
+    if (!res.ok) {
+      try {
+        const errorData = await res.json();
+        if (errorData?.details) {
+          throw new ValidationError(errorData.error || defaultMessage, errorData.details);
+        }
+        throw new Error(errorData?.error || defaultMessage);
+      } catch (e) {
+        if (e instanceof ValidationError) throw e;
+        throw new Error(defaultMessage);
+      }
+    }
+    throw new Error(defaultMessage); // Fallback
+  }
+
+  /**
    * Fetch all entities with optional profile filter
    */
   async fetchAll(profileId?: string): Promise<T[]> {
@@ -30,7 +51,7 @@ export abstract class BaseService<T> {
 
     const res = await fetch(url);
     if (!res.ok) {
-      throw new Error(`Failed to fetch ${this.entityName}s`);
+      await this.handleApiError(res, `Failed to fetch ${this.entityName}s`);
     }
     return res.json();
   }
@@ -46,7 +67,7 @@ export abstract class BaseService<T> {
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to reorder ${this.entityName}s`);
+      await this.handleApiError(res, `Failed to reorder ${this.entityName}s`);
     }
   }
 
@@ -63,7 +84,7 @@ export abstract class BaseService<T> {
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to create ${this.entityName}`);
+      await this.handleApiError(res, `Failed to create ${this.entityName}`);
     }
     return res.json();
   }
@@ -81,7 +102,7 @@ export abstract class BaseService<T> {
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to update ${this.entityName}`);
+      await this.handleApiError(res, `Failed to update ${this.entityName}`);
     }
     return res.json();
   }
@@ -95,7 +116,7 @@ export abstract class BaseService<T> {
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to delete ${this.entityName}`);
+      await this.handleApiError(res, `Failed to delete ${this.entityName}`);
     }
   }
 }

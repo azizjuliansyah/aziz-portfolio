@@ -12,6 +12,7 @@ interface ImageInputProps {
   aspectRatio?: string;
   className?: string;
   placeholder?: "user" | "image";
+  error?: string;
 }
 
 export function ImageInput({
@@ -22,6 +23,7 @@ export function ImageInput({
   aspectRatio = "aspect-square",
   className = "",
   placeholder = "image",
+  error,
 }: ImageInputProps) {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -74,7 +76,9 @@ export function ImageInput({
           border-2 border-dashed transition-all duration-300
           ${isDragging 
             ? "border-primary bg-primary/5 scale-[1.02]" 
-            : "border-outline/10 bg-surface-container-low hover:border-primary/50"}
+            : error 
+              ? "border-error bg-error/5 hover:border-error/80" 
+              : "border-outline/10 bg-surface-container-low hover:border-primary/50"}
           overflow-hidden
         `}
         onDragOver={handleDragOver}
@@ -155,6 +159,12 @@ export function ImageInput({
           <Trash2 className="w-3.5 h-3.5" />
           Remove Image
         </button>
+      )}
+
+      {error && (
+        <p className="text-xs text-error font-medium mt-1.5 ml-1 leading-relaxed">
+          {error}
+        </p>
       )}
     </div>
   );

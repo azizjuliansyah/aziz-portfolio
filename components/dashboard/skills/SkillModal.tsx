@@ -3,11 +3,12 @@ import Image from "next/image";
 import { Plus, Image as ImageIcon } from "lucide-react";
 import { Skill } from "@/types/skill";
 import { CrudModal } from "@/components/dashboard/common";
+import { CrudResult } from "@/hooks/useCRUD";
 
 interface SkillModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: FormData) => Promise<boolean>;
+  onSubmit: (formData: FormData) => Promise<CrudResult>;
   currentSkill: Partial<Skill> | null;
   isLoading: boolean;
 }
@@ -35,18 +36,19 @@ export const SkillModal = ({ isOpen, onClose, onSubmit, currentSkill, isLoading 
     setIsDragging(false);
   };
 
-  const renderCustomFields = (formData: Record<string, any>, handleChange: (name: string, value: any) => void) => {
+  const renderCustomFields = (formData: Record<string, any>, handleChange: (name: string, value: any) => void, errors: Record<string, string>) => {
     return (
       <div className="space-y-2">
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">
           Icon / Image
         </label>
         <div
-          className={`flex items-center gap-4 p-4 rounded-xl border-2 border-dashed transition-colors ${
-            isDragging
+          className={`flex items-center gap-4 p-4 rounded-xl border-2 border-dashed transition-colors ${isDragging
               ? "border-primary bg-primary/5"
-              : "border-outline/20 bg-surface-container-low hover:bg-surface-container"
-          }`}
+              : errors.image
+                ? "border-error bg-error/5 hover:border-error/80"
+                : "border-outline/20 bg-surface-container-low hover:bg-surface-container"
+            }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={(e) => {
@@ -93,6 +95,9 @@ export const SkillModal = ({ isOpen, onClose, onSubmit, currentSkill, isLoading 
             <p className="text-xs text-on-surface/50 mt-1">
               Drag & drop or select PNG, JPG, SVG up to 2MB
             </p>
+            {errors.image && (
+              <p className="text-xs text-error mt-1">{errors.image}</p>
+            )}
           </div>
         </div>
       </div>

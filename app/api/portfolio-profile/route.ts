@@ -20,9 +20,12 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { name } = await request.json();
-
-    if (!name) {
-      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    
+    if (!name || !name.trim()) {
+      return NextResponse.json({ 
+        error: "Profile name is required", 
+        details: [{ path: ["name"], message: "Profile name is required" }] 
+      }, { status: 400 });
     }
 
     const payload = {

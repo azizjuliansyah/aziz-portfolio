@@ -26,6 +26,7 @@ interface SettingsFormProps {
   isSubmittingSettings: boolean;
   onSaveAccount: (e: React.FormEvent, data: { name: string; email: string; password: string; avatar: File | string | null }) => Promise<void>;
   onSaveSettings: (e: React.FormEvent, data: { theme: Theme; enableGlobalTheme: boolean }) => Promise<void>;
+  accountErrors?: Record<string, string>;
 }
 
 export function SettingsForm({
@@ -35,6 +36,7 @@ export function SettingsForm({
   isSubmittingSettings,
   onSaveAccount,
   onSaveSettings,
+  accountErrors = {},
 }: SettingsFormProps) {
   const [activeTab, setActiveTab] = useState<"account" | "appearance">("account");
 
@@ -96,12 +98,13 @@ export function SettingsForm({
                           value={avatar}
                           onChange={(file) => setAvatar(file)}
                           aspectRatio="aspect-square"
+                          error={accountErrors.image}
                         />
                       </div>
                     </div>
                     <div className="sm:col-span-12 md:col-span-8 flex flex-col justify-start gap-5">
-                      <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} required />
-                      <Input label="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                      <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} required error={accountErrors.name} />
+                      <Input label="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required error={accountErrors.email} />
                     </div>
                     <div className="sm:col-span-12">
                       <Input

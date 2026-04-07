@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Profile } from "@/types/profile";
 import { profileService } from "@/services/profileService";
 import { useToast } from "@/hooks/useToast";
-import { getErrorMessage } from "@/types/error";
+import { getErrorMessage, ValidationError } from "@/types/error";
+import { CrudResult } from "@/hooks/useCRUD";
 
 export const useProfile = (id?: string) => {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -30,17 +31,26 @@ export const useProfile = (id?: string) => {
     }
   };
 
-  const updateProfile = async (formData: FormData) => {
-    if (!id) return false;
+  const updateProfile = async (formData: FormData): Promise<CrudResult> => {
+    if (!id) return { success: false };
     setIsSubmitting(true);
     try {
       const updated = await profileService.updateProfile(id, formData);
       setProfile(updated);
       toast.success("Profile updated successfully");
-      return true;
+      return { success: true };
     } catch (error) {
+      if (error instanceof ValidationError && error.details) {
+        const formErrors: Record<string, string> = {};
+        error.details.forEach(err => {
+          if (err.path.length > 0) {
+            formErrors[err.path[0]] = err.message;
+          }
+        });
+        return { success: false, errors: formErrors };
+      }
       toast.error(getErrorMessage(error) || "Failed to update profile");
-      return false;
+      return { success: false };
     } finally {
       setIsSubmitting(false);
     }
@@ -84,10 +94,19 @@ export const useProfiles = () => {
       const newProfile = await profileService.createProfile(name);
       toast.success("Profile created successfully");
       setProfiles(prev => [newProfile, ...prev]);
-      return newProfile;
+      return { success: true, data: newProfile };
     } catch (error) {
+      if (error instanceof ValidationError && error.details) {
+        const formErrors: Record<string, string> = {};
+        error.details.forEach(err => {
+          if (err.path.length > 0) {
+            formErrors[err.path[0]] = err.message;
+          }
+        });
+        return { success: false, errors: formErrors };
+      }
       toast.error(getErrorMessage(error) || "Failed to create profile");
-      return null;
+      return { success: false };
     } finally {
       setIsSubmitting(false);
     }

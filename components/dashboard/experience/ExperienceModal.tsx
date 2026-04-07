@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/Button";
 import { WorkExperience } from "@/types/experience";
 import { Plus, X, Briefcase, Calendar, Building2 } from "lucide-react";
 import { useModalForm } from "@/hooks/useModalForm";
+import { CrudResult } from "@/hooks/useCRUD";
 
 interface ExperienceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Partial<WorkExperience>) => Promise<boolean>;
+  onSubmit: (data: Partial<WorkExperience>) => Promise<CrudResult>;
   currentExperience: Partial<WorkExperience> | null;
   isLoading: boolean;
 }
@@ -17,7 +18,7 @@ interface ExperienceModalProps {
 export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, isLoading }: ExperienceModalProps) => {
   const [responsibilities, setResponsibilities] = useState<{ id?: string, responsibility: string }[]>([]);
 
-  const { formData, handleChange, reset } = useModalForm<{
+  const { formData, handleChange, reset, errors, setErrors } = useModalForm<{
     company_name: string;
     position: string;
     start_date: string;
@@ -55,7 +56,7 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
     // Filter out empty responsibilities
     const validResponsibilities = responsibilities.filter(r => r.responsibility.trim());
 
-    const success = await onSubmit({
+    const result = await onSubmit({
       company_name: formData.company_name,
       position: formData.position,
       start_date: formData.start_date,
@@ -63,9 +64,11 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
       responsibilities: validResponsibilities as any
     });
 
-    if (success) {
+    if (result.success) {
       reset();
       onClose();
+    } else if (result.errors) {
+      setErrors(result.errors);
     }
   };
 
@@ -97,7 +100,7 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
             value={formData.company_name}
             onChange={(e) => handleChange("company_name", e.target.value)}
             icon={Building2}
-            required
+            error={errors.company_name}
           />
           <Input
             label="Position"
@@ -105,7 +108,7 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
             value={formData.position}
             onChange={(e) => handleChange("position", e.target.value)}
             icon={Briefcase}
-            required
+            error={errors.position}
           />
         </div>
 
@@ -116,7 +119,7 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
             value={formData.start_date}
             onChange={(e) => handleChange("start_date", e.target.value)}
             icon={Calendar}
-            required
+            error={errors.start_date}
           />
           <Input
             label="End Date"
@@ -124,7 +127,7 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
             value={formData.end_date}
             onChange={(e) => handleChange("end_date", e.target.value)}
             icon={Calendar}
-            required
+            error={errors.end_date}
           />
         </div>
 
@@ -139,6 +142,7 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
                     placeholder={`Responsibility point ${index + 1}`}
                     value={res.responsibility}
                     onChange={(e) => handleChangeResponsibility(index, e.target.value)}
+                    error={errors[`responsibilities.${index}.responsibility`]}
                   />
                 </div>
                 {responsibilities.length > 1 && (

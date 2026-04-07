@@ -8,11 +8,12 @@ import { Textarea } from "@/components/ui/Textarea";
 import { ImageInput } from "@/components/ui/ImageInput";
 import { Project } from "@/types/project";
 import { useModalForm } from "@/hooks/useModalForm";
+import { CrudResult } from "@/hooks/useCRUD";
 
 interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: FormData) => Promise<boolean>;
+  onSubmit: (formData: FormData) => Promise<CrudResult>;
   currentProject: Partial<Project> | null;
   isLoading: boolean;
 }
@@ -21,7 +22,7 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
   const [galleryPreviews, setGalleryPreviews] = useState<{ id?: string, file?: File, url: string }[]>([]);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
 
-  const { formData, handleChange, reset } = useModalForm<{
+  const { formData, handleChange, reset, errors, setErrors } = useModalForm<{
     title: string;
     description: string;
     link: string;
@@ -96,10 +97,12 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
       submitData.append("removedImages", path);
     });
 
-    const success = await onSubmit(submitData);
-    if (success) {
+    const result = await onSubmit(submitData);
+    if (result.success) {
       reset();
       onClose();
+    } else if (result.errors) {
+      setErrors(result.errors);
     }
   };
 
@@ -129,13 +132,14 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
             placeholder="Unique Project Name"
             value={formData.title}
             onChange={(e) => handleChange("title", e.target.value)}
-            required
+            error={errors.title}
           />
           <Input
             label="Project Link (Optional)"
             placeholder="https://example.com"
             value={formData.link}
             onChange={(e) => handleChange("link", e.target.value)}
+            error={errors.link}
           />
         </div>
 
@@ -144,6 +148,7 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
           placeholder="e.g. Next.js • Tailwind • Supabase"
           value={formData.info}
           onChange={(e) => handleChange("info", e.target.value)}
+          error={errors.info}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -152,6 +157,7 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
             value={formData.thumbnail}
             onChange={(file) => handleChange("thumbnail", file)}
             aspectRatio="aspect-video"
+            error={errors.thumbnail}
           />
 
           <div className="space-y-4">
@@ -195,7 +201,7 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
           placeholder="What makes this project special?"
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
-          required
+          error={errors.description}
         />
       </form>
     </Modal>

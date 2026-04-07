@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import * as bcrypt from "bcrypt";
 import { saveFile, deleteFile } from "@/lib/storage";
 import { handleApiError, errorResponses, successResponse } from "@/utils/apiErrorHandler";
+import { profileSchema } from "@/lib/validation";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "super-secret-key-change-me");
 
@@ -33,6 +34,23 @@ export async function POST(request: Request) {
     const password = formData.get("password") as string;
     const image = formData.get("image") as File | null;
 
+    // Validate using Zod
+    const validationResult = profileSchema.safeParse({
+      name,
+      email,
+      password: password || undefined,
+    });
+
+    if (!validationResult.success) {
+      return NextResponse.json({ 
+        error: "Validation failed", 
+        details: validationResult.error.issues.map((issue) => ({
+          path: issue.path,
+          message: issue.message
+        })) 
+      }, { status: 400 });
+    }
+
     // Fetch current user to get old image path
     const { data: currentUser, error: fetchError } = await supabase
       .from("users")
@@ -45,10 +63,13 @@ export async function POST(request: Request) {
     }
 
     const updateData: any = {};
-    if (name) updateData.name = name;
     
     let emailChanged = false;
     let passwordChanged = false;
+
+    if (name && name !== payload.name) {
+      updateData.name = name;
+    }
 
     if (email && email !== payload.email) {
       updateData.email = email;
@@ -70,24 +91,33 @@ export async function POST(request: Request) {
       updateData.image = imagePath;
     }
 
-    const { data: updatedUser, error: updateError } = await supabase
-      .from("users")
-      .update(updateData)
-      .eq("id", userId)
-      .select()
-      .single();
+    // If nothing changed in the payload, just bypass the DB update to prevent PostgREST PGRST116
+    let updatedUser: any = currentUser;
+    if (Object.keys(updateData).length > 0) {
+      const { data, error: updateError } = await supabase
+        .from("users")
+        .update(updateData)
+        .eq("id", userId)
+        .select()
+        .single();
 
-    if (updateError || !updatedUser) {
-      console.error(updateError);
-      return errorResponses.internalServerError("Failed to update user");
+      if (updateError || !data) {
+        console.error("Failed to update user:", updateError);
+        return errorResponses.internalServerError("Failed to update user");
+      }
+      updatedUser = data;
+    } else {
+      // Re-fetch full user data if we skipped update since currentUser only had image
+      const { data } = await supabase.from("users").select("*").eq("id", userId).single();
+      if (data) updatedUser = data;
     }
 
     const responseData = {
       message: "Profile updated successfully",
       user: {
         id: updatedUser.id,
-        name: updatedUser.name,
-        email: updatedUser.email,
+        name: updatedUser.name || name,
+        email: updatedUser.email || email,
         image: updatedUser.image,
       },
       logoutRequired: emailChanged || passwordChanged,

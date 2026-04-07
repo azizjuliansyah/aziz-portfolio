@@ -26,17 +26,21 @@ export default function ProfileListPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newProfileName, setNewProfileName] = useState("");
+  const [createProfileErrors, setCreateProfileErrors] = useState<Record<string, string>>({});
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const handleCreateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProfileName.trim()) return;
+    setCreateProfileErrors({});
 
-    const profile = await createProfile(newProfileName);
-    if (profile) {
+    const result = await createProfile(newProfileName);
+    if (result.success && result.data) {
       setIsCreateModalOpen(false);
       setNewProfileName("");
-      router.push(`/dashboard/profile/${profile.id}`);
+      setCreateProfileErrors({});
+      router.push(`/dashboard/profile/${result.data.id}`);
+    } else if (result.errors) {
+      setCreateProfileErrors(result.errors);
     }
   };
 
@@ -86,7 +90,7 @@ export default function ProfileListPage() {
               placeholder="e.g. My Professional Portfolio, Side Project Profile"
               value={newProfileName}
               onChange={(e) => setNewProfileName(e.target.value)}
-              required
+              error={createProfileErrors.name}
               autoFocus
             />
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">

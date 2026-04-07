@@ -14,9 +14,11 @@ interface UseModalFormOptions<T> {
 interface UseModalFormReturn<T> {
   formData: T;
   isDirty: boolean;
+  errors: Record<string, string>;
   handleChange: (field: keyof T | string, value: unknown) => void;
   reset: () => void;
   setFormData: React.Dispatch<React.SetStateAction<T>>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
 
 /**
@@ -51,6 +53,7 @@ export function useModalForm<T extends Record<string, unknown>>({
 }: UseModalFormOptions<T>): UseModalFormReturn<T> {
   const [formData, setFormData] = useState<T>(initialValues);
   const [isDirty, setIsDirty] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Use a ref to store initial values so we don't trigger the effect unnecessarily
   const initialValuesRef = useRef(initialValues);
@@ -66,6 +69,7 @@ export function useModalForm<T extends Record<string, unknown>>({
         setFormData(initialValuesRef.current);
       }
       setIsDirty(false);
+      setErrors({});
     }
   }, [currentItem, isOpen]);
 
@@ -75,6 +79,14 @@ export function useModalForm<T extends Record<string, unknown>>({
   const handleChange = (field: keyof T | string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setIsDirty(true);
+    // Clear error for the field when it's changed
+    if (errors[field as string]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field as string];
+        return newErrors;
+      });
+    }
   };
 
   /**
@@ -83,13 +95,16 @@ export function useModalForm<T extends Record<string, unknown>>({
   const reset = () => {
     setFormData(initialValues);
     setIsDirty(false);
+    setErrors({});
   };
 
   return {
     formData,
     isDirty,
+    errors,
     handleChange,
     reset,
     setFormData,
+    setErrors,
   };
 }

@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { SocialLink } from "@/types/socialLink";
 import { useModalForm } from "@/hooks/useModalForm";
+import { CrudResult } from "@/hooks/useCRUD";
 
 interface SocialLinkModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: FormData) => Promise<boolean>;
+  onSubmit: (formData: FormData) => Promise<CrudResult>;
   currentLink: Partial<SocialLink> | null;
   isLoading: boolean;
 }
@@ -18,7 +19,7 @@ interface SocialLinkModalProps {
 export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoading }: SocialLinkModalProps) => {
   const [isDragging, setIsDragging] = useState(false);
 
-  const { formData, handleChange, reset } = useModalForm<{
+  const { formData, handleChange, reset, errors, setErrors } = useModalForm<{
     name: string;
     link: string;
     image: File | string | null;
@@ -44,10 +45,12 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
       submitData.append("image", formData.image);
     }
 
-    const success = await onSubmit(submitData);
-    if (success) {
+    const result = await onSubmit(submitData);
+    if (result.success) {
       reset();
       onClose();
+    } else if (result.errors) {
+      setErrors(result.errors);
     }
   };
 
@@ -71,8 +74,8 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
   };
 
   return (
-    <Modal 
-      isOpen={isOpen} 
+    <Modal
+      isOpen={isOpen}
       onClose={onClose}
       title={currentLink?.id ? "Edit Social Link" : "Add New Social Link"}
     >
@@ -82,31 +85,32 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
           placeholder="e.g. LinkedIn, GitHub, Instagram"
           value={formData.name}
           onChange={(e) => handleChange("name", e.target.value)}
-          required
+          error={errors.name}
         />
-        
+
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Icon / Image</label>
-          <div 
-            className={`flex items-center gap-4 p-4 rounded-xl border-2 border-dashed transition-colors ${
-              isDragging 
-                ? "border-primary bg-primary/5" 
-                : "border-outline/20 bg-surface-container-low hover:bg-surface-container"
-            }`}
+          <div
+            className={`flex items-center gap-4 p-4 rounded-xl border-2 border-dashed transition-colors ${isDragging
+                ? "border-primary bg-primary/5"
+                : errors.image
+                  ? "border-error bg-error/5 hover:border-error/80"
+                  : "border-outline/20 bg-surface-container-low hover:bg-surface-container"
+              }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
             <div className="w-16 h-16 bg-surface rounded-xl border border-outline/10 flex items-center justify-center text-on-surface/40 overflow-hidden shadow-sm flex-shrink-0">
               {formData.image ? (
-                  <Image
-                    src={typeof formData.image === "string" ? formData.image : URL.createObjectURL(formData.image)} 
-                    alt="Preview" 
-                    width={64}
-                    height={64}
-                    className="w-full h-full object-cover" 
-                    unoptimized
-                  />
+                <Image
+                  src={typeof formData.image === "string" ? formData.image : URL.createObjectURL(formData.image)}
+                  alt="Preview"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                />
               ) : (
                 <Plus className="w-6 h-6" />
               )}
@@ -122,7 +126,7 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
                   if (file) handleChange("image", file);
                 }}
               />
-              <label 
+              <label
                 htmlFor="social-link-image"
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 dark:bg-blue-900/10 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
               >
@@ -130,6 +134,9 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
                 Choose File
               </label>
               <p className="text-xs text-on-surface/50 mt-1">Drag & drop or select PNG, JPG, SVG up to 2MB</p>
+              {errors.image && (
+                <p className="text-xs text-error mt-1">{errors.image}</p>
+              )}
             </div>
           </div>
         </div>
@@ -139,7 +146,7 @@ export const SocialLinkModal = ({ isOpen, onClose, onSubmit, currentLink, isLoad
           placeholder="https://..."
           value={formData.link}
           onChange={(e) => handleChange("link", e.target.value)}
-          required
+          error={errors.link}
           type="url"
         />
 

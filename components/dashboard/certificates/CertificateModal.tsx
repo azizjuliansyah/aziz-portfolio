@@ -5,17 +5,18 @@ import { Button } from "@/components/ui/Button";
 import { ImageInput } from "@/components/ui/ImageInput";
 import { Certificate } from "@/types/certificate";
 import { useModalForm } from "@/hooks/useModalForm";
+import { CrudResult } from "@/hooks/useCRUD";
 
 interface CertificateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: FormData) => Promise<boolean>;
+  onSubmit: (formData: FormData) => Promise<CrudResult>;
   currentCertificate: Partial<Certificate> | null;
   isLoading: boolean;
 }
 
 export const CertificateModal = ({ isOpen, onClose, onSubmit, currentCertificate, isLoading }: CertificateModalProps) => {
-  const { formData, handleChange, reset } = useModalForm<{
+  const { formData, handleChange, reset, errors, setErrors } = useModalForm<{
     title: string;
     issuer: string;
     date_issued: string;
@@ -50,10 +51,12 @@ export const CertificateModal = ({ isOpen, onClose, onSubmit, currentCertificate
       submitData.append("image_url", formData.image_url);
     }
 
-    const success = await onSubmit(submitData);
-    if (success) {
+    const result = await onSubmit(submitData);
+    if (result.success) {
       reset();
       onClose();
+    } else if (result.errors) {
+      setErrors(result.errors);
     }
   };
 
@@ -82,6 +85,7 @@ export const CertificateModal = ({ isOpen, onClose, onSubmit, currentCertificate
           value={formData.image_url}
           onChange={(file) => handleChange("image_url", file)}
           aspectRatio="aspect-[2/1]"
+          error={errors.image_url}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -90,34 +94,36 @@ export const CertificateModal = ({ isOpen, onClose, onSubmit, currentCertificate
             placeholder="e.g. AWS Certified Solutions Architect"
             value={formData.title}
             onChange={(e) => handleChange("title", e.target.value)}
-            required
             className="md:col-span-2"
+            error={errors.title}
           />
           <Input
             label="Issuer Authority"
             placeholder="e.g. Amazon Web Services"
             value={formData.issuer}
             onChange={(e) => handleChange("issuer", e.target.value)}
-            required
+            error={errors.issuer}
           />
           <Input
             label="Date Issued"
             placeholder="e.g. August 2023"
             value={formData.date_issued}
             onChange={(e) => handleChange("date_issued", e.target.value)}
-            required
+            error={errors.date_issued}
           />
           <Input
             label="Credential ID (Optional)"
             placeholder="e.g. 12345678"
             value={formData.credential_id}
             onChange={(e) => handleChange("credential_id", e.target.value)}
+            error={errors.credential_id}
           />
           <Input
             label="Credential URL (Optional)"
             placeholder="https://www.credly.com/..."
             value={formData.credential_url}
             onChange={(e) => handleChange("credential_url", e.target.value)}
+            error={errors.credential_url}
           />
         </div>
       </form>

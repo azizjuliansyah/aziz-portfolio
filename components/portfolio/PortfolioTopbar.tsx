@@ -54,12 +54,12 @@ export function PortfolioTopbar({ profile, activeSection = "home" }: PortfolioTo
           </a>
         ))}
       </div>
-      <a
+      {/* <a
         href={profile?.email ? `mailto:${profile.email}` : "#"}
         className="bg-primary hover:bg-primary-dim text-on-primary px-5 py-2.5 rounded-xl font-label text-sm font-bold transition-all active:scale-95 shadow-lg shadow-primary/20"
       >
         Get in Touch
-      </a>
+      </a> */}
     </nav>
   );
 }

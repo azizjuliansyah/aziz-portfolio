@@ -22,10 +22,12 @@ import { useModalForm } from "@/hooks/useModalForm";
  * @param renderCustomFields - Optional function to render custom fields
  * @param onBeforeSubmit - Optional hook before form submission
  */
+import { CrudResult } from "@/hooks/useCRUD";
+
 export interface CrudModalProps<T> {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: FormData) => Promise<boolean>;
+  onSubmit: (formData: FormData) => Promise<CrudResult>;
   currentItem: Partial<T> | null;
   isLoading: boolean;
   fields: FieldConfig[];
@@ -39,7 +41,8 @@ export interface CrudModalProps<T> {
   }>;
   renderCustomFields?: (
     formData: Record<string, any>,
-    handleChange: (name: string, value: any) => void
+    handleChange: (name: string, value: any) => void,
+    errors: Record<string, string>
   ) => React.ReactNode;
   onBeforeSubmit?: (formData: Record<string, any>) => Record<string, any>;
 }
@@ -65,7 +68,7 @@ export function CrudModal<T extends Record<string, any>>({
   }, {} as Record<string, any>);
 
   // Use useModalForm hook for form state management
-  const { formData, handleChange, reset } = useModalForm<Record<string, any>>({
+  const { formData, handleChange, reset, errors, setErrors } = useModalForm<Record<string, any>>({
     initialValues,
     currentItem,
     isOpen,
@@ -97,10 +100,12 @@ export function CrudModal<T extends Record<string, any>>({
       }
     });
 
-    const success = await onSubmit(formDataObj);
-    if (success) {
+    const result = await onSubmit(formDataObj);
+    if (result.success) {
       reset();
       onClose();
+    } else if (result.errors) {
+      setErrors(result.errors);
     }
   };
 
@@ -128,6 +133,7 @@ export function CrudModal<T extends Record<string, any>>({
                 config={fieldConfig}
                 value={formData[fieldConfig.name]}
                 onChange={handleChange}
+                error={errors[fieldConfig.name]}
               />
             ))}
           </FormSection>
@@ -142,6 +148,7 @@ export function CrudModal<T extends Record<string, any>>({
         config={fieldConfig}
         value={formData[fieldConfig.name]}
         onChange={handleChange}
+        error={errors[fieldConfig.name]}
       />
     ));
   };
@@ -168,7 +175,7 @@ export function CrudModal<T extends Record<string, any>>({
         {renderFields()}
 
         {/* Render custom fields if provided */}
-        {renderCustomFields?.(formData, handleChange)}
+        {renderCustomFields?.(formData, handleChange, errors)}
       </form>
     </Modal>
   );

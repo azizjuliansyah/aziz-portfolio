@@ -2,8 +2,13 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/useToast";
 import { arrayMove } from "@dnd-kit/sortable";
 import { DragEndEvent } from "@dnd-kit/core";
-import { getErrorMessage } from "@/types/error";
+import { getErrorMessage, ValidationError } from "@/types/error";
 import { BaseService } from "@/services/baseService";
+
+export interface CrudResult {
+  success: boolean;
+  errors?: Record<string, string>;
+}
 
 /**
  * Generic CRUD hook that eliminates code duplication across entity hooks
@@ -75,18 +80,26 @@ export function useCRUD<T extends { id: string; order?: number }>(
 
   const createItem = async (
     data: FormData | Record<string, any>
-  ): Promise<boolean> => {
+  ): Promise<CrudResult> => {
     setIsSubmitting(true);
     try {
       await service.create(data);
       toast.success(`${options.entityName} created successfully`);
       fetchItems();
-      return true;
+      return { success: true };
     } catch (error) {
+      if (error instanceof ValidationError && error.details) {
+        const errors: Record<string, string> = {};
+        error.details.forEach((d) => {
+          if (d.path[0]) errors[d.path[0]] = d.message;
+        });
+        // Tidak menampilkan toast untuk error validasi individual
+        return { success: false, errors };
+      }
       toast.error(
         getErrorMessage(error) || `Failed to create ${options.entityName}`
       );
-      return false;
+      return { success: false };
     } finally {
       setIsSubmitting(false);
     }
@@ -95,18 +108,25 @@ export function useCRUD<T extends { id: string; order?: number }>(
   const updateItem = async (
     id: string,
     data: FormData | Record<string, any>
-  ): Promise<boolean> => {
+  ): Promise<CrudResult> => {
     setIsSubmitting(true);
     try {
       await service.update(id, data);
       toast.success(`${options.entityName} updated successfully`);
       fetchItems();
-      return true;
+      return { success: true };
     } catch (error) {
+      if (error instanceof ValidationError && error.details) {
+        const errors: Record<string, string> = {};
+        error.details.forEach((d) => {
+          if (d.path[0]) errors[d.path[0]] = d.message;
+        });
+        return { success: false, errors };
+      }
       toast.error(
         getErrorMessage(error) || `Failed to update ${options.entityName}`
       );
-      return false;
+      return { success: false };
     } finally {
       setIsSubmitting(false);
     }

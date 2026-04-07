@@ -60,8 +60,8 @@ function formDataToObject(formData: FormData): Record<string, any> {
   const obj: Record<string, any> = {};
 
   formData.forEach((value, key) => {
-    // Skip empty values
-    if (value === "" || value === null) return;
+    // Skip only null values. Empty strings must be preserved to trigger Zod's .min(1) messages.
+    if (value === null) return;
 
     // Handle multiple values for the same key (arrays)
     if (obj[key] !== undefined) {

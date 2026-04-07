@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
+import { useCRUD, CrudResult } from "@/hooks/useCRUD";
 import { useSkills } from "@/hooks/useSkills";
 import { useProjects } from "@/hooks/useProjects";
 import { useSocialLinks } from "@/hooks/useSocialLinks";
@@ -115,6 +116,7 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
   const [avatar, setAvatar] = useState<File | string | null>(null);
   const [cv, setCv] = useState<File | string | null>(null);
   const [isCvModalOpen, setIsCvModalOpen] = useState(false);
+  const [profileErrors, setProfileErrors] = useState<Record<string, string>>({});
 
   // Skills & Projects Common States
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
@@ -162,7 +164,13 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
     if (avatar instanceof File) formData.append("avatar", avatar);
     if (cv instanceof File) formData.append("cv", cv);
 
-    await updateProfile(formData);
+    const result = await updateProfile(formData);
+    
+    if (result.success) {
+      setProfileErrors({});
+    } else if (result.errors) {
+      setProfileErrors(result.errors);
+    }
   };
 
   // Common Modal Handlers
@@ -205,58 +213,74 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
   };
 
   // Submit Handlers for Skills/Projects
-  const onSkillSubmit = async (formData: FormData) => {
+  const onSkillSubmit = async (formData: FormData): Promise<CrudResult> => {
     if (currentEntry?.id) {
-      return await updateSkill(currentEntry.id, formData);
+      const result = await updateSkill(currentEntry.id, formData);
+      if (result.success) handleCloseEntryModal();
+      return result;
     } else {
       if (id) formData.append("profileId", id);
-      return await createSkill(formData);
+      const result = await createSkill(formData);
+      if (result.success) handleCloseEntryModal();
+      return result;
     }
   };
 
-  const onProjectSubmit = async (formData: FormData) => {
+  const onProjectSubmit = async (formData: FormData): Promise<CrudResult> => {
     if (currentEntry?.id) {
-      const success = await updateProject(currentEntry.id, formData);
-      if (success) handleCloseEntryModal();
-      return success;
+      const result = await updateProject(currentEntry.id, formData);
+      if (result.success) handleCloseEntryModal();
+      return result;
     } else {
       if (id) formData.append("profileId", id);
-      const success = await createProject(formData);
-      if (success) handleCloseEntryModal();
-      return success;
+      const result = await createProject(formData);
+      if (result.success) handleCloseEntryModal();
+      return result;
     }
   };
 
-  const onSocialLinkSubmit = async (formData: FormData) => {
-    if (activeTab !== "social-links") return false;
+  const onSocialLinkSubmit = async (formData: FormData): Promise<CrudResult> => {
+    if (activeTab !== "social-links") return { success: false };
     if (currentEntry?.id) {
-      return await updateSocialLink(currentEntry.id, formData);
+      const result = await updateSocialLink(currentEntry.id, formData);
+      if (result.success) handleCloseEntryModal();
+      return result;
     } else {
       if (id) formData.append("profileId", id);
-      return await createSocialLink(formData);
+      const result = await createSocialLink(formData);
+      if (result.success) handleCloseEntryModal();
+      return result;
     }
   };
 
-  const onExperienceSubmit = async (data: Partial<WorkExperience>) => {
-    if (activeTab !== "experience") return false;
+  const onExperienceSubmit = async (data: Partial<WorkExperience>): Promise<CrudResult> => {
+    if (activeTab !== "experience") return { success: false };
 
     // Convert to appropriate API format, add profileId if creating
     const payload = { ...data };
 
     if (currentEntry?.id) {
-      return await updateExperience(currentEntry.id, payload);
+      const result = await updateExperience(currentEntry.id, payload);
+      if (result.success) handleCloseEntryModal();
+      return result;
     } else {
       if (id) payload.profile_id = id;
-      return await createExperience(payload);
+      const result = await createExperience(payload);
+      if (result.success) handleCloseEntryModal();
+      return result;
     }
   };
 
-  const onCertificateSubmit = async (formData: FormData) => {
+  const onCertificateSubmit = async (formData: FormData): Promise<CrudResult> => {
     if (currentEntry?.id) {
-      return await updateCertificate(currentEntry.id, formData);
+      const result = await updateCertificate(currentEntry.id, formData);
+      if (result.success) handleCloseEntryModal();
+      return result;
     } else {
       if (id) formData.append("profileId", id);
-      return await createCertificate(formData);
+      const result = await createCertificate(formData);
+      if (result.success) handleCloseEntryModal();
+      return result;
     }
   };
 
@@ -295,6 +319,7 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
             cv={cv}
             isSubmitting={isProfileSubmitting}
             isCvModalOpen={isCvModalOpen}
+            errors={profileErrors}
             onChange={handleProfileFieldChange}
             onSubmit={handleProfileSubmit}
             onCvModalOpen={() => setIsCvModalOpen(true)}

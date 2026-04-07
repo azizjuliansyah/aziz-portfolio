@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/config/db";
+import { supabasePublic as supabase } from "@/config/db";
 import { Skill } from "@/types/skill";
 import { Project } from "@/types/project";
 import { SocialLink } from "@/types/socialLink";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
@@ -16,6 +16,7 @@ import { Theme } from "@/types/settings";
 export default function SettingsPage() {
   const { settings, isLoading: isSettingsLoading, updateSettings, isSubmitting: isSubmittingSettings } = useSettings();
   const { isSubmitting: isSubmittingAccount, updateAccount } = useAuthAccount();
+  const [accountErrors, setAccountErrors] = useState<Record<string, string>>({});
   const { logout } = useAuth();
   const { setTheme: setAppTheme } = useTheme();
 
@@ -29,6 +30,8 @@ export default function SettingsPage() {
 
   const handleSaveAccount = async (e: React.FormEvent, data: { name: string; email: string; password: string; avatar: File | string | null }) => {
     e.preventDefault();
+    setAccountErrors({});
+
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", data.email);
@@ -41,9 +44,13 @@ export default function SettingsPage() {
 
     const result = await updateAccount(formData);
 
-    // If successful and logout is required (due to email or password change)
-    if (result && result.logoutRequired) {
-      logout();
+    if (result.success) {
+      // If successful and logout is required (due to email or password change)
+      if (result.logoutRequired) {
+        logout();
+      }
+    } else if (result.errors) {
+      setAccountErrors(result.errors);
     }
   };
 
@@ -84,6 +91,7 @@ export default function SettingsPage() {
           isSubmittingSettings={isSubmittingSettings}
           onSaveAccount={handleSaveAccount}
           onSaveSettings={handleSaveSettings}
+          accountErrors={accountErrors}
         />
       </div>
     </DashboardLayout>

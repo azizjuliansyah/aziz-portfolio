@@ -1,15 +1,31 @@
 import { Profile } from "@/types/profile";
+import { ValidationError } from "@/types/error";
+
+const handleProfileError = async (res: Response, defaultMessage: string) => {
+  if (!res.ok) {
+    try {
+      const errorData = await res.json();
+      if (errorData?.details) {
+        throw new ValidationError(errorData.error || defaultMessage, errorData.details);
+      }
+      throw new Error(errorData?.error || defaultMessage);
+    } catch (e) {
+      if (e instanceof ValidationError) throw e;
+      throw new Error(defaultMessage);
+    }
+  }
+};
 
 export const profileService = {
   async fetchProfiles(): Promise<Profile[]> {
     const res = await fetch("/api/portfolio-profile");
-    if (!res.ok) throw new Error("Failed to fetch profiles");
+    if (!res.ok) await handleProfileError(res, "Failed to fetch profiles");
     return res.json();
   },
 
   async fetchProfile(id: string): Promise<Profile> {
     const res = await fetch(`/api/portfolio-profile/${id}`);
-    if (!res.ok) throw new Error("Failed to fetch profile");
+    if (!res.ok) await handleProfileError(res, "Failed to fetch profile");
     return res.json();
   },
 
@@ -19,7 +35,7 @@ export const profileService = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name }),
     });
-    if (!res.ok) throw new Error("Failed to create profile");
+    if (!res.ok) await handleProfileError(res, "Failed to create profile");
     return res.json();
   },
 
@@ -28,7 +44,7 @@ export const profileService = {
       method: "PUT",
       body: data,
     });
-    if (!res.ok) throw new Error("Failed to update profile");
+    if (!res.ok) await handleProfileError(res, "Failed to update profile");
     return res.json();
   },
 

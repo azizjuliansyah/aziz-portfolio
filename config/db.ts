@@ -1,13 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabaseServiceRoleKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || "";
+const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "";
+const supabaseSecretKey = process.env.NEXT_PUBLIC_SUPABASE_SECRET_KEY || "";
 
 // Standard client for public access
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabasePublic = createClient(supabaseUrl, supabasePublishableKey);
 
-export const supabaseAdmin = supabaseServiceRoleKey 
-  ? createClient(supabaseUrl, supabaseServiceRoleKey) 
-  : (null as any); 
+export const supabaseAdmin = createClient(supabaseUrl, supabaseSecretKey);
 

@@ -16,18 +16,29 @@ export const useAuthAccount = () => {
         method: "POST",
         body: formData,
       });
+
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
+        
+        // Handle validation errors (400)
+        if (res.status === 400 && errorData.details) {
+          const errors: Record<string, string> = {};
+          errorData.details.forEach((d: any) => {
+            if (d.path[0]) errors[d.path[0]] = d.message;
+          });
+          return { success: false, errors };
+        }
+
         throw new Error(errorData.error || "Failed to update account");
       }
+
       const data = await res.json();
-      
       dispatch(updateUser(data.user));
       toast.success(data.message || "Account updated successfully");
-      return data;
+      return { success: true, ...data };
     } catch (error) {
       toast.error(getErrorMessage(error) || "Failed to update account");
-      return null;
+      return { success: false };
     } finally {
       setIsSubmitting(false);
     }

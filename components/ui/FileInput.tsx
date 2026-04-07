@@ -10,6 +10,7 @@ interface FileInputProps {
   accept?: string;
   className?: string;
   helperText?: string;
+  error?: string;
 }
 
 export function FileInput({
@@ -19,6 +20,7 @@ export function FileInput({
   accept = ".pdf,.doc,.docx",
   className = "",
   helperText,
+  error,
 }: FileInputProps) {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +70,9 @@ export function FileInput({
             flex flex-col items-center justify-center gap-2
             ${isDragging 
               ? "border-primary bg-primary/5 scale-[1.01]" 
-              : "border-outline/10 bg-surface-container-low hover:border-primary/50"}
+              : error
+                ? "border-error bg-error/5 hover:border-error/80"
+                : "border-outline/10 bg-surface-container-low hover:border-primary/50"}
           `}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -113,6 +117,12 @@ export function FileInput({
             <X className="w-4 h-4" />
           </button>
         </div>
+      )}
+
+      {error && (
+        <p className="text-xs text-error font-medium mt-1.5 ml-1 leading-relaxed">
+          {error}
+        </p>
       )}
     </div>
   );
