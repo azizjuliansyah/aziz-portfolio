@@ -91,7 +91,7 @@ export function CrudCard<T extends { id: string }>({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+          <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200">
             {/* Extra Actions */}
             {extraActions.map((action, idx) => (
               <ActionButton

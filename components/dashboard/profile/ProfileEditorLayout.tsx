@@ -55,7 +55,7 @@ export function ProfileEditorLayout({
         <div className="flex flex-col gap-1">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-sm text-on-surface/50 hover:text-primary transition-colors w-fit group"
+            className="flex items-center gap-2 text-sm text-on-surface/50 hover:text-primary transition-colors w-fit group cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Back to profiles
@@ -70,14 +70,27 @@ export function ProfileEditorLayout({
           </div>
         </div>
         {(activeTab === "skills" || activeTab === "projects" || activeTab === "social-links" || activeTab === "experience" || activeTab === "certificates") && onAddEntry && (
-          <Button onClick={onAddEntry} leftIcon={Plus} className="shadow-lg shadow-blue-500/20">
+          <Button onClick={onAddEntry} leftIcon={Plus} className="hidden md:flex shadow-lg shadow-blue-500/20">
             {activeTab === "skills" ? "Add Skill" : activeTab === "projects" ? "Add Project" : activeTab === "social-links" ? "Add Social Link" : activeTab === "certificates" ? "Add Certificate" : "Add Experience"}
           </Button>
         )}
       </div>
 
+      {/* Mobile Floating Action Button */}
+      {(activeTab === "skills" || activeTab === "projects" || activeTab === "social-links" || activeTab === "experience" || activeTab === "certificates") && onAddEntry && (
+        <div className="fixed bottom-6 right-6 z-50 md:hidden animate-in fade-in slide-in-from-bottom-10 duration-500">
+          <Button 
+            onClick={onAddEntry} 
+            leftIcon={Plus} 
+            className="shadow-2xl shadow-primary/40 rounded-full h-14 !px-6 bg-primary text-on-primary border-none"
+          >
+            {activeTab === "skills" ? "Add Skill" : activeTab === "projects" ? "Add Project" : activeTab === "social-links" ? "Add Link" : activeTab === "certificates" ? "Add Cert" : "Add Experience"}
+          </Button>
+        </div>
+      )}
+
       {/* Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pb-20 md:pb-0">
         {/* Left: Profile Preview */}
         <div className="lg:col-span-1">
           <Card className="shadow-sm h-[max-content] sticky top-8">
@@ -119,15 +132,15 @@ export function ProfileEditorLayout({
 
         {/* Right: Tabbed Content */}
         <div className="lg:col-span-3">
-          <Card className="h-full flex flex-col p-0 overflow-hidden shadow-sm">
+          <Card noPadding className="h-full flex flex-col overflow-hidden shadow-sm">
             {/* Tabs Header */}
-            <div className="flex border-b border-outline/10 px-6 pt-4 bg-surface-container-low/50 overflow-x-auto no-scrollbar">
+            <div className="flex border-b border-outline/10 bg-surface-container-low/50 overflow-x-auto no-scrollbar">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={() => onTabChange(tab.id)}
-                  className={`pb-4 px-4 text-sm font-medium transition-colors border-b-2 relative whitespace-nowrap cursor-pointer ${
+                  className={`py-4 px-4 text-sm font-medium transition-colors border-b-2 relative whitespace-nowrap cursor-pointer ${
                     activeTab === tab.id
                       ? "border-primary text-primary"
                       : "border-transparent text-on-surface/50 hover:text-on-surface"

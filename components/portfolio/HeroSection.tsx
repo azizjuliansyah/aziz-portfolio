@@ -16,6 +16,7 @@ export function HeroSection({ profile }: HeroSectionProps) {
   return (
     <header className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 md:px-20 pt-24 overflow-hidden" id="home">
       <div className="absolute top-0 right-0 w-1/3 h-full bg-surface-container-low -z-10 transition-all"></div>
+      
       <div className="w-full max-w-7xl my-10 mx-auto grid md:grid-cols-12 items-center">
         <div className="md:col-span-7 mb-4 z-10">
           <p className="font-label uppercase tracking-widest text-primary font-bold mb-4 opacity-80 animate-in fade-in slide-in-from-left-4 duration-700">
@@ -115,8 +116,8 @@ export function HeroSection({ profile }: HeroSectionProps) {
             </div>
           </div>
           {/* Extended Hero Decor */}
-          <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-primary/30 rounded-full blur-[80px] -z-10 animate-pulse"></div>
-          <div className="absolute top-10 -right-10 w-48 h-48 bg-secondary/30 rounded-full blur-[90px] -z-10"></div>
+          <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-primary/30 rounded-full blur-[60px] md:blur-[80px] -z-10 animate-pulse"></div>
+          <div className="absolute top-10 -right-10 w-48 h-48 bg-secondary/30 rounded-full blur-[70px] md:blur-[90px] -z-10"></div>
         </div>
       </div>
     </header>

@@ -58,9 +58,9 @@ export const projectSchema = z.object({
   title: z.string()
     .min(1, "Project title is required")
     .max(100, "Project title must be less than 100 characters"),
-  description: z.string()
-    .min(1, "Project description is required")
-    .max(2000, "Description must be less than 2000 characters"),
+  overview: z.string()
+    .min(1, "Project overview is required")
+    .max(2000, "Overview must be less than 2000 characters"),
   link: z.string()
     .url("Invalid URL format")
     .or(z.literal(""))

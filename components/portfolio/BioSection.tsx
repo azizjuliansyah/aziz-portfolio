@@ -49,8 +49,8 @@ export function BioSection({ profile, onCvModalOpen }: BioSectionProps) {
       </div>
       <ScrollReveal variant="slideUp">
         <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-16 relative z-10 ">
-          <div className="md:col-span-4 space-y-12">
-          <div className="space-y-6">
+          <div className="md:col-span-4 space-y-8">
+          <div className="space-y-3">
             <h3 className="font-label text-xs uppercase tracking-[0.3em] text-outline">Contact Details</h3>
             <ul className="space-y-4 font-label text-sm font-semibold">
               {profile.email && (
@@ -73,7 +73,7 @@ export function BioSection({ profile, onCvModalOpen }: BioSectionProps) {
               )}
             </ul>
           </div>
-          <div className="space-y-6">
+          <div className="space-y-3">
             <h3 className="font-label text-xs uppercase tracking-[0.3em] text-outline">Social Graph</h3>
             <div className="flex flex-wrap gap-4">
               {profile.social_links?.map((social) => (
@@ -113,8 +113,8 @@ export function BioSection({ profile, onCvModalOpen }: BioSectionProps) {
           )}
         </div>
         <div className="md:col-span-8">
-          <h3 className="font-headline text-4xl mb-8 leading-tight">
-            Crafting the <span className="italic font-body">unseen infrastructure</span> of modern digital monographs.
+          <h3 className="font-headline text-4xl mb-4 leading-tight">
+            Engineering <span className="italic font-body">the backbone</span> of modern web applications.
           </h3>
           <div className="space-y-6 font-body text-xl text-on-surface-variant leading-relaxed">
             <p className="whitespace-pre-wrap">

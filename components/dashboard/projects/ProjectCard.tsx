@@ -53,8 +53,8 @@ export const ProjectCard = ({ project, index, onEdit, onDelete }: ProjectCardPro
               <p className="text-primary text-[10px] font-bold uppercase tracking-wider mb-2 truncate">
                 {item.info || "Personal Project"}
               </p>
-              <p className="text-on-surface/60 text-sm line-clamp-3 flex-1">
-                {item.description}
+              <p className="text-sm text-on-surface-variant line-clamp-2 mt-1">
+                {item.overview}
               </p>
 
               {item.images?.length > 0 && (

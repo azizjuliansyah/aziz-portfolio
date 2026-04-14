@@ -6,9 +6,9 @@ export function BackgroundDecorations() {
       {/* Global Decorative Background Accents */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         {/* Soft Ambient Glows */}
-        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-primary/20 blur-[150px] mix-blend-screen" />
-        <div className="absolute top-[30%] left-[-15%] w-[500px] h-[500px] rounded-full bg-tertiary/20 mix-blend-screen blur-[180px]" />
-        <div className="absolute bottom-[-10%] right-[15%] w-[800px] h-[800px] rounded-full bg-secondary/15 blur-[200px] mix-blend-screen" />
+        <div className="hidden md:block absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-primary/20 blur-[100px] md:blur-[150px]" />
+        <div className="hidden md:block absolute top-[30%] left-[-15%] w-[500px] h-[500px] rounded-full bg-tertiary/20 blur-[120px] md:blur-[180px]" />
+        <div className="hidden md:block absolute bottom-[-10%] right-[15%] w-[800px] h-[800px] rounded-full bg-secondary/15 blur-[120px] md:blur-[200px]" />
 
         {/* Prominent Geometric Floating Accents */}
         {/* 1. Large Hollow Circle */}
@@ -21,8 +21,8 @@ export function BackgroundDecorations() {
 
         {/* 3. Bold Glowing Cross */}
         <div className="absolute top-[45%] left-[9%] flex items-center justify-center animate-spin-slow">
-          <div className="absolute w-40 h-[4px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_20px_rgba(var(--color-primary),0.6)] rounded-full" />
-          <div className="absolute h-40 w-[4px] bg-gradient-to-b from-transparent via-primary to-transparent shadow-[0_0_20px_rgba(var(--color-primary),0.6)] rounded-full" />
+          <div className="hidden md:block absolute w-40 h-[4px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_20px_rgba(var(--color-primary),0.6)] rounded-full" />
+          <div className="hidden md:block absolute h-40 w-[4px] bg-gradient-to-b from-transparent via-primary to-transparent shadow-[0_0_20px_rgba(var(--color-primary),0.6)] rounded-full" />
         </div>
 
         {/* 4. Prominent Dot Grid */}
@@ -33,7 +33,7 @@ export function BackgroundDecorations() {
         </div>
 
         {/* 5. Intersecting Rings */}
-        <div className="absolute top-[0%] left-[10%] opacity-60 animate-spin-slow">
+        <div className="absolute -top-10 -left-10 md:top-[-8%] md:left-[9%] opacity-80 animate-spin-slow">
           <svg width="250" height="250" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg" className="overflow-visible">
             <circle cx="125" cy="125" r="80" stroke="var(--color-tertiary)" strokeWidth="3" fill="none" strokeDasharray="12 12" />
             <circle cx="125" cy="125" r="105" stroke="var(--color-primary)" strokeWidth="2" fill="none" opacity="0.5" />

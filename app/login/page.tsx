@@ -29,10 +29,12 @@ export default function LoginPage() {
         </CardHeader>
 
         <div className="p-8">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" suppressHydrationWarning>
             <Input
               label="Email Address"
               type="email"
+              name="email"
+              autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -43,6 +45,8 @@ export default function LoginPage() {
             <Input
               label="Password"
               type="password"
+              name="password"
+              autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}

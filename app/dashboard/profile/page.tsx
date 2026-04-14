@@ -22,7 +22,6 @@ export default function ProfileListPage() {
   const { user } = useSelector((state: RootState) => state.auth);
   const router = useRouter();
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newProfileName, setNewProfileName] = useState("");
@@ -71,8 +70,6 @@ export default function ProfileListPage() {
       <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <ProfileGrid
           profiles={profiles}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
           onCreateProfile={() => setIsCreateModalOpen(true)}
           onToggleActive={toggleActive}
           onDeleteClick={openDeleteModal}
@@ -91,7 +88,6 @@ export default function ProfileListPage() {
               value={newProfileName}
               onChange={(e) => setNewProfileName(e.target.value)}
               error={createProfileErrors.name}
-              autoFocus
             />
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
               <Button type="button" variant="secondary" onClick={() => setIsCreateModalOpen(false)}>

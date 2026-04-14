@@ -100,12 +100,14 @@ export function ImageInput({
               src={previewUrl} 
               alt="Preview" 
               fill 
+              sizes="(max-width: 768px) 100vw, 33vw"
+              priority
               className="object-cover transition-transform group-hover:scale-105"
-              unoptimized
+              unoptimized={value instanceof File}
             />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-2">
+            <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-2">
               <Camera className="w-6 h-6" />
-              <span className="text-xs font-medium">Click or Drag to change</span>
+              <span className="text-xs font-medium text-center px-2">Click or Drop to change</span>
             </div>
           </>
         ) : (

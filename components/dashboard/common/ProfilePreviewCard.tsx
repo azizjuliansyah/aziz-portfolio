@@ -1,6 +1,7 @@
 "use client";
 
 import { User, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 import { Card } from "@/components/ui/Card";
 
 interface ProfilePreviewCardProps {
@@ -16,9 +17,12 @@ export function ProfilePreviewCard({ name, email, avatar }: ProfilePreviewCardPr
         <div className="relative group w-28 h-28 rounded-full overflow-hidden border-4 border-surface shadow-lg bg-surface-container-high flex items-center justify-center">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary-dim opacity-20 transition duration-1000"></div>
           {avatar ? (
-            <img
+            <Image
               src={typeof avatar === "string" ? avatar : URL.createObjectURL(avatar)}
               alt="Profile Preview"
+              fill
+              sizes="112px"
+              priority
               className="w-full h-full object-cover relative z-10"
             />
           ) : (

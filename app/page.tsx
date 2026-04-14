@@ -12,7 +12,6 @@ import { BackgroundDecorations } from "@/components/portfolio/BackgroundDecorati
 import { CVPreviewModal } from "@/components/portfolio/CVPreviewModal";
 import { PortfolioSkeleton } from "@/components/portfolio/PortfolioSkeleton";
 import { useActiveProfile } from "@/hooks/useActiveProfile";
-import { useActiveSection } from "@/hooks/useActiveSection";
 import { useHashNavigation } from "@/hooks/useHashNavigation";
 
 export default function Home() {
@@ -20,7 +19,6 @@ export default function Home() {
   const [isCvModalOpen, setIsCvModalOpen] = useState(false);
 
   const sectionIds = ["home", "bio", "experience", "skills", "certificates", "projects"];
-  const activeSection = useActiveSection(sectionIds);
 
   useHashNavigation(loading);
 
@@ -68,7 +66,7 @@ export default function Home() {
   return (
     <div className="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container font-body relative overflow-hidden">
       <BackgroundDecorations />
-      <PortfolioTopbar profile={profile} activeSection={activeSection} />
+      <PortfolioTopbar profile={profile} />
 
       <HeroSection profile={profile} />
       <BioSection profile={profile} onCvModalOpen={() => setIsCvModalOpen(true)} />

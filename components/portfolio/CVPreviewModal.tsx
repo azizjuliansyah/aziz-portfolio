@@ -17,9 +17,11 @@ export function CVPreviewModal({ isOpen, onClose, cvUrl, profileName, isPdf }: C
     <div className="flex justify-between items-center w-full">
       <p className="text-sm text-on-surface-variant font-medium hidden md:block">Reviewing {profileName}'s professional history</p>
       <div className="flex gap-3 w-full md:w-auto justify-end">
-        <Button type="button" variant="outline" onClick={onClose} className="rounded-xl flex-1 md:flex-none">
-          Close
-        </Button>
+        <div className="hidden md:block">
+          <Button type="button" variant="outline" onClick={onClose} className="rounded-xl flex-1 md:flex-none">
+            Close
+          </Button>
+        </div>
         {cvUrl && (
           <>
             <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="flex-1 md:flex-none">

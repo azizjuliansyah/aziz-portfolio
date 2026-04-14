@@ -3,7 +3,11 @@
 interface ProjectDetailsProps {
   project: {
     title: string;
-    description: string;
+    overview: string;
+    narrative?: string;
+    core_engine?: string;
+    development_stack?: string;
+    database_stack?: string;
   };
 }
 
@@ -23,43 +27,36 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         </h2>
         <div className="font-body text-lg md:text-xl text-on-surface leading-relaxed space-y-6">
           <p className="whitespace-pre-wrap">
-            {project.description}
+            {project.overview}
           </p>
-          <p>
-            In the digital landscape of 2024, scalability is no longer a luxury—it's a survival requirement.
-            The {project.title} project began as a challenge to rethink how distributed systems handle state
-            across disparate geographic zones without compromising the developer experience.
-          </p>
+          {project.narrative && (
+            <p className="whitespace-pre-wrap font-light opacity-90">
+              {project.narrative}
+            </p>
+          )}
         </div>
       </div>
-      <aside className="md:col-span-5 bg-surface-container p-8 md:p-12 rounded-lg">
+      <aside className="md:col-span-5 bg-surface-container p-8 md:p-12 rounded-lg border border-outline-variant/10 shadow-sm">
         <h3 className="font-headline text-lg font-bold mb-8 uppercase tracking-widest">Technical Stack</h3>
-        <div className="grid grid-cols-2 gap-y-8 gap-x-4">
-          <div>
-            <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-2">Core Engine</span>
-            <p className="font-label font-bold text-on-surface">React / TypeScript</p>
-          </div>
-          <div>
-            <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-2">Development</span>
-            <p className="font-label font-bold text-on-surface">Next.js / Tailwind CSS</p>
-          </div>
-          <div>
-            <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-2">Supabase</span>
-            <p className="font-label font-bold text-on-surface">PostgreSQL / Auth / Storage</p>
-          </div>
-        </div>
-        <div className="mt-12 pt-12 border-t border-outline-variant/15">
-          <h4 className="font-label text-[10px] uppercase tracking-widest text-outline mb-4">Key Metrics</h4>
-          <ul className="space-y-4">
-            <li className="flex items-center justify-between">
-              <span className="font-body italic text-on-surface-variant">Performance</span>
-              <span className="font-headline font-bold text-primary text-xl">Lighthouse 100</span>
-            </li>
-            <li className="flex items-center justify-between">
-              <span className="font-body italic text-on-surface-variant">Responsive</span>
-              <span className="font-headline font-bold text-primary text-xl">Universal</span>
-            </li>
-          </ul>
+        <div className="grid grid-cols-1 gap-y-8">
+          {project.core_engine && (
+            <div>
+              <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-2">Core Engine</span>
+              <p className="font-label font-bold text-on-surface">{project.core_engine}</p>
+            </div>
+          )}
+          {project.development_stack && (
+            <div>
+              <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-2">Development</span>
+              <p className="font-label font-bold text-on-surface">{project.development_stack}</p>
+            </div>
+          )}
+          {project.database_stack && (
+            <div>
+              <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-2">Database</span>
+              <p className="font-label font-bold text-on-surface">{project.database_stack}</p>
+            </div>
+          )}
         </div>
       </aside>
     </section>

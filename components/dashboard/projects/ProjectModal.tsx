@@ -24,14 +24,22 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
 
   const { formData, handleChange, reset, errors, setErrors } = useModalForm<{
     title: string;
-    description: string;
+    overview: string;
+    narrative: string;
+    core_engine: string;
+    development_stack: string;
+    database_stack: string;
     link: string;
     info: string;
     thumbnail: File | string | null;
   }>({
     initialValues: {
       title: "",
-      description: "",
+      overview: "",
+      narrative: "",
+      core_engine: "",
+      development_stack: "",
+      database_stack: "",
       link: "",
       info: "",
       thumbnail: null,
@@ -77,7 +85,11 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
     e.preventDefault();
     const submitData = new FormData();
     submitData.append("title", formData.title);
-    submitData.append("description", formData.description);
+    submitData.append("overview", formData.overview);
+    submitData.append("narrative", formData.narrative);
+    submitData.append("core_engine", formData.core_engine);
+    submitData.append("development_stack", formData.development_stack);
+    submitData.append("database_stack", formData.database_stack);
     submitData.append("link", formData.link);
     submitData.append("info", formData.info);
 
@@ -186,7 +198,7 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
                   <button 
                     type="button"
                     onClick={() => removeGalleryImage(idx)}
-                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity"
+                    className="absolute inset-0 bg-black/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center text-white transition-opacity"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -197,12 +209,44 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
         </div>
 
         <Textarea
-          label="Description"
-          placeholder="What makes this project special?"
-          value={formData.description}
-          onChange={(e) => handleChange("description", e.target.value)}
-          error={errors.description}
+          label="Project Overview (Short)"
+          placeholder="A brief summary of the project"
+          value={formData.overview}
+          onChange={(e) => handleChange("overview", e.target.value)}
+          error={errors.overview}
         />
+
+        <Textarea
+          label="Narrative (Long)"
+          placeholder="Detailed story or explanation of the project"
+          value={formData.narrative}
+          onChange={(e) => handleChange("narrative", e.target.value)}
+          error={errors.narrative}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Input
+            label="Core Engine"
+            placeholder="e.g. React / TypeScript"
+            value={formData.core_engine}
+            onChange={(e) => handleChange("core_engine", e.target.value)}
+            error={errors.core_engine}
+          />
+          <Input
+            label="Development"
+            placeholder="e.g. Next.js / Tailwind CSS"
+            value={formData.development_stack}
+            onChange={(e) => handleChange("development_stack", e.target.value)}
+            error={errors.development_stack}
+          />
+          <Input
+            label="Database"
+            placeholder="e.g. PostgreSQL / Auth / Storage"
+            value={formData.database_stack}
+            onChange={(e) => handleChange("database_stack", e.target.value)}
+            error={errors.database_stack}
+          />
+        </div>
       </form>
     </Modal>
   );

@@ -30,7 +30,7 @@ export function ScrollReveal({
   return (
     <div
       ref={elementRef}
-      className={`${animation.hidden} ${isVisible ? animation.visible : ""} ${className}`}
+      className={`${isVisible ? animation.visible : animation.hidden} ${className}`}
       style={delayStyle}
     >
       {children}

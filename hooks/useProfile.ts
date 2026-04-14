@@ -131,7 +131,12 @@ export const useProfiles = () => {
     setIsSubmitting(true);
     try {
       await profileService.toggleActiveProfile(id, true);
-      toast.success("Profile set as active");
+      
+      const activatedProfile = profiles.find(p => p.id === id);
+      const profileName = activatedProfile?.name || "Profile";
+      
+      toast.success(`Profile "${profileName}" set as active`);
+      
       setProfiles(prev => prev.map(p => ({
         ...p,
         is_active: p.id === id

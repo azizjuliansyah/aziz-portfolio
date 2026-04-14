@@ -19,7 +19,7 @@ export async function PUT(
     }
 
     // Extract validated data
-    const { title, info, link, description, thumbnail } = validated;
+    const { title, info, link, overview, narrative, core_engine, development_stack, database_stack, thumbnail } = validated;
     const thumbnailFile = formData.get("thumbnail") as File | null;
     const galleryFiles = formData.getAll("images") as File[];
     const removedImages = formData.getAll("removedImages") as string[];
@@ -85,7 +85,11 @@ export async function PUT(
         title,
         info,
         link,
-        description,
+        overview,
+        narrative,
+        core_engine,
+        development_stack,
+        database_stack,
         thumbnail: thumbnailPath,
       })
       .eq("id", id)

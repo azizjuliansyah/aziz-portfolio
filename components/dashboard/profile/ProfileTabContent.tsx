@@ -14,55 +14,22 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { DragEndEvent } from "@dnd-kit/core";
+import { Skill } from "@/types/skill";
+import { Project, ProjectImage } from "@/types/project";
+import { SocialLink } from "@/types/socialLink";
+import { WorkExperience as Experience } from "@/types/experience";
+import { Certificate } from "@/types/certificate";
+
+// Component Imports
 import { SkillCard } from "@/components/dashboard/skills/SkillCard";
 import { ProjectCard } from "@/components/dashboard/projects/ProjectCard";
 import { SocialLinkCard } from "@/components/dashboard/social-links/SocialLinkCard";
 import { ExperienceCard } from "@/components/dashboard/experience/ExperienceCard";
 import { CertificateCard } from "@/components/dashboard/certificates/CertificateCard";
-import { ProjectImage } from "@/types/project";
-import { WorkExperienceResponsibility } from "@/types/experience";
-import { Certificate } from "@/types/certificate";
 
 type ProfileTab = "basic" | "experience" | "skills" | "projects" | "social-links" | "certificates";
 
-interface Skill {
-  id: string;
-  title: string;
-  image: string | File;
-  order: number;
-}
-
-interface Project {
-  id: string;
-  title: string;
-  thumbnail: string | File;
-  link?: string;
-  info?: string;
-  description: string;
-  order: number;
-  images: ProjectImage[];
-}
-
-interface SocialLink {
-  id: string;
-  name: string;
-  image: string | File;
-  link: string;
-  order: number;
-  profile_id?: string;
-}
-
-interface Experience {
-  id: string;
-  profile_id?: string;
-  company_name: string;
-  position: string;
-  start_date: string;
-  end_date: string;
-  order: number;
-  created_at?: string;
-  responsibilities?: WorkExperienceResponsibility[];
-}
+// Reusing centralized types instead of local interfaces
 
 interface ProfileTabContentProps {
   activeTab: ProfileTab;

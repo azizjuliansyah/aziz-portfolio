@@ -77,7 +77,7 @@ export function SettingsForm({
 
       {/* Right Column: Tabbed Settings Form */}
       <div className="lg:col-span-3">
-        <Card className="h-full flex flex-col p-0 overflow-hidden shadow-sm">
+        <Card noPadding className="h-full flex flex-col overflow-hidden shadow-sm">
           <TabNavigation
             tabs={tabs}
             activeTab={activeTab}
@@ -132,7 +132,7 @@ export function SettingsForm({
             {activeTab === "appearance" && (
               <form onSubmit={handleSaveSettings} className="h-full flex flex-col animate-in fade-in duration-300">
                 <div className="space-y-6 flex-1 w-full">
-                  <div className="flex items-center justify-between p-5 bg-surface-container-high rounded-2xl border border-outline/10 transition">
+                  <div className="flex items-center justify-between gap-2 p-5 bg-surface-container-high rounded-2xl border border-outline/10 transition">
                     <div className="space-y-1">
                       <p className="text-sm font-semibold text-on-surface">Enable Global Theme</p>
                       <p className="text-xs text-on-surface/60">Lock the admin theme to match site-wide default settings.</p>
@@ -145,7 +145,7 @@ export function SettingsForm({
 
                   <div className={`space-y-4 pt-4 transition duration-300 ${!enableGlobalTheme ? 'opacity-40 grayscale-[50%] pointer-events-none' : 'opacity-100'}`}>
                     <p className="text-sm font-medium text-on-surface/80">Global Color Mode</p>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-2 md:gap-4">
                       {[
                         { id: "light", label: "Light", icon: Sun, desc: "Clean and bright" },
                         { id: "dark", label: "Dark", icon: Moon, desc: "Easy on eyes" },
@@ -156,7 +156,7 @@ export function SettingsForm({
                           type="button"
                           disabled={!enableGlobalTheme}
                           onClick={() => setTheme(item.id as Theme)}
-                          className={`flex flex-col items-center gap-2 p-4 rounded-xl border-[1.5px] transition-all group ${theme === item.id
+                          className={`flex flex-col items-center gap-2 p-2 rounded-xl border-[1.5px] transition-all group cursor-pointer ${theme === item.id
                             ? "border-primary bg-primary/10 text-primary shadow-sm"
                             : "border-outline/10 hover:border-outline/30 text-on-surface/50"
                             }`}
@@ -167,7 +167,7 @@ export function SettingsForm({
                           </div>
                           <div className="text-center">
                             <span className="block text-sm font-medium text-on-surface mb-0.5">{item.label}</span>
-                            <span className="text-[10px] sm:text-xs text-on-surface/50 font-normal">{item.desc}</span>
+                            <span className="hidden md:block text-[10px] sm:text-xs text-on-surface/50 font-normal">{item.desc}</span>
                           </div>
                         </button>
                       ))}

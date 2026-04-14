@@ -22,7 +22,11 @@ export const skillUpdateSchema = skillSchema.partial();
  */
 export const projectSchema = z.object({
   title: z.string().min(1, "Project title is required"),
-  description: z.string().min(1, "Project description is required"),
+  overview: z.string().min(1, "Project overview is required"),
+  narrative: z.string().optional(),
+  core_engine: z.string().optional(),
+  development_stack: z.string().optional(),
+  database_stack: z.string().optional(),
   link: z.string().url("Invalid URL format").optional().or(z.literal("")),
   info: z.string().optional(),
   thumbnail: z.any().refine((file) => file instanceof File || typeof file === "string", {

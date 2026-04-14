@@ -12,7 +12,7 @@ export const Skeleton = ({ className = "", width, height, circle = false }: Skel
     <div
       className={`bg-surface-container-high animate-pulse ${
         circle ? "rounded-full" : "rounded-lg"
-      } ${className}`}
+      } ${className} max-w-full`}
       style={{
         width: width,
         height: height,

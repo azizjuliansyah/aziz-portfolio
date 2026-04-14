@@ -20,8 +20,6 @@ interface Profile {
 
 interface ProfileGridProps {
   profiles: Profile[];
-  searchQuery: string;
-  onSearchChange: (value: string) => void;
   onCreateProfile: () => void;
   onToggleActive: (id: string) => void;
   onDeleteClick: (id: string) => void;
@@ -29,17 +27,11 @@ interface ProfileGridProps {
 
 export function ProfileGrid({
   profiles,
-  searchQuery,
-  onSearchChange,
   onCreateProfile,
   onToggleActive,
   onDeleteClick,
 }: ProfileGridProps) {
   const router = useRouter();
-
-  const filteredProfiles = profiles.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <>
@@ -57,23 +49,9 @@ export function ProfileGrid({
         </Button>
       </div>
 
-      {/* Search Bar */}
-      <Card className="bg-surface-container-low border-outline/10">
-        <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search profiles by name..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-surface border border-outline/10 rounded-xl text-sm focus:border-primary focus:ring-primary focus:ring-offset-0 outline-none transition-all text-on-surface"
-          />
-        </div>
-      </Card>
-
       {/* Profile Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProfiles.map((profile) => (
+        {profiles.map((profile) => (
           <Card
             key={profile.id}
             noPadding
@@ -111,7 +89,7 @@ export function ProfileGrid({
                     <p className="text-[11px] text-primary font-medium truncate">{profile.title || 'No title set'}</p>
                   </div>
                 </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   {!profile.is_active ? (
                     <ActionButton
                       variant="primary"
@@ -161,7 +139,7 @@ export function ProfileGrid({
           </Card>
         ))}
 
-        {filteredProfiles.length === 0 && (
+        {profiles.length === 0 && (
           <div className="col-span-full py-16 text-center bg-surface-container-low rounded-3xl border-2 border-dashed border-outline/20">
             <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
               <Globe className="w-8 h-8 text-on-surface/20" />

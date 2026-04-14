@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     }
 
     // Extract validated data
-    const { title, info, link, description, thumbnail } = validated;
+    const { title, info, link, overview, narrative, core_engine, development_stack, database_stack, thumbnail } = validated;
     const profileId = formData.get("profileId") as string;
     const thumbnailFile = formData.get("thumbnail") as File | null;
     const galleryFiles = formData.getAll("images") as File[];
@@ -73,7 +73,11 @@ export async function POST(request: Request) {
         title,
         info,
         link,
-        description,
+        overview,
+        narrative,
+        core_engine,
+        development_stack,
+        database_stack,
         thumbnail: thumbnailPath,
         order: nextOrder,
         profile_id: profileId || null,

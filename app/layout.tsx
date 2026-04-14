@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "./store/ReduxProvider";
@@ -11,6 +11,12 @@ import { getErrorMessage } from "@/types/error";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,6 +31,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Aziz Juliansyah Portfolio",
   description: "Portfolio Aziz Juliansyah",
+  formatDetection: {
+    telephone: false,
+    date: false,
+    email: false,
+    address: false,
+  },
 };
 
 export default async function RootLayout({
@@ -55,6 +67,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={htmlClass} style={{ scrollBehavior: 'smooth' }} data-scroll-behavior="smooth">
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ErrorBoundary>

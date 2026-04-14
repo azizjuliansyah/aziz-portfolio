@@ -1,7 +1,7 @@
 "use client";
 
 import { LucideIcon } from "lucide-react";
-import React, { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes, useId } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -19,10 +19,13 @@ export function Input({
   containerClassName = "",
   helperText,
   error,
-  id,
+  id: providedId,
   required,
   ...props
 }: InputProps) {
+  const autoId = useId();
+  const id = providedId || autoId;
+
   return (
     <div className={`space-y-2 ${containerClassName}`}>
       {label && (
@@ -39,6 +42,7 @@ export function Input({
         )}
         <input
           id={id}
+          suppressHydrationWarning
           className={`
             block w-full rounded-xl border bg-surface-container-low 
             transition-all text-sm py-2.5 outline-none text-on-surface placeholder:text-on-surface/30

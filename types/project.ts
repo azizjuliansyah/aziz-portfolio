@@ -9,7 +9,11 @@ export interface Project {
   thumbnail: string | File;
   link?: string;
   info?: string;
-  description: string;
+  overview: string;
+  narrative?: string;
+  core_engine?: string;
+  development_stack?: string;
+  database_stack?: string;
   order: number;
   images: ProjectImage[];
 }

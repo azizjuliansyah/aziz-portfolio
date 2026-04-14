@@ -63,14 +63,14 @@ export function Modal({
             {showCloseButton && (
               <button 
                 onClick={onClose} 
-                className="text-outline hover:text-on-surface transition-colors"
+                className="text-outline hover:text-on-surface transition-colors cursor-pointer"
               >
                 <X className="w-6 h-6" />
               </button>
             )}
           </div>
         )}
-        <div className="p-6 overflow-y-auto w-full no-scrollbar flex-1">
+        <div className="p-2 md:p-6 overflow-y-auto w-full no-scrollbar flex-1">
           {children}
         </div>
         {footer && (

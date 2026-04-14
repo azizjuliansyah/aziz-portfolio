@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { LayoutDashboard, Rocket, Code, Share2, User as UserIcon, Settings as SettingsIcon, Plus, Award, Briefcase } from "lucide-react";
+import { LayoutDashboard, Rocket, Code, Share2, User as UserIcon, Settings as SettingsIcon, Plus, Award, Briefcase, LayoutTemplate } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Button } from "@/components/ui/Button";
@@ -30,20 +30,23 @@ export default function DashboardPage() {
     <DashboardLayout user={user} onLogout={logout}>
       <div className="space-y-8">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-on-surface flex items-center gap-3">
-              <Rocket className="w-8 h-8 text-primary" />
-              Hello, {user?.name || "Admin"}!
-            </h1>
-            <p className="text-on-surface/70 mt-2">
-              Currently managing: <span className="text-blue-600 font-semibold">{isStatsLoading ? "..." : stats.activeProfileName}</span>
-            </p>
-          </div>
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-surface to-secondary/5 border border-primary/10 p-8 shadow-sm">
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-primary/20 blur-3xl rounded-full"></div>
+          <div className="absolute bottom-0 left-10 -mb-4 w-24 h-24 bg-tertiary/20 blur-2xl rounded-full"></div>
           
-          <div className="flex items-center gap-2 text-sm text-on-surface/70 bg-surface-container-high px-4 py-2 rounded-full border border-outline/10">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            System Online
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <h1 className="text-4xl font-extrabold text-on-surface flex items-center gap-3">
+                Hello, <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">{user?.name || "Admin"}</span>!
+              </h1>
+              <p className="text-on-surface/70 mt-2 text-lg">
+                Currently managing portfolio: <span className="text-primary font-semibold px-2 py-1 bg-primary/10 rounded-md tracking-wide ml-1">{isStatsLoading ? "..." : stats.activeProfileName}</span>
+              </p>
+            </div>
+            
+            <div className="hidden md:flex items-center justify-center w-20 h-20 bg-surface rounded-2xl shadow-sm border border-outline/10 text-primary transform rotate-3 hover:rotate-0 transition-transform duration-300">
+              <Rocket className="w-10 h-10" />
+            </div>
           </div>
         </div>
 
@@ -52,56 +55,59 @@ export default function DashboardPage() {
           <StatCard 
             label="Projects" 
             value={isStatsLoading ? "..." : stats.totalProjects.toString()} 
-            colorClass="bg-primary" 
+            colorClass="bg-primary"
+            icon={LayoutTemplate} 
           />
           <StatCard 
             label="Skills" 
             value={isStatsLoading ? "..." : stats.totalSkills.toString()} 
             colorClass="bg-secondary" 
+            icon={Code}
           />
           <StatCard 
             label="Social Links" 
             value={isStatsLoading ? "..." : stats.totalSocialLinks.toString()} 
             colorClass="bg-tertiary" 
+            icon={Share2}
           />
         </div>
 
         {/* Quick Actions Section */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-on-surface">Quick Actions</h2>
+        <div className="space-y-6 relative z-10">
+          <h2 className="text-2xl font-bold text-on-surface tracking-tight">Quick Actions</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {quickActions.map((action) => (
               <button
                 key={action.label}
                 onClick={() => router.push(action.path)}
-                className="p-4 rounded-2xl bg-surface-container-low border border-outline/10 hover:border-primary transition-all group text-left shadow-sm hover:shadow-md cursor-pointer"
+                className="relative overflow-hidden p-5 rounded-2xl bg-surface border border-outline/10 hover:border-primary/40 transition-all duration-300 group text-center shadow-sm hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col items-center justify-center gap-3"
               >
-                <div className={`w-12 h-12 ${action.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm`}>
-                  <action.icon className={`w-6 h-6 ${action.color}`} />
+                <div className={`w-14 h-14 ${action.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-inner`}>
+                  <action.icon className={`w-7 h-7 ${action.color}`} />
                 </div>
-                <span className="text-sm font-semibold text-on-surface/90">{action.label}</span>
+                <span className="text-sm font-semibold text-on-surface/90 group-hover:text-primary transition-colors">{action.label}</span>
               </button>
             ))}
           </div>
         </div>
 
         {/* Footer Preview Action */}
-        <div className="pt-12 pb-6 flex flex-col items-center justify-center border-t border-outline/10 mt-12 w-full">
-          <div className="text-center max-w-md space-y-4 flex flex-col items-center">
-            <div className="flex items-center justify-center gap-2 text-primary font-medium">
+        <div className="pb-6 flex flex-col items-center justify-center mt-12 w-full relative">
+          <div className="absolute inset-0 top-12 bg-gradient-to-t from-primary/5 to-transparent rounded-t-3xl -z-10"></div>
+          <div className="text-center max-w-md space-y-6 flex flex-col items-center relative z-10 p-8 rounded-3xl border border-primary/10 bg-surface/50 backdrop-blur-sm shadow-sm">
+            <div className="flex items-center justify-center gap-2 text-primary font-bold tracking-wide uppercase text-sm bg-primary/10 px-4 py-1.5 rounded-full">
               <Share2 className="w-4 h-4" />
               <span>Public Portfolio is live</span>
             </div>
-            <p className="text-on-surface/70 text-sm">
-              Your profile for <span className="text-primary font-semibold">{stats.activeProfileName}</span> is visible to everyone.
+            <p className="text-on-surface/80 text-base">
+              Your profile for <span className="text-primary font-semibold border-b-2 border-primary/30 pb-0.5">{stats.activeProfileName}</span> is visible to everyone on the internet.
             </p>
             <Button 
-              variant="outline"
-              className="mt-4 border-outline/20 text-primary hover:bg-primary/5 rounded-xl px-8 py-6 group mx-auto"
+              className="mt-2 bg-gradient-to-r from-primary to-secondary text-on-primary hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 rounded-full px-10 py-6 group mx-auto font-bold text-base transition-all duration-300"
               onClick={() => window.open("/", "_blank")}
             >
-              Launch Preview
-              <Rocket className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              Launch Live Preview
+              <Rocket className="w-5 h-5 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Button>
           </div>
         </div>

@@ -24,7 +24,7 @@ export function Topbar({ title, user, onMenuClick }: TopbarProps) {
         >
           <Menu className="w-6 h-6" />
         </button>
-        <h2 className="text-xl font-semibold text-on-surface">{title}</h2>
+        <h2 className="hidden md:block text-xl font-semibold text-on-surface">{title}</h2>
       </div>
 
       <div className="flex items-center gap-4">

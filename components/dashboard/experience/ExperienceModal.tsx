@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +17,20 @@ interface ExperienceModalProps {
 
 export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, isLoading }: ExperienceModalProps) => {
   const [responsibilities, setResponsibilities] = useState<{ id?: string, responsibility: string }[]>([]);
+
+  // Sync responsibilities separately since it's an array field
+  useEffect(() => {
+    if (isOpen) {
+      if (currentExperience?.responsibilities && currentExperience.responsibilities.length > 0) {
+        setResponsibilities(currentExperience.responsibilities.map(r => ({
+          id: r.id,
+          responsibility: r.responsibility
+        })));
+      } else {
+        setResponsibilities([]);
+      }
+    }
+  }, [isOpen, currentExperience]);
 
   const { formData, handleChange, reset, errors, setErrors } = useModalForm<{
     company_name: string;
@@ -149,7 +163,7 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
                   <button
                     type="button"
                     onClick={() => handleRemoveResponsibility(index)}
-                    className="p-2.5 mt-0.5 text-on-surface/40 hover:text-red-500 bg-surface-container rounded-lg transition-colors border border-outline/10 hover:border-red-200 shadow-sm"
+                    className="p-2.5 mt-0.5 text-on-surface/40 hover:text-red-500 bg-surface-container rounded-lg transition-colors border border-outline/10 hover:border-red-200 shadow-sm cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>

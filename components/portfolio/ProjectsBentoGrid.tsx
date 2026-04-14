@@ -7,7 +7,7 @@ interface ProjectsBentoGridProps {
   projects: Array<{
     id: string | number;
     title: string;
-    description: string;
+    overview: string;
     thumbnail: string;
     info?: string;
   }>;
@@ -30,7 +30,7 @@ export function ProjectsBentoGrid({ projects }: ProjectsBentoGridProps) {
           WebkitMaskImage: "linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)"
         }}
       />
-
+      
       {/* Hexagon shape decoration */}
       <div className="absolute top-1/4 right-20 opacity-[0.15] pointer-events-none z-0 rotate-12 hidden md:block">
         <svg width="250" height="250" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -155,7 +155,7 @@ export function ProjectsBentoGrid({ projects }: ProjectsBentoGridProps) {
                   </p>
                   <h3 className={`font-headline text-4xl font-bold mb-4 project-title-${project.id}`}>{project.title}</h3>
                   <p className={`font-body text-lg text-on-surface-variant max-w-md mb-6 line-clamp-2 project-desc-${project.id}`}>
-                    {project.description}
+                    {project.overview}
                   </p>
                   <a className={`text-on-surface font-label font-bold flex items-center gap-2 inline-flex project-link-${project.id}`} href={`/projects/${project.id}`}>
                     Case Study

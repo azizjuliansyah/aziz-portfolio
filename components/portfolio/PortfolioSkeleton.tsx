@@ -28,8 +28,8 @@ export function PortfolioSkeleton() {
           {/* Text Content - 7 columns */}
           <div className="md:col-span-7 mb-4 z-10">
             <Skeleton width={200} height={24} className="mb-4" />
-            <Skeleton width={500} height={80} className="mb-8" />
-            <Skeleton width={400} height={32} />
+            <Skeleton width="90%" height={80} className="mb-12" />
+            <Skeleton width="70%" height={32} className="mb-4" />
           </div>
 
           {/* Card Stack Avatar - 5 columns */}
@@ -93,11 +93,11 @@ export function PortfolioSkeleton() {
 
           {/* Right Column - Bio Content */}
           <div className="md:col-span-8">
-            <Skeleton width={400} height={40} className="mb-8" />
+            <Skeleton width="100%" height={40} className="mb-8" />
             <div className="space-y-4">
-              <Skeleton width="100%" height={24} />
-              <Skeleton width="100%" height={24} />
-              <Skeleton width="100%" height={24} />
+              <Skeleton width="90%" height={24} />
+              <Skeleton width="90%" height={24} />
+              <Skeleton width="90%" height={24} />
               <Skeleton width={80} height={24} />
             </div>
           </div>
@@ -170,6 +170,54 @@ export function PortfolioSkeleton() {
               <div key={i} className="flex flex-col items-center justify-end w-[80px] md:w-[100px]">
                 <div className="w-14 h-14 md:w-[72px] md:h-[72px] flex items-center justify-center bg-surface-container rounded-lg mb-4" />
                 <Skeleton width={80} height={16} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* Certifications Skeleton - Carousel Layout */}
+      <section className="py-24 bg-surface relative overflow-hidden">
+        {/* Blueprint Grid Pattern Background */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.03] z-0" 
+          style={{ 
+            backgroundImage: "linear-gradient(var(--color-on-surface) 1px, transparent 1px), linear-gradient(90deg, var(--color-on-surface) 1px, transparent 1px)", 
+            backgroundSize: "40px 40px" 
+          }} 
+        />
+        
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-outline/10 to-transparent"></div>
+        
+        <div className="max-w-7xl mx-auto px-6 md:px-20 relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Skeleton width={100} height={12} />
+              </div>
+              <Skeleton width={250} height={48} />
+            </div>
+            
+            {/* Nav arrows skeleton */}
+            <div className="flex gap-2">
+              <Skeleton circle width={48} height={48} />
+              <Skeleton circle width={48} height={48} />
+            </div>
+          </div>
+          
+          {/* Certificates Grid Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-surface-container-low rounded-2xl overflow-hidden border border-outline/10">
+                <div className="aspect-video w-full bg-surface-container-high" />
+                <div className="p-6 space-y-4">
+                  <Skeleton width={100} height={20} className="rounded-full" />
+                  <Skeleton width="100%" height={24} />
+                  <div className="pt-4 border-t border-outline/10 flex items-center gap-2">
+                    <Skeleton circle width={16} height={16} />
+                    <Skeleton width={120} height={14} />
+                  </div>
+                </div>
               </div>
             ))}
           </div>

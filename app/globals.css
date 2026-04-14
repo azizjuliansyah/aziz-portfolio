@@ -311,3 +311,13 @@ body {
 .animate-spin-slow {
   animation: spin-slow 20s linear infinite;
 }
+/* Utility to hide scrollbars while keeping functionality */
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
