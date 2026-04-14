@@ -9,10 +9,12 @@ interface PortfolioTopbarProps {
     email?: string | null;
     name?: string | null;
   } | null;
+  activeSection?: string;
 }
 
-export function PortfolioTopbar({ profile }: PortfolioTopbarProps) {
-  const activeSection = useActiveSection(["home", "bio", "experience", "skills", "certificates", "projects"]);
+export function PortfolioTopbar({ profile, activeSection: activeSectionProp }: PortfolioTopbarProps) {
+  const detectedSection = useActiveSection(["home", "bio", "experience", "skills", "certificates", "projects"]);
+  const activeSection = activeSectionProp || detectedSection;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
 
