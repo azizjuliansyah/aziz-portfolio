@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cache } from "react";
 import "./globals.css";
 import { ReduxProvider } from "./store/ReduxProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -8,6 +9,7 @@ import { ToastContainer } from "@/components/ui/Toast";
 import { SessionManager } from "@/components/auth/SessionManager";
 import { ErrorBoundary } from "@/components/error";
 import { getErrorMessage } from "@/types/error";
+import { Settings } from "@/types/settings";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -28,37 +30,64 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Aziz Juliansyah Portfolio",
-  description: "Portfolio Aziz Juliansyah",
-  formatDetection: {
-    telephone: false,
-    date: false,
-    email: false,
-    address: false,
-  },
-};
+const getSettings = cache(async () => {
+  try {
+    const { data: settings } = await supabase
+      .from("app_settings")
+      .select("*")
+      .maybeSingle();
+    return settings as Settings | null;
+  } catch (err) {
+    console.error("Failed to fetch app settings:", getErrorMessage(err));
+    return null;
+  }
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+
+  const title = settings?.seo_title || "Aziz Juliansyah Portfolio";
+  const description = settings?.seo_description || "Portfolio Aziz Juliansyah";
+  const siteName = settings?.seo_site_name || "Aziz Portfolio";
+  const type = settings?.seo_type || "website";
+  const image = settings?.seo_image || null;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      siteName,
+      type: type as any,
+      images: image ? [{ url: image }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image] : [],
+    },
+    formatDetection: {
+      telephone: false,
+      date: false,
+      email: false,
+      address: false,
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch global theme from DB
+  // Fetch global theme from DB using cached function
+  const settings = await getSettings();
   let globalTheme = "system";
-  try {
-    const { data: settings } = await supabase
-      .from("app_settings")
-      .select("theme, enable_global_theme")
-      .maybeSingle(); // Better than single() if row might not exist
 
-    if (settings?.theme) {
-      globalTheme = settings.theme;
-    }
-  } catch (err) {
-    // Fail silently, use system default
-    console.error("Failed to fetch global theme:", getErrorMessage(err));
-    globalTheme = "system";
+  if (settings?.theme) {
+    globalTheme = settings.theme;
   }
 
   // Pre-calculate class to prevent flicker
