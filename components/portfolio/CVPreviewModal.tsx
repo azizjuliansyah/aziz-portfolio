@@ -2,7 +2,19 @@
 
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { Download, ExternalLink } from "lucide-react";
+import { Download, ExternalLink, Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Dynamically import the PDF viewer with SSR disabled to prevent DOMMatrix errors
+const DynamicPDFViewer = dynamic(() => import("./DynamicPDFViewer"), { 
+  ssr: false,
+  loading: () => (
+    <div className="flex flex-col items-center justify-center h-full text-on-surface-variant mt-20">
+      <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
+      <p>Loading PDF document...</p>
+    </div>
+  )
+});
 
 interface CVPreviewModalProps {
   isOpen: boolean;
@@ -50,11 +62,11 @@ export function CVPreviewModal({ isOpen, onClose, cvUrl, profileName, isPdf }: C
     >
       <div className="space-y-6">
         {cvUrl && (
-          <div className="w-full h-[50vh] md:h-[65vh] rounded-3xl overflow-hidden border border-outline-variant/15 bg-surface-container-low relative shadow-inner">
+          <div className="w-full h-[50vh] md:h-[65vh] rounded-3xl overflow-y-auto overflow-x-hidden border border-outline-variant/15 bg-surface-container-low relative shadow-inner p-4 md:p-8 flex flex-col items-center custom-scrollbar">
             {isPdf || cvUrl.toLowerCase().split('?')[0].endsWith('.pdf') ? (
-              <iframe src={cvUrl} className="w-full h-full object-fill absolute inset-0 border-none" title="CV Preview" />
+              <DynamicPDFViewer cvUrl={cvUrl} />
             ) : (
-              <img src={cvUrl} alt="CV Preview" className="w-full h-full object-contain p-4 shadow-2xl absolute inset-0" />
+              <img src={cvUrl} alt="CV Preview" className="w-full h-auto object-contain shadow-2xl rounded-lg bg-white" />
             )}
           </div>
         )}
