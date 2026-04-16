@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Image as ImageIcon, ExternalLink, Calendar, Award } from "lucide-react";
+import { Image as ImageIcon, ExternalLink, Calendar, Award, FileText } from "lucide-react";
 import { Certificate } from "@/types/certificate";
 import { CrudCard } from "@/components/dashboard/common";
 

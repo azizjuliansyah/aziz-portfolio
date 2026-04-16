@@ -73,8 +73,9 @@ export const certificateSchema = z.object({
   credential_id: z.string().optional(),
   credential_url: z.string().url("Invalid URL format").optional().or(z.literal("")),
   image_url: z.any().refine((file) => file instanceof File || typeof file === "string", {
-    message: "Certificate image is required",
+    message: "Certificate thumbnail image is required",
   }),
+  file_url: z.any().optional(),
   profile_id: z.string().optional(),
 });
 

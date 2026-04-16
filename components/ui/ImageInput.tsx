@@ -2,12 +2,13 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { Upload, Camera, Trash2, User, Image as ImageIcon } from "lucide-react";
+import { Upload, Camera, Trash2, User, Image as ImageIcon, FileText } from "lucide-react";
 
 interface ImageInputProps {
   value: string | File | null;
   onChange: (file: File | null) => void;
   label?: string;
+  accept?: string;
   shape?: "circle" | "square";
   aspectRatio?: string;
   className?: string;
@@ -19,6 +20,7 @@ export function ImageInput({
   value,
   onChange,
   label,
+  accept = "image/*",
   shape = "square",
   aspectRatio = "aspect-square",
   className = "",
@@ -42,8 +44,15 @@ export function ImageInput({
     setIsDragging(false);
     
     const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      onChange(file);
+    if (file) {
+      // Basic check if it matches the accept pattern (very simplified)
+      const isPdfAccepted = accept.includes("application/pdf") || accept.includes(".pdf");
+      const isImage = file.type.startsWith("image/");
+      const isPdf = file.type === "application/pdf";
+
+      if (isImage || (isPdf && isPdfAccepted)) {
+        onChange(file);
+      }
     }
   };
 
@@ -57,6 +66,9 @@ export function ImageInput({
   const previewUrl = value instanceof File 
     ? URL.createObjectURL(value) 
     : (typeof value === "string" ? value : null);
+
+  const isPdf = (value instanceof File && value.type === "application/pdf") || 
+                (typeof value === "string" && value.toLowerCase().endsWith(".pdf"));
 
   const isCircle = shape === "circle";
 
@@ -90,21 +102,30 @@ export function ImageInput({
           ref={inputRef}
           type="file" 
           className="hidden" 
-          accept="image/*"
+          accept={accept}
           onChange={handleFileChange}
         />
 
         {previewUrl ? (
           <>
-            <Image 
-              src={previewUrl} 
-              alt="Preview" 
-              fill 
-              sizes="(max-width: 768px) 100vw, 33vw"
-              priority
-              className="object-cover transition-transform group-hover:scale-105"
-              unoptimized={value instanceof File}
-            />
+            {isPdf ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-container-high text-primary/80 gap-3">
+                <FileText className="w-12 h-12" />
+                <span className="text-xs font-semibold px-4 text-center truncate w-full">
+                  {value instanceof File ? value.name : "Certificate PDF"}
+                </span>
+              </div>
+            ) : (
+              <Image 
+                src={previewUrl} 
+                alt="Preview" 
+                fill 
+                sizes="(max-width: 768px) 100vw, 33vw"
+                priority
+                className="object-cover transition-transform group-hover:scale-105"
+                unoptimized={value instanceof File}
+              />
+            )}
             <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-2">
               <Camera className="w-6 h-6" />
               <span className="text-xs font-medium text-center px-2">Click or Drop to change</span>
@@ -129,11 +150,11 @@ export function ImageInput({
             </div>
             <div className="text-center">
               <p className={`font-bold text-on-surface ${isCircle ? "text-[10px]" : "text-xs"}`}>
-                {isCircle ? "Tap / Drop" : "Click or Drop Image"}
+                {isCircle ? "Tap / Drop" : `Click or Drop ${accept.includes("pdf") ? "File" : "Image"}`}
               </p>
               {!isCircle && (
                 <p className="text-[10px] mt-1 text-on-surface/50">
-                  PNG, JPG or WebP
+                  {accept.includes("pdf") ? "PNG, JPG, WebP or PDF" : "PNG, JPG or WebP"}
                 </p>
               )}
             </div>
@@ -159,7 +180,7 @@ export function ImageInput({
           className="relative z-10 flex items-center gap-1.5 text-xs font-semibold text-error hover:text-error/80 hover:underline transition-all cursor-pointer ml-1 py-1"
         >
           <Trash2 className="w-3.5 h-3.5" />
-          Remove Image
+          Remove File
         </button>
       )}
 

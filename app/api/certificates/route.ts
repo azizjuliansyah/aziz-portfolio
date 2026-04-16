@@ -43,12 +43,18 @@ export async function POST(request: Request) {
     const { title, issuer, date_issued, credential_id, credential_url } = validated;
     const profileId = formData.get("profileId") as string;
     const imageFile = formData.get("image_url") as File | null;
+    const certPdfFile = formData.get("file_url") as File | null;
 
     let imagePath = "";
     if (imageFile && imageFile.size > 0 && typeof imageFile !== "string") {
-      imagePath = await saveFile(imageFile, "projects"); // Using projects bucket as requested
+      imagePath = await saveFile(imageFile, "certificates");
     } else {
-        return NextResponse.json({ error: "Image is required" }, { status: 400 });
+        return NextResponse.json({ error: "Certificate image is required" }, { status: 400 });
+    }
+
+    let pdfPath = null;
+    if (certPdfFile && certPdfFile.size > 0 && typeof certPdfFile !== "string") {
+      pdfPath = await saveFile(certPdfFile, "certificates");
     }
 
     const { data: maxOrderData, error: maxOrderError } = await supabase
@@ -71,6 +77,7 @@ export async function POST(request: Request) {
         credential_id,
         credential_url,
         image_url: imagePath,
+        file_url: pdfPath,
         order: nextOrder,
         profile_id: profileId || null,
       })

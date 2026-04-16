@@ -23,6 +23,7 @@ export const CertificateModal = ({ isOpen, onClose, onSubmit, currentCertificate
     credential_id: string;
     credential_url: string;
     image_url: File | string | null;
+    file_url: File | string | null;
   }>({
     initialValues: {
       title: "",
@@ -31,6 +32,7 @@ export const CertificateModal = ({ isOpen, onClose, onSubmit, currentCertificate
       credential_id: "",
       credential_url: "",
       image_url: null,
+      file_url: null,
     },
     currentItem: currentCertificate,
     isOpen,
@@ -50,6 +52,16 @@ export const CertificateModal = ({ isOpen, onClose, onSubmit, currentCertificate
     } else if (typeof formData.image_url === "string") {
       submitData.append("image_url", formData.image_url);
     }
+
+    if (formData.file_url instanceof File) {
+      submitData.append("file_url", formData.file_url);
+    } else if (typeof formData.file_url === "string" && formData.file_url) {
+      submitData.append("file_url", formData.file_url);
+    } else if (formData.file_url === null && currentCertificate?.id) {
+       // signal to remove file_url if it was cleared
+       submitData.append("file_url", "");
+    }
+
 
     const result = await onSubmit(submitData);
     if (result.success) {
@@ -80,13 +92,24 @@ export const CertificateModal = ({ isOpen, onClose, onSubmit, currentCertificate
       footer={modalFooter}
     >
       <form id="certificate-form" onSubmit={handleSubmit} className="space-y-6">
-        <ImageInput
-          label="Certificate Image"
-          value={formData.image_url}
-          onChange={(file) => handleChange("image_url", file)}
-          aspectRatio="aspect-[2/1]"
-          error={errors.image_url}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ImageInput
+            label="Certificate Thumbnail (Image)"
+            accept="image/*"
+            value={formData.image_url}
+            onChange={(file) => handleChange("image_url", file)}
+            aspectRatio="aspect-[2/1]"
+            error={errors.image_url}
+          />
+          <ImageInput
+            label="Certificate PDF (Optional)"
+            accept="application/pdf"
+            value={formData.file_url}
+            onChange={(file) => handleChange("file_url", file)}
+            aspectRatio="aspect-[2/1]"
+            error={errors.file_url}
+          />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input

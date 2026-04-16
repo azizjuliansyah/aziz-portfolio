@@ -7,6 +7,7 @@ export interface Certificate {
   credential_id?: string;
   credential_url?: string;
   image_url: string | File;
+  file_url?: string | File;
   order: number;
   created_at?: string;
 }

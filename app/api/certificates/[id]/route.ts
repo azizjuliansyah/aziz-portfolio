@@ -32,11 +32,19 @@ export async function PUT(
     // Extract validated data
     const { title, issuer, date_issued, credential_id, credential_url } = validated;
     const imageFile = formData.get("image_url");
+    const certPdfFile = formData.get("file_url");
 
     let imagePath = existing.image_url;
     // Check if imageFile is a new File
     if (imageFile && typeof imageFile !== "string" && imageFile instanceof Blob && imageFile.size > 0) {
-      imagePath = await saveFile(imageFile as File, "projects");
+      imagePath = await saveFile(imageFile as File, "certificates");
+    }
+
+    let pdfPath = existing.file_url;
+    if (certPdfFile && typeof certPdfFile !== "string" && certPdfFile instanceof Blob && certPdfFile.size > 0) {
+      pdfPath = await saveFile(certPdfFile as File, "certificates");
+    } else if (certPdfFile === "") { // if empty string sent, user wants to remove file_url
+      pdfPath = null;
     }
 
     const { data: updated, error: updateError } = await supabase
@@ -48,6 +56,7 @@ export async function PUT(
         credential_id,
         credential_url,
         image_url: imagePath,
+        file_url: pdfPath,
       })
       .eq("id", id)
       .select()

@@ -47,7 +47,7 @@ export function SkillsGrid({ skills }: SkillsGridProps) {
       />
       <ScrollReveal variant="slideUp">
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+          <div className="flex flex-col md:flex-row justify-between items-end">
             <h2 className="font-headline text-5xl font-bold tracking-tight">The Toolkit</h2>
             <p className="font-label text-sm text-outline max-w-xs text-right">A curated selection of technologies utilized to build robust digital foundations.</p>
           </div>

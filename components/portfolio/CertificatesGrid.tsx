@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { ExternalLink, Award, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { ExternalLink, Award, Calendar, ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import { ScrollReveal } from "./ScrollReveal";
 import { Certificate } from "@/types/certificate";
 import { ProjectLightbox } from "./ProjectLightbox";
@@ -197,16 +197,32 @@ export function CertificatesGrid({ certificates }: CertificatesGridProps) {
                 <div className="group flex flex-col h-full bg-surface-container-low rounded-2xl overflow-hidden border border-outline/10 hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5">
                   <div 
                     className="relative aspect-video w-full overflow-hidden bg-surface-container-high cursor-pointer"
-                    onClick={() => cert.image_url && setSelectedImage(cert.image_url as string)}
+                    onClick={() => {
+                      if (cert.file_url) {
+                        window.open(cert.file_url as string, "_blank");
+                      } else if (cert.image_url) {
+                        setSelectedImage(cert.image_url as string);
+                      }
+                    }}
                   >
                     {cert.image_url ? (
-                      <Image
-                        src={cert.image_url as string}
-                        alt={cert.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                        unoptimized
-                      />
+                      <>
+                        <Image
+                          src={cert.image_url as string}
+                          alt={cert.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                          unoptimized
+                        />
+                        {cert.file_url && (
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 z-10">
+                            <span className="bg-primary text-on-primary px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
+                              <ExternalLink className="w-4 h-4" />
+                              View Document
+                            </span>
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
                         <Award className="w-16 h-16" />
