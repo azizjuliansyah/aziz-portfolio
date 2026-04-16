@@ -27,7 +27,7 @@ async function ensureBucket(bucketName: string) {
 /**
  * Saves a file to Supabase Storage and returns the public URL.
  */
-export async function saveFile(file: File, folder: "profiles" | "skills" | "projects" | "social-links" | "certificates"): Promise<string> {
+export async function saveFile(file: File, folder: "profiles" | "skills" | "projects" | "social-links" | "certificates" | "settings"): Promise<string> {
   const bucketName = folder;
   
   // Ensure bucket exists (programmatic creation as requested)

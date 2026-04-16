@@ -26,7 +26,7 @@ export const useSettings = () => {
     }
   };
 
-  const updateSettings = async (data: UpdateSettingsInput) => {
+  const updateSettings = async (data: FormData | UpdateSettingsInput) => {
     setIsSubmitting(true);
     try {
       const updated = await settingsService.updateSettings(data);

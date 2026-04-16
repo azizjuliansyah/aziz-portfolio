@@ -54,12 +54,24 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveSettings = async (e: React.FormEvent, data: { theme: Theme; enableGlobalTheme: boolean }) => {
+  const handleSaveSettings = async (e: React.FormEvent, data: { theme: Theme; enableGlobalTheme: boolean; seoTitle: string; seoDescription: string; seoSiteName: string; seoType: string; seoImage: File | string | null }) => {
     e.preventDefault();
-    await updateSettings({
-      theme: data.theme,
-      enable_global_theme: data.enableGlobalTheme,
-    });
+    
+    const formData = new FormData();
+    formData.append("theme", data.theme);
+    formData.append("enable_global_theme", String(data.enableGlobalTheme));
+    formData.append("seo_title", data.seoTitle || "");
+    formData.append("seo_description", data.seoDescription || "");
+    formData.append("seo_site_name", data.seoSiteName || "");
+    formData.append("seo_type", data.seoType || "");
+    
+    if (data.seoImage instanceof File) {
+      formData.append("seo_image", data.seoImage);
+    } else if (typeof data.seoImage === 'string') {
+      formData.append("seo_image", data.seoImage);
+    }
+
+    await updateSettings(formData);
     setAppTheme(data.theme);
   };
 

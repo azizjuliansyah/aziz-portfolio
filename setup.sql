@@ -140,6 +140,11 @@ CREATE TABLE app_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   theme TEXT DEFAULT 'system',
   enable_global_theme BOOLEAN DEFAULT false,
+  seo_title TEXT,
+  seo_description TEXT,
+  seo_site_name TEXT,
+  seo_type TEXT,
+  seo_image TEXT,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
