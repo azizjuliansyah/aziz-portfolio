@@ -101,7 +101,7 @@ export function PortfolioTopbar({ profile, activeSection: activeSectionProp }: P
   return (
     <header ref={headerRef} className="fixed top-6 right-0 left-0 mx-auto w-[90%] max-w-5xl z-50">
       <nav className="relative w-full rounded-2xl bg-surface/70 backdrop-blur-lg shadow-xl flex justify-between items-center px-6 md:px-8 py-4 border border-outline-variant/10 transform-gpu">
-        <Link href="/login" className="text-2xl font-bold text-on-surface italic font-headline tracking-tighter hover:text-primary transition-colors duration-300">
+        <Link href="/" className="text-2xl font-bold text-on-surface italic font-headline tracking-tighter hover:text-primary transition-colors duration-300">
           {profile?.name}
         </Link>
 
