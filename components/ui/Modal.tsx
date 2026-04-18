@@ -70,7 +70,7 @@ export function Modal({
             )}
           </div>
         )}
-        <div className="p-2 md:p-6 overflow-y-auto w-full no-scrollbar flex-1">
+        <div className="p-2 md:p-6 overflow-y-auto w-full flex-1">
           {children}
         </div>
         {footer && (

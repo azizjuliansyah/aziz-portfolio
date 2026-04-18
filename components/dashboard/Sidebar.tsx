@@ -28,7 +28,7 @@ export function Sidebar({ onLogout, isOpen = false, onClose }: SidebarProps) {
       <aside
         className={`
           fixed h-full z-30 transition-transform duration-300 ease-in-out
-          bg-surface-container border-r border-outline/10
+          bg-surface-container-low border-r border-outline/10
           flex flex-col w-64
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0 md:static md:z-10

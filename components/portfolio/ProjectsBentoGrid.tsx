@@ -101,7 +101,7 @@ export function ProjectsBentoGrid({ projects }: ProjectsBentoGridProps) {
                   .project-meta-${project.id} {
                     opacity: 0.7;
                     transform: translateY(8px);
-                    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.4s ease;
                   }
                   .project-card-${project.id}:hover .project-meta-${project.id} {
                     opacity: 1;
@@ -110,7 +110,7 @@ export function ProjectsBentoGrid({ projects }: ProjectsBentoGridProps) {
                   .project-title-${project.id} {
                     opacity: 0.85;
                     transform: translateY(8px);
-                    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.4s ease;
                   }
                   .project-card-${project.id}:hover .project-title-${project.id} {
                     opacity: 1;
@@ -119,7 +119,7 @@ export function ProjectsBentoGrid({ projects }: ProjectsBentoGridProps) {
                   .project-desc-${project.id} {
                     opacity: 0.7;
                     transform: translateY(8px);
-                    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.4s ease;
                   }
                   .project-card-${project.id}:hover .project-desc-${project.id} {
                     opacity: 1;
@@ -128,7 +128,7 @@ export function ProjectsBentoGrid({ projects }: ProjectsBentoGridProps) {
                   .project-link-${project.id} {
                     opacity: 0.6;
                     transform: translateX(-4px);
-                    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.4s ease;
                   }
                   .project-card-${project.id}:hover .project-link-${project.id} {
                     opacity: 1;
@@ -139,6 +139,21 @@ export function ProjectsBentoGrid({ projects }: ProjectsBentoGridProps) {
                   }
                   .project-card-${project.id}:hover .project-arrow-${project.id} {
                     transform: translateX(4px);
+                  }
+
+                  /* Theme-dependent shadows on hover */
+                  .light .project-card-${project.id}:hover .project-title-${project.id},
+                  .light .project-card-${project.id}:hover .project-meta-${project.id},
+                  .light .project-card-${project.id}:hover .project-desc-${project.id},
+                  .light .project-card-${project.id}:hover .project-link-${project.id} {
+                    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 255, 255, 0.9);
+                  }
+
+                  .dark .project-card-${project.id}:hover .project-title-${project.id},
+                  .dark .project-card-${project.id}:hover .project-meta-${project.id},
+                  .dark .project-card-${project.id}:hover .project-desc-${project.id},
+                  .dark .project-card-${project.id}:hover .project-link-${project.id} {
+                    text-shadow: 0 0 10px var(--color-primary), 0 0 5px rgba(0, 0, 0, 0.8);
                   }
                 `}</style>
                 <div className="absolute inset-0 bg-surface-container-lowest">

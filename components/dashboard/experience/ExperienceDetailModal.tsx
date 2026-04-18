@@ -56,7 +56,7 @@ export const ExperienceDetailModal = ({ isOpen, onClose, experience }: Experienc
           <h3 className="text-sm font-bold tracking-wider uppercase text-on-surface/50 mb-4 px-1">
             Responsibilities & Achievements
           </h3>
-          <div className="bg-surface-container-lowest border border-outline/10 rounded-xl p-6 shadow-sm">
+          <div className="bg-surface-container-low border border-outline/10 rounded-xl p-6 shadow-sm">
             {experience.responsibilities && experience.responsibilities.length > 0 ? (
               <ul className="space-y-4">
                 {experience.responsibilities.map((res: any) => (

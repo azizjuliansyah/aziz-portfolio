@@ -98,7 +98,7 @@ export function SettingsForm({
           />
 
           {/* Tab Content */}
-          <div className="p-6 flex-1 bg-surface-container">
+          <div className="p-6 flex-1 bg-surface-container-low">
             {/* Account Details Tab */}
             {activeTab === "account" && (
               <form onSubmit={handleSaveAccount} className="h-full flex flex-col animate-in fade-in duration-300">

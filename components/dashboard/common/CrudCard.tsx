@@ -68,7 +68,7 @@ export function CrudCard<T extends { id: string }>({
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       <div
-        className="bg-white dark:bg-surface-container-high rounded-2xl group relative overflow-hidden transition-all duration-300 flex flex-col h-full border border-outline/10 hover:border-primary/50 shadow-sm hover:shadow-md"
+        className="bg-surface-container-low rounded-2xl group relative overflow-hidden transition-all duration-300 flex flex-col h-full border border-outline/10 hover:border-primary/50 shadow-sm hover:shadow-md"
       >
         {/* Header Section */}
         <div className="px-3 py-2 bg-surface-container-low border-b border-outline/10 flex items-center justify-between">

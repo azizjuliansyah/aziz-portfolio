@@ -21,7 +21,7 @@ export function Card({
 }: CardProps) {
   return (
     <div
-      className={`bg-surface-container rounded-2xl shadow-sm border border-outline/10 overflow-hidden ${className}`}
+      className={`bg-surface-container-low rounded-2xl shadow-sm border border-outline/10 overflow-hidden ${className}`}
       {...props}
     >
       {(title || Icon) && (

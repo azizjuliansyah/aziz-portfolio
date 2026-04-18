@@ -88,6 +88,10 @@
 
 /* Explicit Dark Mode Force */
 .dark {
+  /* Main background/foreground */
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
   --background-raw: #0a0a0a;
   --foreground-raw: #ededed;
 
@@ -127,7 +131,7 @@
   --on-error-container-raw: #ffdad6;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background-raw);
   --color-foreground: var(--foreground-raw);
   --font-sans: "Newsreader", serif;
@@ -239,7 +243,7 @@ button, a, input, textarea {
 }
 
 body {
-  background-color: var(--background);
+  background-color: var(--background-raw);
   color: var(--foreground);
   font-family: var(--font-body);
 }
@@ -311,12 +315,45 @@ body {
 .animate-spin-slow {
   animation: spin-slow 20s linear infinite;
 }
+/* Custom minimalist scrollbar */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--outline-variant-raw);
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--outline-raw);
+    background-clip: content-box;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--outline-variant-raw) transparent;
+  }
+}
+
 /* Utility to hide scrollbars while keeping functionality */
 @layer utilities {
-  .scrollbar-hide::-webkit-scrollbar {
+  .scrollbar-hide::-webkit-scrollbar,
+  .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  .scrollbar-hide {
+  .scrollbar-hide,
+  .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }

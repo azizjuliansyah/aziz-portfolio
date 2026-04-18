@@ -289,6 +289,7 @@ export default function ProfileDetailPage({ params }: { params: Promise<{ id: st
     title,
     location,
     avatar,
+    is_active: profile?.is_active,
   };
 
   if (isProfileLoading || (activeTab === "skills" && isSkillsLoading) || (activeTab === "projects" && isProjectsLoading) || (activeTab === "social-links" && isSocialLinksLoading) || (activeTab === "experience" && isExperiencesLoading) || (activeTab === "certificates" && isCertificatesLoading)) {

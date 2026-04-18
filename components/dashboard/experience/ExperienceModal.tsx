@@ -163,7 +163,7 @@ export const ExperienceModal = ({ isOpen, onClose, onSubmit, currentExperience, 
                   <button
                     type="button"
                     onClick={() => handleRemoveResponsibility(index)}
-                    className="p-2.5 mt-0.5 text-on-surface/40 hover:text-red-500 bg-surface-container rounded-lg transition-colors border border-outline/10 hover:border-red-200 shadow-sm cursor-pointer"
+                    className="p-2.5 mt-0.5 text-on-surface/40 hover:text-red-500 bg-surface-container-high rounded-lg transition-colors border border-outline/10 hover:border-red-200 shadow-sm cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>

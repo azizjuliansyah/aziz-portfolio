@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { User, MapPin, Globe, Briefcase, Code2, LayoutGrid, Award, Share2 } from "lucide-react";
+import { User, MapPin, Globe, Briefcase, Code2, LayoutGrid, Award, Share2, Eye } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Plus } from "lucide-react";
@@ -16,6 +16,7 @@ interface ProfileEditorLayoutProps {
     title?: string | null;
     location?: string | null;
     avatar?: string | File | null;
+    is_active?: boolean;
   } | null;
   activeTab: ProfileTab;
   onTabChange: (tab: ProfileTab) => void;
@@ -121,10 +122,19 @@ export function ProfileEditorLayout({
                 )}
               </div>
 
-              <div className="w-full pt-4 mt-2 border-t border-outline/10">
+              <div className="w-full pt-4 mt-2 border-t border-outline/10 flex flex-col gap-3">
                 <span className="inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-wider text-on-tertiary-container bg-tertiary-container px-3 py-1.5 rounded-full font-bold w-max mx-auto">
                   <Globe className="w-3.5 h-3.5" /> Public Portfolio
                 </span>
+
+                <Button 
+                  variant="outline" 
+                  leftIcon={Eye}
+                  onClick={() => window.open("/", "_blank")}
+                  className="text-xs font-semibold py-2 w-full"
+                >
+                  Portfolio Preview
+                </Button>
               </div>
             </div>
           </Card>
@@ -155,7 +165,7 @@ export function ProfileEditorLayout({
             </div>
 
             {/* Tab Content */}
-            <div className="p-6 flex-1 bg-surface-container min-h-[500px]">
+            <div className="p-6 flex-1 bg-surface-container-low min-h-[500px]">
               {children}
             </div>
           </Card>
