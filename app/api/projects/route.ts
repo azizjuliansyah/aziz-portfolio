@@ -12,7 +12,8 @@ export async function GET(request: Request) {
     let query = supabase
       .from("projects")
       .select("*, project_images(*)")
-      .order("order", { ascending: true });
+      .order("order", { ascending: true })
+      .order("order", { foreignTable: "project_images", ascending: true });
 
     if (profileId) {
       query = query.eq("profile_id", profileId);
@@ -90,13 +91,22 @@ export async function POST(request: Request) {
     // Handle gallery images
     let images = [];
     if (galleryFiles.length > 0) {
+      galleryFiles.forEach((file, index) => {
+        if (file && file.size > 0 && typeof file !== "string") {
+          // Note: In POST (new project), we can just use the index as order
+          // But since saveFile is async, we collect paths first
+        }
+      });
+      
       const galleryData = [];
-      for (const file of galleryFiles) {
+      for (let i = 0; i < galleryFiles.length; i++) {
+        const file = galleryFiles[i];
         if (file && file.size > 0 && typeof file !== "string") {
           const path = await saveFile(file, "projects");
           galleryData.push({
             name: path,
             project_id: project.id,
+            order: i,
           });
         }
       }

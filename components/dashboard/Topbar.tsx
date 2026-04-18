@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 
 interface TopbarProps {
@@ -28,10 +28,6 @@ export function Topbar({ title, user, onMenuClick }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="p-2 text-on-surface/60 hover:bg-surface-container-high rounded-full transition-colors relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
-        </button>
         <Link href="/dashboard/settings" className="flex items-center gap-3 pl-4 border-l border-outline/10 hover:opacity-80 transition-opacity">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-medium text-on-surface">{user?.name || "User"}</p>

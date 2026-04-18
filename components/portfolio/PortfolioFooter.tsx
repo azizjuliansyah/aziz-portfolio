@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 interface PortfolioFooterProps {
   profile: {
     name?: string | null;
@@ -43,6 +45,12 @@ export function PortfolioFooter({ profile }: PortfolioFooterProps) {
             {social.name}
           </a>
         ))}
+        <Link
+          href="/login"
+          className="font-label text-xs uppercase tracking-widest text-outline hover:text-on-surface transition-all flex items-center gap-1.5 opacity-40 hover:opacity-100"
+        >
+          Admin
+        </Link>
       </div>
     </footer>
   );

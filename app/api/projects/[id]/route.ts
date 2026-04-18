@@ -24,6 +24,8 @@ export async function PUT(
     const galleryFiles = formData.getAll("images") as File[];
     const removedImages = formData.getAll("removedImages") as string[];
 
+    const imageOrder = formData.get("imageOrder") ? JSON.parse(formData.get("imageOrder") as string) : [];
+
     const { data: currentProjectData, error: fetchError } = await supabase
       .from("projects")
       .select("*, project_images(*)")
@@ -59,23 +61,49 @@ export async function PUT(
       }
     }
 
-    // Handle new gallery images
+    // Handle new gallery images and reordering
+    // 1. Upload new images
+    const newImagePaths: string[] = [];
     if (galleryFiles.length > 0) {
-      const galleryData = [];
       for (const file of galleryFiles) {
         if (file && file.size > 0 && typeof file !== "string") {
           const path = await saveFile(file, "projects");
-          galleryData.push({
-            name: path,
-            project_id: id,
-          });
+          newImagePaths.push(path);
         }
       }
+    }
 
-      if (galleryData.length > 0) {
-        await supabase
-          .from("project_images")
-          .insert(galleryData);
+    // 2. Map identifiers in imageOrder to final paths
+    let newImageIdx = 0;
+    const finalImagePaths = imageOrder.map((identifier: string) => {
+      if (identifier.startsWith("new-")) {
+        return newImagePaths[newImageIdx++];
+      }
+      return identifier;
+    }).filter(Boolean);
+
+    // 3. Update existing images and insert new ones with correct order
+    if (finalImagePaths.length > 0) {
+      for (let i = 0; i < finalImagePaths.length; i++) {
+        const path = finalImagePaths[i];
+        
+        // Check if it's a new image (was just uploaded)
+        if (newImagePaths.includes(path)) {
+          await supabase
+            .from("project_images")
+            .insert({
+              name: path,
+              project_id: id,
+              order: i
+            });
+        } else {
+          // Existing image - update order
+          await supabase
+            .from("project_images")
+            .update({ order: i })
+            .eq("name", path)
+            .eq("project_id", id);
+        }
       }
     }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Plus, X } from "lucide-react";
+import { Plus, X, GripVertical } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +9,23 @@ import { ImageInput } from "@/components/ui/ImageInput";
 import { Project } from "@/types/project";
 import { useModalForm } from "@/hooks/useModalForm";
 import { CrudResult } from "@/hooks/useCRUD";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -18,9 +35,67 @@ interface ProjectModalProps {
   isLoading: boolean;
 }
 
+interface SortableGalleryImageProps {
+  preview: { id?: string; file?: File; url: string };
+  index: number;
+  onRemove: (index: number) => void;
+}
+
+const SortableGalleryImage = ({ preview, index, onRemove }: SortableGalleryImageProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: preview.url });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : 0,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative w-16 h-16 md:w-18 md:h-18 rounded-lg overflow-hidden border border-gray-200 group ring-2 ring-transparent hover:ring-blue-500 transition-all bg-surface-container-low"
+    >
+      <Image src={preview.url} alt="Gallery" fill className="object-cover" unoptimized />
+      
+      {/* Drag Handle Overlay */}
+      <div 
+        {...attributes} 
+        {...listeners}
+        className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-grab active:cursor-grabbing transition-opacity"
+      >
+        <GripVertical className="w-6 h-6 text-white" />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => onRemove(index)}
+        className="absolute top-1 right-1 bg-black/50 hover:bg-error rounded-full p-1 text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all z-10"
+      >
+        <X className="w-3 h-3" />
+      </button>
+    </div>
+  );
+};
+
 export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoading }: ProjectModalProps) => {
   const [galleryPreviews, setGalleryPreviews] = useState<{ id?: string, file?: File, url: string }[]>([]);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const { formData, handleChange, reset, errors, setErrors } = useModalForm<{
     title: string;
@@ -71,6 +146,18 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
     }
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setGalleryPreviews((items) => {
+        const oldIndex = items.findIndex((item) => item.url === active.id);
+        const newIndex = items.findIndex((item) => item.url === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
   const removeGalleryImage = (index: number) => {
     const imageToRemove = galleryPreviews[index];
     if (imageToRemove.id) {
@@ -99,6 +186,18 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
       submitData.append("thumbnail", formData.thumbnail);
     }
 
+    // Send ordered identifiers
+    // Existing images use their URL/path, new images use a placeholder "new-X"
+    let newFileCount = 0;
+    const imageOrder = galleryPreviews.map(p => {
+      if (p.file) {
+        return `new-${newFileCount++}`;
+      }
+      return p.url;
+    });
+    submitData.append("imageOrder", JSON.stringify(imageOrder));
+
+    // Append new files in the order they appear (to match imageOrder placeholders)
     galleryPreviews.forEach(preview => {
       if (preview.file) {
         submitData.append("images", preview.file);
@@ -191,19 +290,28 @@ export const ProjectModal = ({ isOpen, onClose, onSubmit, currentProject, isLoad
                 Add Gallery Images
               </label>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {galleryPreviews.map((preview, idx) => (
-                <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200 group ring-2 ring-transparent hover:ring-blue-500 transition-all">
-                  <Image src={preview.url} alt="Gallery" fill className="object-cover" unoptimized />
-                  <button 
-                    type="button"
-                    onClick={() => removeGalleryImage(idx)}
-                    className="absolute inset-0 bg-black/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center text-white transition-opacity"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+            <div className="mt-2">
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={galleryPreviews.map((p) => p.url)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                    {galleryPreviews.map((preview, idx) => (
+                      <SortableGalleryImage
+                        key={preview.url}
+                        preview={preview}
+                        index={idx}
+                        onRemove={removeGalleryImage}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
             </div>
           </div>
         </div>
