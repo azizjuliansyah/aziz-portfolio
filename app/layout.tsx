@@ -10,6 +10,7 @@ import { SessionManager } from "@/components/auth/SessionManager";
 import { ErrorBoundary } from "@/components/error";
 import { getErrorMessage } from "@/types/error";
 import { Settings } from "@/types/settings";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -105,6 +106,7 @@ export default async function RootLayout({
               <SessionManager>
                 {children}
                 <ToastContainer />
+                <SpeedInsights />
               </SessionManager>
             </ReduxProvider>
           </ThemeProvider>
