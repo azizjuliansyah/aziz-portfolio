@@ -56,11 +56,11 @@ export function ProjectHero({ project }: ProjectHeroProps) {
 
       {/* Project Info & Title */}
       <div>
-        <div className="flex items-center gap-4 mb-6">
-          <span className="font-label text-xs uppercase tracking-[0.2em] text-outline px-3 py-1 bg-surface-container rounded-full">
+        <div className="flex items-start gap-4 mb-6">
+          <span className="font-label text-[10px] md:text-xs uppercase tracking-[0.2em] text-outline px-3.5 py-2 bg-surface-container-high/50 rounded-xl inline-block max-w-[280px] sm:max-w-md leading-relaxed">
             {project.info || "Engineering & Design"}
           </span>
-          <span className="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold">
+          <span className="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold mt-2 shrink-0">
             {new Date(project.created_at).getFullYear()}
           </span>
         </div>

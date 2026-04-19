@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useActiveSection } from "@/hooks/useActiveSection";
 
 interface PortfolioTopbarProps {
@@ -13,18 +14,20 @@ interface PortfolioTopbarProps {
 }
 
 export function PortfolioTopbar({ profile, activeSection: activeSectionProp }: PortfolioTopbarProps) {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
   const detectedSection = useActiveSection(["home", "bio", "experience", "skills", "certificates", "projects"]);
   const activeSection = activeSectionProp || detectedSection;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
 
   const navLinks = [
-    { href: "#home", label: "Home", section: "home" },
-    { href: "#bio", label: "Bio", section: "bio" },
-    { href: "#experience", label: "Experience", section: "experience" },
-    { href: "#skills", label: "Skills", section: "skills" },
-    { href: "#certificates", label: "Certificates", section: "certificates" },
-    { href: "#projects", label: "Projects", section: "projects" },
+    { href: "/#home", label: "Home", section: "home" },
+    { href: "/#bio", label: "Bio", section: "bio" },
+    { href: "/#experience", label: "Experience", section: "experience" },
+    { href: "/#skills", label: "Skills", section: "skills" },
+    { href: "/#certificates", label: "Certificates", section: "certificates" },
+    { href: "/#projects", label: "Projects", section: "projects" },
   ];
 
   useEffect(() => {
@@ -44,16 +47,29 @@ export function PortfolioTopbar({ profile, activeSection: activeSectionProp }: P
   }, [isMobileMenuOpen]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
     setIsMobileMenuOpen(false); // Close menu on click
-    const elementId = href.replace('#', '');
-    const element = document.getElementById(elementId);
-    if (element) {
-      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 80;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+
+    // Smooth scroll logic for anchors on the same page
+    if (isHomePage && (href.startsWith("/#") || href.startsWith("#"))) {
+      const id = href.includes("#") ? href.split("#")[1] : null;
+      if (id) {
+        const element = document.getElementById(id);
+        if (element) {
+          e.preventDefault();
+          
+          const offset = 100; // Match scroll-margin-top
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+
+          // Update URL hash without jumping
+          window.history.pushState(null, "", href);
+        }
+      }
     }
   };
 
@@ -64,20 +80,22 @@ export function PortfolioTopbar({ profile, activeSection: activeSectionProp }: P
 
     if (isMobile) {
       return (
-        <a
+        <Link
           href={href}
+          scroll={false}
           onClick={(e) => handleNavClick(e, href)}
           className={`${baseClass} text-lg ${isActive ? "text-primary font-bold" : "text-on-surface/80 font-medium hover:text-primary"
             }`}
         >
           {label}
-        </a>
+        </Link>
       );
     }
 
     return (
-      <a
+      <Link
         href={href}
+        scroll={false}
         onClick={(e) => handleNavClick(e, href)}
         className={`${baseClass} text-sm ${isActive
             ? "text-primary font-bold underline decoration-2 underline-offset-8"
@@ -85,7 +103,7 @@ export function PortfolioTopbar({ profile, activeSection: activeSectionProp }: P
           }`}
       >
         {label}
-      </a>
+      </Link>
     );
   };
 

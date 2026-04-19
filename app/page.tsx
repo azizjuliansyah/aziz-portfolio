@@ -30,7 +30,10 @@ export default function Home() {
         setTimeout(() => {
           const element = document.getElementById(scrollToSection);
           if (element) {
-            const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 80;
+            const offset = 100;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - offset;
+
             window.scrollTo({
               top: offsetPosition,
               behavior: 'smooth'
@@ -64,7 +67,7 @@ export default function Home() {
   const cvUrl = profile.cv ? (typeof profile.cv === "string" ? profile.cv : URL.createObjectURL(profile.cv)) : null;
 
   return (
-    <div className="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container font-body relative overflow-hidden">
+    <div className="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container font-body relative overflow-x-hidden">
       <BackgroundDecorations />
       <PortfolioTopbar profile={profile} />
 

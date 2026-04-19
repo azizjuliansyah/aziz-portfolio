@@ -67,9 +67,11 @@ export const CertificateCard = ({ certificate, index, onEdit, onDelete }: Certif
                   <span className="truncate">{item.date_issued}</span>
                 </div>
                 {item.credential_id && (
-                  <div className="flex flex-wrap items-center gap-1.5 w-full">
-                    <span className="font-semiboldshrink-0">ID:</span>
-                    <span className="font-mono text-[10px] break-all p-1 bg-surface-container-high rounded-md w-full">{item.credential_id}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold shrink-0">ID:</span>
+                    <span className="font-mono text-[10px] break-all px-1.5 py-0.5 bg-surface-container-high rounded-md">
+                      {item.credential_id}
+                    </span>
                   </div>
                 )}
               </div>

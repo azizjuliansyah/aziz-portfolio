@@ -165,14 +165,14 @@ export function ProjectsBentoGrid({ projects }: ProjectsBentoGridProps) {
                   />
                 </div>
                 <div className="absolute inset-0 p-12 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/10 to-transparent">
-                  <p className={`font-label text-xs font-bold uppercase tracking-widest text-primary mb-2 project-meta-${project.id}`}>
+                  <p className={`hidden md:block font-label text-xs font-bold uppercase tracking-widest text-primary mb-2 project-meta-${project.id}`}>
                     {project.info || "Visual Case Study"}
                   </p>
                   <h3 className={`font-headline text-4xl font-bold mb-4 project-title-${project.id}`}>{project.title}</h3>
-                  <p className={`font-body text-lg text-on-surface-variant max-w-md mb-6 line-clamp-2 project-desc-${project.id}`}>
+                  {/* <p className={`hidden md:block font-body text-lg text-on-surface-variant max-w-md mb-6 line-clamp-2 project-desc-${project.id}`}>
                     {project.overview}
-                  </p>
-                  <a className={`text-on-surface font-label font-bold flex items-center gap-2 inline-flex project-link-${project.id}`} href={`/projects/${project.id}`}>
+                  </p> */}
+                  <a className={`ml-1.5 text-on-surface font-label font-bold flex items-center gap-2 inline-flex project-link-${project.id}`} href={`/projects/${project.id}`}>
                     Case Study
                     <ArrowRight className={`w-5 h-5 text-primary project-arrow-${project.id}`} />
                   </a>

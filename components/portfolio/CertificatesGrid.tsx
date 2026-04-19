@@ -264,9 +264,11 @@ export function CertificatesGrid({ certificates }: CertificatesGridProps) {
                       </div>
                       
                       {cert.credential_id && (
-                        <div className="flex items-center text-xs text-on-surface-variant/80">
-                          <span className="font-semibold mr-1">ID:</span>
-                          <span className="font-mono break-all line-clamp-1">{cert.credential_id}</span>
+                        <div className="flex items-center gap-1.5 text-xs text-on-surface-variant/80">
+                          <span className="font-semibold shrink-0">ID:</span>
+                          <span className="font-mono break-all px-1.5 py-0.5 bg-on-surface/5 rounded-md">
+                            {cert.credential_id}
+                          </span>
                         </div>
                       )}
                     </div>

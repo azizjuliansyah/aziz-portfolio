@@ -4,6 +4,16 @@
 
 @import "tailwindcss";
 
+@layer base {
+  html, body {
+    scroll-behavior: smooth !important;
+  }
+  
+  section, header[id], [id] {
+    scroll-margin-top: 100px;
+  }
+}
+
 :root {
   /* Default Light Mode Variables */
   --background-raw: #ffffff;
