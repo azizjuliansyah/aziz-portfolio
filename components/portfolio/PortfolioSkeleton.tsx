@@ -39,9 +39,7 @@ export function PortfolioSkeleton() {
               <div className="absolute inset-0 rounded-2xl bg-tertiary/20 border border-tertiary/30" style={{ transform: 'rotate(6deg) translateX(12px) translateY(6px)' }} />
               <div className="absolute inset-0 rounded-2xl bg-primary/10 border border-primary/20" style={{ transform: 'rotate(3deg) translateX(12px) translateY(6px)' }} />
               {/* Main Card */}
-              <div className="absolute inset-0 rounded-2xl overflow-hidden bg-surface-container">
-                <Skeleton circle width={200} height={200} className="w-full h-full" />
-              </div>
+              <div className="absolute inset-0 rounded-2xl overflow-hidden bg-surface-container" />
             </div>
           </div>
         </div>
@@ -166,7 +164,7 @@ export function PortfolioSkeleton() {
 
           {/* Skills - Flex Layout */}
           <div className="flex flex-wrap justify-center gap-y-16 gap-x-8 md:gap-x-12 lg:gap-x-16 pt-12">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
               <div key={i} className="flex flex-col items-center justify-end w-[80px] md:w-[100px]">
                 <div className="w-14 h-14 md:w-[72px] md:h-[72px] flex items-center justify-center bg-surface-container rounded-lg mb-4" />
                 <Skeleton width={80} height={16} />
@@ -261,10 +259,14 @@ export function PortfolioSkeleton() {
       </section>
 
       {/* Footer Skeleton */}
-      <footer className="py-12 px-6 md:px-12 border-t border-outline/10">
-        <div className="max-w-7xl mx-auto text-center space-y-4">
-          <Skeleton width={200} height={20} />
-          <Skeleton width={300} height={16} />
+      <footer className="py-6 px-8 border-t border-outline/10">
+        <div className="max-w-7xl mx-auto text-center space-y-4 flex flex-col md:flex-row justify-between items-center">
+          <Skeleton width={400} height={24} />
+          <div className="flex flex-wrap gap-4 md:gap-6 justify-center">
+            <Skeleton width={50} height={14} />
+            <Skeleton width={50} height={14} />
+            <Skeleton width={50} height={14} />
+          </div>
         </div>
       </footer>
     </div>
