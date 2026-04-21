@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/types";
 import { profileService } from "@/services/profileService";
 import { useToast } from "@/hooks/useToast";
-import { getErrorMessage, ValidationError } from "@/types/error";
-import { CrudResult } from "@/hooks/useCRUD";
+import { getErrorMessage, ValidationError } from "@/types";
+import { useCRUD, CrudResult } from "@/hooks/useCRUD";
 
+/**
+ * Hook for single profile management
+ */
 export const useProfile = (id?: string) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,7 +25,7 @@ export const useProfile = (id?: string) => {
   const fetchProfile = async (profileId: string) => {
     setIsLoading(true);
     try {
-      const data = await profileService.fetchProfile(profileId);
+      const data = await profileService.getById(profileId);
       setProfile(data);
     } catch (error) {
       toast.error(getErrorMessage(error) || "Failed to fetch profile");
@@ -35,7 +38,7 @@ export const useProfile = (id?: string) => {
     if (!id) return { success: false };
     setIsSubmitting(true);
     try {
-      const updated = await profileService.updateProfile(id, formData);
+      const updated = await profileService.update(id, formData);
       setProfile(updated);
       toast.success("Profile updated successfully");
       return { success: true };
@@ -65,99 +68,34 @@ export const useProfile = (id?: string) => {
   };
 };
 
+/**
+ * Hook for profile collection management
+ */
 export const useProfiles = () => {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const crud = useCRUD(profileService, {
+    entityName: "Profile",
+  });
   const toast = useToast();
 
-  useEffect(() => {
-    fetchProfiles();
-  }, []);
-
-  const fetchProfiles = async () => {
-    setIsLoading(true);
-    try {
-      const data = await profileService.fetchProfiles();
-      setProfiles(data);
-    } catch (error) {
-      toast.error(getErrorMessage(error) || "Failed to fetch profiles");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const createProfile = async (name: string) => {
-    setIsSubmitting(true);
-    try {
-      const newProfile = await profileService.createProfile(name);
-      toast.success("Profile created successfully");
-      setProfiles(prev => [newProfile, ...prev]);
-      return { success: true, data: newProfile };
-    } catch (error) {
-      if (error instanceof ValidationError && error.details) {
-        const formErrors: Record<string, string> = {};
-        error.details.forEach(err => {
-          if (err.path.length > 0) {
-            formErrors[err.path[0]] = err.message;
-          }
-        });
-        return { success: false, errors: formErrors };
-      }
-      toast.error(getErrorMessage(error) || "Failed to create profile");
-      return { success: false };
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const deleteProfile = async (id: string) => {
-    setIsDeleting(true);
-    try {
-      await profileService.deleteProfile(id);
-      toast.success("Profile deleted successfully");
-      setProfiles(prev => prev.filter(p => p.id !== id));
-      return true;
-    } catch (error) {
-      toast.error(getErrorMessage(error) || "Failed to delete profile");
-      return false;
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   const toggleActive = async (id: string) => {
-    setIsSubmitting(true);
-    try {
-      await profileService.toggleActiveProfile(id, true);
-      
-      const activatedProfile = profiles.find(p => p.id === id);
+    const result = await crud.patchItem(id, { is_active: true });
+    if (result.success) {
+      const activatedProfile = crud.items.find(p => p.id === id);
       const profileName = activatedProfile?.name || "Profile";
-      
       toast.success(`Profile "${profileName}" set as active`);
       
-      setProfiles(prev => prev.map(p => ({
-        ...p,
-        is_active: p.id === id
-      })));
-      return true;
-    } catch (error) {
-      toast.error(getErrorMessage(error) || "Failed to set active profile");
-      return false;
-    } finally {
-      setIsSubmitting(false);
+      // Refresh items to reflect changes across all profiles (other profiles become inactive)
+      crud.refreshItems();
     }
+    return result.success;
   };
 
   return {
-    profiles,
-    isLoading,
-    isSubmitting,
-    isDeleting,
-    createProfile,
-    deleteProfile,
+    ...crud,
+    profiles: crud.items,
+    createProfile: async (name: string) => crud.createItem({ name }),
+    deleteProfile: crud.deleteItem,
     toggleActive,
-    refreshProfiles: fetchProfiles,
+    refreshProfiles: crud.refreshItems,
   };
 };

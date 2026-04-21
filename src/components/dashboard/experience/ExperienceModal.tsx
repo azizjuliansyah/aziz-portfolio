@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { WorkExperience } from "@/types/experience";
+import { WorkExperience } from "@/types";
 import { Plus, X, Briefcase, Calendar, Building2 } from "lucide-react";
 import { useModalForm } from "@/hooks/useModalForm";
 import { CrudResult } from "@/hooks/useCRUD";

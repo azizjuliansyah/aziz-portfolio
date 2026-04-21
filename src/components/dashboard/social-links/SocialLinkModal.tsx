@@ -4,7 +4,7 @@ import { Plus, Image as ImageIcon } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { SocialLink } from "@/types/socialLink";
+import { SocialLink } from "@/types";
 import { useModalForm } from "@/hooks/useModalForm";
 import { CrudResult } from "@/hooks/useCRUD";
 

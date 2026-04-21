@@ -14,11 +14,14 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { DragEndEvent } from "@dnd-kit/core";
-import { Skill } from "@/types/skill";
-import { Project, ProjectImage } from "@/types/project";
-import { SocialLink } from "@/types/socialLink";
-import { WorkExperience as Experience } from "@/types/experience";
-import { Certificate } from "@/types/certificate";
+import { 
+  Skill, 
+  Project, 
+  ProjectImage, 
+  SocialLink, 
+  WorkExperience as Experience, 
+  Certificate 
+} from "@/types";
 
 // Component Imports
 import { SkillCard } from "@/components/dashboard/skills/SkillCard";

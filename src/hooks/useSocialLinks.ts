@@ -1,4 +1,4 @@
-import { SocialLink } from "@/types/socialLink";
+import { SocialLink } from "@/types";
 import { socialLinkService } from "@/services/socialLinkService";
 import { useCRUD } from "@/hooks/useCRUD";
 

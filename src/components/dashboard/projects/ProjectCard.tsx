@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Image as ImageIcon, ExternalLink } from "lucide-react";
-import { Project } from "@/types/project";
+import { Project } from "@/types";
 import { CrudCard } from "@/components/dashboard/common";
 
 interface ProjectCardProps {

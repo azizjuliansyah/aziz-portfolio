@@ -1,4 +1,4 @@
-import { Project } from "@/types/project";
+import { Project } from "@/types";
 import { projectService } from "@/services/projectService";
 import { useCRUD } from "@/hooks/useCRUD";
 

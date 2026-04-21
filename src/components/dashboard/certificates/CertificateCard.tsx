@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Image as ImageIcon, ExternalLink, Calendar, Award, FileText } from "lucide-react";
-import { Certificate } from "@/types/certificate";
+import { Certificate } from "@/types";
 import { CrudCard } from "@/components/dashboard/common";
 
 interface CertificateCardProps {

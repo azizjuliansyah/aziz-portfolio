@@ -8,8 +8,7 @@ import { supabaseAdmin as supabase } from "@/config/db";
 import { ToastContainer } from "@/components/ui/Toast";
 import { SessionManager } from "@/components/auth/SessionManager";
 import { ErrorBoundary } from "@/components/error";
-import { getErrorMessage } from "@/types/error";
-import { Settings } from "@/types/settings";
+import { getErrorMessage, Settings } from "@/types";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const dynamic = "force-dynamic";

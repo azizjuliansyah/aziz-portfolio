@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { ProfilePreviewCard } from "../common/ProfilePreviewCard";
 import { TabNavigation } from "../common/TabNavigation";
-import { Theme } from "@/types/settings";
+import { Theme } from "@/types";
 
 interface SettingsFormProps {
   user: {

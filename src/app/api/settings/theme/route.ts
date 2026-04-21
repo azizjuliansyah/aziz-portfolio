@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { ApiResponse, UpdateResponse, ApiErrorResponse } from "@/types/api";
+import { ApiResponse, UpdateResponse, ApiErrorResponse } from "@/types";
 import { handleApiError } from "@/utils/apiErrorHandler";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "super-secret-key-change-me");

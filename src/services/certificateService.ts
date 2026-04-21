@@ -1,8 +1,9 @@
-import { Certificate } from "@/types/certificate";
+import { API_ENDPOINTS } from "@/constants/api";
+import type { Certificate } from "@/types";
 import { BaseService } from "./baseService";
 
 class CertificateService extends BaseService<Certificate> {
-  protected endpoint = "/api/certificates";
+  protected endpoint = API_ENDPOINTS.CERTIFICATES;
   protected entityName = "certificate";
   protected contentType = "multipart/form-data" as const;
 }

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { ImageInput } from "@/components/ui/ImageInput";
-import { Project } from "@/types/project";
+import { Project } from "@/types";
 import { useModalForm } from "@/hooks/useModalForm";
 import { CrudResult } from "@/hooks/useCRUD";
 import {

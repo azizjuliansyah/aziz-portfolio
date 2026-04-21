@@ -1,4 +1,4 @@
-import { WorkExperience } from "@/types/experience";
+import { WorkExperience } from "@/types";
 import { experienceService } from "@/services/experienceService";
 import { useCRUD } from "@/hooks/useCRUD";
 

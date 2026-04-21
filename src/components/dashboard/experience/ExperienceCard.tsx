@@ -1,6 +1,6 @@
 import React from "react";
 import { Briefcase } from "lucide-react";
-import { WorkExperience } from "@/types/experience";
+import { WorkExperience } from "@/types";
 import { CrudCard } from "@/components/dashboard/common";
 
 interface ExperienceCardProps {

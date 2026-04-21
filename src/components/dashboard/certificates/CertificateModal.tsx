@@ -3,7 +3,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ImageInput } from "@/components/ui/ImageInput";
-import { Certificate } from "@/types/certificate";
+import { Certificate } from "@/types";
 import { useModalForm } from "@/hooks/useModalForm";
 import { CrudResult } from "@/hooks/useCRUD";
 

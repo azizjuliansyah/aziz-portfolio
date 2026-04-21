@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { supabaseAdmin as supabase } from "@/config/db";
+import { env } from "@/lib/env";
 
-
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "super-secret-key-change-me");
+const SECRET_KEY = new TextEncoder().encode(env.JWT_SECRET);
 
 export async function GET() {
   const cookieStore = await cookies();

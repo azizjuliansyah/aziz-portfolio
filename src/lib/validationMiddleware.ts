@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ZodSchema, ZodError } from "zod";
-import { ValidationError } from "@/types/error";
+import { ValidationError } from "@/types";
 
 // Helper function to extract issues from ZodError
 function getZodIssues(error: ZodError): Array<{ path: string[]; message: string }> {

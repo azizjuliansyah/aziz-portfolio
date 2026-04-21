@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { Settings, UpdateSettingsInput } from "@/types/settings";
+import { Settings, UpdateSettingsInput, getErrorMessage } from "@/types";
 import { settingsService } from "@/services/settingsService";
 import { useToast } from "@/hooks/useToast";
-import { getErrorMessage } from "@/types/error";
 
 export const useSettings = () => {
   const [settings, setSettings] = useState<Settings | null>(null);

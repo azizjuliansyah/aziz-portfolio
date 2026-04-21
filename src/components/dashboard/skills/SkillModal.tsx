@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Plus, Image as ImageIcon } from "lucide-react";
-import { Skill } from "@/types/skill";
+import { Skill } from "@/types";
 import { CrudModal } from "@/components/dashboard/common";
 import { CrudResult } from "@/hooks/useCRUD";
 

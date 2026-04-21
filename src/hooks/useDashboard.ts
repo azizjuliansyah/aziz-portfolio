@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { dashboardService } from "@/services/dashboardService";
 import { useToast } from "@/hooks/useToast";
-import { getErrorMessage } from "@/types/error";
+import { getErrorMessage } from "@/types";
 
 export interface DashboardStats {
   totalProjects: number;

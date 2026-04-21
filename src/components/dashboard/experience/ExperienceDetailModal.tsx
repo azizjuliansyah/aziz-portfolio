@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { WorkExperience } from "@/types/experience";
+import { WorkExperience } from "@/types";
 import { Briefcase, Calendar, Building2, ArrowRight } from "lucide-react";
 
 interface ExperienceDetailModalProps {

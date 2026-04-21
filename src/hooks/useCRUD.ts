@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/useToast";
 import { arrayMove } from "@dnd-kit/sortable";
 import { DragEndEvent } from "@dnd-kit/core";
-import { getErrorMessage, ValidationError } from "@/types/error";
+import { getErrorMessage, ValidationError } from "@/types";
 import { BaseService } from "@/services/baseService";
 
-export interface CrudResult {
+export interface CrudResult<T = any> {
   success: boolean;
   errors?: Record<string, string>;
+  data?: T;
 }
 
 /**
@@ -83,10 +84,10 @@ export function useCRUD<T extends { id: string; order?: number }>(
   ): Promise<CrudResult> => {
     setIsSubmitting(true);
     try {
-      await service.create(data);
+      const newItem = await service.create(data);
       toast.success(`${options.entityName} created successfully`);
       fetchItems();
-      return { success: true };
+      return { success: true, data: newItem };
     } catch (error) {
       if (error instanceof ValidationError && error.details) {
         const errors: Record<string, string> = {};
@@ -111,10 +112,37 @@ export function useCRUD<T extends { id: string; order?: number }>(
   ): Promise<CrudResult> => {
     setIsSubmitting(true);
     try {
-      await service.update(id, data);
+      const updatedItem = await service.update(id, data);
       toast.success(`${options.entityName} updated successfully`);
       fetchItems();
-      return { success: true };
+      return { success: true, data: updatedItem };
+    } catch (error) {
+      if (error instanceof ValidationError && error.details) {
+        const errors: Record<string, string> = {};
+        error.details.forEach((d) => {
+          if (d.path[0]) errors[d.path[0]] = d.message;
+        });
+        return { success: false, errors };
+      }
+      toast.error(
+        getErrorMessage(error) || `Failed to update ${options.entityName}`
+      );
+      return { success: false };
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const patchItem = async (
+    id: string,
+    data: Record<string, any>
+  ): Promise<CrudResult> => {
+    setIsSubmitting(true);
+    try {
+      const updatedItem = await service.patch(id, data);
+      toast.success(`${options.entityName} updated successfully`);
+      fetchItems();
+      return { success: true, data: updatedItem };
     } catch (error) {
       if (error instanceof ValidationError && error.details) {
         const errors: Record<string, string> = {};
@@ -157,6 +185,7 @@ export function useCRUD<T extends { id: string; order?: number }>(
     reorderItems,
     createItem,
     updateItem,
+    patchItem,
     deleteItem,
     refreshItems: fetchItems,
   };

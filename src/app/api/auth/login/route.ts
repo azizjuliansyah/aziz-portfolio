@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import * as bcrypt from "bcrypt";
 import { SignJWT } from "jose";
+import { env } from "@/lib/env";
 
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "super-secret-key-change-me");
+const SECRET_KEY = new TextEncoder().encode(env.JWT_SECRET);
 
 export async function POST(request: Request) {
   try {
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
     // Set HTTP-only cookie
     response.cookies.set("auth_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24, // 1 day
       path: "/",

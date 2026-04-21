@@ -15,11 +15,13 @@ import { useProjects } from "@/hooks/useProjects";
 import { useSocialLinks } from "@/hooks/useSocialLinks";
 import { useExperience } from "@/hooks/useExperience";
 import { useCertificates } from "@/hooks/useCertificates";
-import { Skill } from "@/types/skill";
-import { Project } from "@/types/project";
-import { SocialLink } from "@/types/socialLink";
-import { WorkExperience } from "@/types/experience";
-import { Certificate } from "@/types/certificate";
+import { 
+  Skill, 
+  Project, 
+  SocialLink, 
+  WorkExperience, 
+  Certificate 
+} from "@/types";
 
 // Component Imports
 import { SkillModal } from "@/components/dashboard/skills/SkillModal";

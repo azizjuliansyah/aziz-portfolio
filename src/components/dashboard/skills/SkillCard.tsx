@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Image as ImageIcon } from "lucide-react";
-import { Skill } from "@/types/skill";
+import { Skill } from "@/types";
 import { CrudCard } from "@/components/dashboard/common";
 
 interface SkillCardProps {

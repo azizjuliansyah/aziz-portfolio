@@ -1,4 +1,4 @@
-import { Certificate } from "@/types/certificate";
+import { Certificate } from "@/types";
 import { certificateService } from "@/services/certificateService";
 import { useCRUD } from "@/hooks/useCRUD";
 

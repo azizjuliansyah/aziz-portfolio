@@ -1,4 +1,4 @@
-import { Skill } from "@/types/skill";
+import { Skill } from "@/types";
 import { skillService } from "@/services/skillService";
 import { useCRUD } from "@/hooks/useCRUD";
 

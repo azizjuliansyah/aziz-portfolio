@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
 import { ZodSchema } from "zod";
+import { logger } from "@/utils/logger";
+import { saveFile } from "@/lib/storage";
 
 /**
  * Generic CRUD API Handler Configuration
@@ -15,25 +17,17 @@ export interface CRUDHandlerConfig<T> {
   autoFields?: {
     order?: boolean;
   };
+  // Fields that contain files to be uploaded
+  fileFields?: {
+    [key: string]: "profiles" | "skills" | "projects" | "social-links" | "certificates" | "settings";
+  };
+  // Custom query modifier
+  customQuery?: (query: any) => any;
 }
 
 /**
  * Generic CRUD Handler Factory
  * Creates standardized CRUD operations for any entity
- *
- * @example
- * ```ts
- * const projectHandlers = createCRUDHandler({
- *   tableName: "projects",
- *   schema: projectSchema,
- *   selectFields: "*",
- *   relations: "project_images(*)",
- *   autoFields: { order: true }
- * });
- *
- * export const GET = projectHandlers.getAll;
- * export const POST = projectHandlers.create;
- * ```
  */
 export function createCRUDHandler<T extends Record<string, any>>(
   config: CRUDHandlerConfig<T>
@@ -44,9 +38,32 @@ export function createCRUDHandler<T extends Record<string, any>>(
     selectFields = "*",
     relations = "",
     autoFields = {},
+    fileFields = {},
+    customQuery,
   } = config;
 
   const selectClause = relations ? `${selectFields}, ${relations}` : selectFields;
+
+  /**
+   * Helper to process file uploads in validated data
+   */
+  async function processFiles(data: any, formData: FormData) {
+    const updatedData = { ...data };
+    for (const [field, folder] of Object.entries(fileFields)) {
+      const file = formData.get(field) as File | null;
+      if (file && file.size > 0) {
+        try {
+          updatedData[field] = await saveFile(file, folder);
+        } catch (error) {
+          logger.error(`Failed to upload file for field ${field}:`, error);
+        }
+      } else if (updatedData[field] instanceof File) {
+        // Remove file object if it wasn't processed (shouldn't happen with correct formDataToObject)
+        delete updatedData[field];
+      }
+    }
+    return updatedData;
+  }
 
   return {
     /**
@@ -59,11 +76,20 @@ export function createCRUDHandler<T extends Record<string, any>>(
 
         let query = supabase
           .from(tableName)
-          .select(selectClause)
-          .order("order", { ascending: true });
+          .select(selectClause);
+
+        if (autoFields.order) {
+          query = query.order("order", { ascending: true });
+        } else {
+          query = query.order("created_at", { ascending: false });
+        }
 
         if (profileId) {
           query = query.eq("profile_id", profileId);
+        }
+
+        if (customQuery) {
+          query = customQuery(query);
         }
 
         const { data, error } = await query;
@@ -72,7 +98,7 @@ export function createCRUDHandler<T extends Record<string, any>>(
 
         return NextResponse.json(data);
       } catch (error) {
-        console.error(`Failed to fetch ${tableName}:`, error);
+        logger.error(`Failed to fetch ${tableName}:`, error);
         return NextResponse.json(
           { error: "Internal server error" },
           { status: 500 }
@@ -105,7 +131,7 @@ export function createCRUDHandler<T extends Record<string, any>>(
 
         return NextResponse.json(data);
       } catch (error) {
-        console.error(`Failed to fetch ${tableName}:`, error);
+        logger.error(`Failed to fetch ${tableName}:`, error);
         return NextResponse.json(
           { error: "Internal server error" },
           { status: 500 }
@@ -118,18 +144,37 @@ export function createCRUDHandler<T extends Record<string, any>>(
      */
     async create(request: Request): Promise<NextResponse> {
       try {
-        const formData = await request.formData();
+        const contentType = request.headers.get("content-type") || "";
+        let validated: any;
+        let formData: FormData | null = null;
 
-        // Validate using the validation middleware
         const { validateOrRespond } = await import("@/lib/validationMiddleware");
-        const validated = await validateOrRespond(formData, schema);
+
+        if (contentType.includes("multipart/form-data")) {
+          formData = await request.formData();
+          validated = await validateOrRespond(formData, schema);
+        } else {
+          const body = await request.json();
+          validated = await validateOrRespond(body, schema);
+        }
 
         if (validated instanceof NextResponse) {
-          return validated; // Return validation error
+          return validated;
+        }
+
+        // Handle file uploads
+        let insertData = validated;
+        if (formData) {
+          insertData = await processFiles(validated, formData);
+          
+          // Handle profile_id from formData if not in validated
+          const profileId = formData.get("profileId") as string;
+          if (profileId && !insertData.profile_id) {
+            insertData.profile_id = profileId;
+          }
         }
 
         // Calculate order if needed
-        let insertData = { ...validated };
         if (autoFields.order) {
           const { data: maxOrderData } = await supabase
             .from(tableName)
@@ -138,13 +183,7 @@ export function createCRUDHandler<T extends Record<string, any>>(
             .limit(1);
 
           const maxOrder = maxOrderData?.[0]?.order ?? -1;
-          insertData = { ...insertData, order: maxOrder + 1 };
-        }
-
-        // Handle profile_id
-        const profileId = formData.get("profileId") as string;
-        if (profileId && !insertData.profile_id) {
-          insertData = { ...insertData, profile_id: profileId };
+          insertData.order = maxOrder + 1;
         }
 
         const { data, error } = await supabase
@@ -157,7 +196,7 @@ export function createCRUDHandler<T extends Record<string, any>>(
 
         return NextResponse.json(data, { status: 201 });
       } catch (error) {
-        console.error(`Failed to create ${tableName}:`, error);
+        logger.error(`Failed to create ${tableName}:`, error);
         return NextResponse.json(
           { error: "Internal server error" },
           { status: 500 }
@@ -174,19 +213,33 @@ export function createCRUDHandler<T extends Record<string, any>>(
     ): Promise<NextResponse> {
       try {
         const { id } = await params;
-        const formData = await request.formData();
+        const contentType = request.headers.get("content-type") || "";
+        let validated: any;
+        let formData: FormData | null = null;
 
-        // Validate using the validation middleware (partial for updates)
         const { validateOrRespond } = await import("@/lib/validationMiddleware");
-        const validated = await validateOrRespond(formData, schema);
+
+        if (contentType.includes("multipart/form-data")) {
+          formData = await request.formData();
+          validated = await validateOrRespond(formData, schema);
+        } else {
+          const body = await request.json();
+          validated = await validateOrRespond(body, schema);
+        }
 
         if (validated instanceof NextResponse) {
-          return validated; // Return validation error
+          return validated;
+        }
+
+        // Handle file uploads
+        let updateData = validated;
+        if (formData) {
+          updateData = await processFiles(validated, formData);
         }
 
         const { data, error } = await supabase
           .from(tableName)
-          .update(validated)
+          .update(updateData)
           .eq("id", id)
           .select(selectClause)
           .single();
@@ -195,7 +248,7 @@ export function createCRUDHandler<T extends Record<string, any>>(
 
         return NextResponse.json(data);
       } catch (error) {
-        console.error(`Failed to update ${tableName}:`, error);
+        logger.error(`Failed to update ${tableName}:`, error);
         return NextResponse.json(
           { error: "Internal server error" },
           { status: 500 }
@@ -222,7 +275,7 @@ export function createCRUDHandler<T extends Record<string, any>>(
 
         return NextResponse.json({ message: `${tableName} deleted successfully` });
       } catch (error) {
-        console.error(`Failed to delete ${tableName}:`, error);
+        logger.error(`Failed to delete ${tableName}:`, error);
         return NextResponse.json(
           { error: "Internal server error" },
           { status: 500 }
@@ -256,7 +309,7 @@ export function createCRUDHandler<T extends Record<string, any>>(
 
         return NextResponse.json({ success: true });
       } catch (error) {
-        console.error(`Failed to reorder ${tableName}:`, error);
+        logger.error(`Failed to reorder ${tableName}:`, error);
         return NextResponse.json(
           { error: "Internal server error" },
           { status: 500 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { AppError, getErrorMessage, parseApiError } from "@/types/error";
+import { AppError, getErrorMessage, parseApiError } from "@/types";
 
 /**
  * Standard API error response format

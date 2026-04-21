@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/components/ThemeProvider";
 import { SettingsForm } from "@/components/dashboard/settings/SettingsForm";
 import { DashboardLoadingSkeleton } from "@/components/dashboard/common/DashboardLoadingSkeleton";
-import { Theme } from "@/types/settings";
+import { Theme } from "@/types";
 
 export default function SettingsPage() {
   const { settings, isLoading: isSettingsLoading, updateSettings, isSubmitting: isSubmittingSettings } = useSettings();

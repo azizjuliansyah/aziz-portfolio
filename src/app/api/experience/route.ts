@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/config/db";
-import { WorkExperience } from "@/types/experience";
+import { WorkExperience } from "@/types";
 import { validateOrRespond } from "@/lib/validationMiddleware";
 import { workExperienceSchema } from "@/lib/validation";
 

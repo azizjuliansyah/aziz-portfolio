@@ -1,4 +1,4 @@
-import { ValidationError } from "@/types/error";
+import { ValidationError } from "@/types";
 
 /**
  * BaseService - Abstract base class for all CRUD services
@@ -72,6 +72,17 @@ export abstract class BaseService<T> {
   }
 
   /**
+   * Fetch single entity by ID
+   */
+  async getById(id: string): Promise<T> {
+    const res = await fetch(`${this.endpoint}/${id}`);
+    if (!res.ok) {
+      await this.handleApiError(res, `Failed to fetch ${this.entityName}`);
+    }
+    return res.json();
+  }
+
+  /**
    * Create a new entity
    */
   async create(data: FormData | Record<string, any>): Promise<T> {
@@ -79,7 +90,7 @@ export abstract class BaseService<T> {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
-      headers: isFormData ? undefined : { "Content-Type": "application/json" },
+      headers: isFormData ? {} : { "Content-Type": "application/json" },
       body: isFormData ? data as FormData : JSON.stringify(data),
     });
 
@@ -97,7 +108,7 @@ export abstract class BaseService<T> {
 
     const res = await fetch(`${this.endpoint}/${id}`, {
       method: "PUT",
-      headers: isFormData ? undefined : { "Content-Type": "application/json" },
+      headers: isFormData ? {} : { "Content-Type": "application/json" },
       body: isFormData ? data as FormData : JSON.stringify(data),
     });
 
@@ -118,5 +129,21 @@ export abstract class BaseService<T> {
     if (!res.ok) {
       await this.handleApiError(res, `Failed to delete ${this.entityName}`);
     }
+  }
+
+  /**
+   * Partially update an entity (PATCH)
+   */
+  async patch(id: string, data: Record<string, any>): Promise<T> {
+    const res = await fetch(`${this.endpoint}/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      await this.handleApiError(res, `Failed to patch ${this.entityName}`);
+    }
+    return res.json();
   }
 }

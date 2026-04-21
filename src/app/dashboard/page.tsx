@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboard } from "@/hooks/useDashboard";
 import { Card } from "@/components/ui/Card";
+import { ROUTES } from "@/constants/routes";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -18,12 +19,12 @@ export default function DashboardPage() {
   const { stats, isLoading: isStatsLoading } = useDashboard();
 
   const quickActions = [
-    { label: "Edit Profile", icon: UserIcon, color: "text-on-primary-container", bg: "bg-primary-container", path: stats.activeProfileId ? `/dashboard/profile/${stats.activeProfileId}?tab=basic` : "/dashboard/profile" },
-    { label: "Experience", icon: Briefcase, color: "text-on-secondary-container", bg: "bg-secondary-container", path: stats.activeProfileId ? `/dashboard/profile/${stats.activeProfileId}?tab=experience` : "/dashboard/profile" },
-    { label: "Manage Skills", icon: Code, color: "text-on-tertiary-container", bg: "bg-tertiary-container", path: stats.activeProfileId ? `/dashboard/profile/${stats.activeProfileId}?tab=skills` : "/dashboard/profile" },
-    { label: "Certificates", icon: Award, color: "text-on-primary-container", bg: "bg-primary-container", path: stats.activeProfileId ? `/dashboard/profile/${stats.activeProfileId}?tab=certificates` : "/dashboard/profile" },
-    { label: "Add Project", icon: Plus, color: "text-on-secondary-container", bg: "bg-secondary-container", path: stats.activeProfileId ? `/dashboard/profile/${stats.activeProfileId}?tab=projects` : "/dashboard/profile" },
-    { label: "Social Links", icon: Share2, color: "text-on-tertiary-container", bg: "bg-tertiary-container", path: stats.activeProfileId ? `/dashboard/profile/${stats.activeProfileId}?tab=social-links` : "/dashboard/profile" },
+    { label: "Edit Profile", icon: UserIcon, color: "text-on-primary-container", bg: "bg-primary-container", path: stats.activeProfileId ? `${ROUTES.DASHBOARD.PROFILE}/${stats.activeProfileId}?tab=basic` : ROUTES.DASHBOARD.PROFILE },
+    { label: "Experience", icon: Briefcase, color: "text-on-secondary-container", bg: "bg-secondary-container", path: stats.activeProfileId ? `${ROUTES.DASHBOARD.PROFILE}/${stats.activeProfileId}?tab=experience` : ROUTES.DASHBOARD.PROFILE },
+    { label: "Manage Skills", icon: Code, color: "text-on-tertiary-container", bg: "bg-tertiary-container", path: stats.activeProfileId ? `${ROUTES.DASHBOARD.PROFILE}/${stats.activeProfileId}?tab=skills` : ROUTES.DASHBOARD.PROFILE },
+    { label: "Certificates", icon: Award, color: "text-on-primary-container", bg: "bg-primary-container", path: stats.activeProfileId ? `${ROUTES.DASHBOARD.PROFILE}/${stats.activeProfileId}?tab=certificates` : ROUTES.DASHBOARD.PROFILE },
+    { label: "Add Project", icon: Plus, color: "text-on-secondary-container", bg: "bg-secondary-container", path: stats.activeProfileId ? `${ROUTES.DASHBOARD.PROFILE}/${stats.activeProfileId}?tab=projects` : ROUTES.DASHBOARD.PROFILE },
+    { label: "Social Links", icon: Share2, color: "text-on-tertiary-container", bg: "bg-tertiary-container", path: stats.activeProfileId ? `${ROUTES.DASHBOARD.PROFILE}/${stats.activeProfileId}?tab=social-links` : ROUTES.DASHBOARD.PROFILE },
   ];
 
   return (
@@ -104,7 +105,7 @@ export default function DashboardPage() {
             </p>
             <Button 
               className="mt-2 bg-gradient-to-r from-primary to-secondary text-on-primary hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 rounded-full px-10 py-6 group mx-auto font-bold text-base transition-all duration-300"
-              onClick={() => window.open("/", "_blank")}
+              onClick={() => window.open(ROUTES.HOME, "_blank")}
             >
               Launch Live Preview
               <Rocket className="w-5 h-5 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />

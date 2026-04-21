@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useToast } from "@/hooks/useToast";
 import { updateUser } from "@/app/store/features/authSlice";
-import { getErrorMessage } from "@/types/error";
+import { getErrorMessage } from "@/types";
 
 export const useAuthAccount = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabasePublic as supabase } from "@/config/db";
-import { Skill } from "@/types/skill";
-import { Project } from "@/types/project";
-import { SocialLink } from "@/types/socialLink";
-import { WorkExperience } from "@/types/experience";
+import { 
+  Skill, 
+  Project, 
+  SocialLink, 
+  WorkExperience 
+} from "@/types";
 
 export async function GET() {
   try {

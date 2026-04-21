@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { ExternalLink, Award, Calendar, ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import { ScrollReveal } from "./ScrollReveal";
-import { Certificate } from "@/types/certificate";
+import { Certificate } from "@/types";
 import { ProjectLightbox } from "./ProjectLightbox";
 
 interface CertificatesGridProps {

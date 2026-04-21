@@ -1,24 +1,41 @@
 -- ==========================================
--- PART 1: CLEANUP (Hapus table dan sebagainya)
+-- PORTFOLIO AZIZ SETUP SCRIPT (ONE-SHOT)
+-- ==========================================
+-- This script will reset and recreate the entire database schema.
+-- Wrapped in a transaction to ensure atomicity.
+
+BEGIN;
+
+-- ==========================================
+-- PART 1: CLEANUP
 -- ==========================================
 
+-- Drop triggers and functions
 DROP TRIGGER IF EXISTS enforce_single_active_profile ON portfolio_profile;
 DROP FUNCTION IF EXISTS set_single_active_profile();
-DROP TABLE IF EXISTS social_links;
-DROP TABLE IF EXISTS project_images;
-DROP TABLE IF EXISTS projects;
-DROP TABLE IF EXISTS skills;
-DROP TABLE IF EXISTS info;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS app_settings;
-DROP TABLE IF EXISTS work_experience_responsibilities;
-DROP TABLE IF EXISTS work_experience;
-DROP TABLE IF EXISTS certificates;
-DROP TABLE IF EXISTS portfolio_profile;
 
+-- Drop tables with CASCADE to automatically handle foreign key dependencies
+DROP TABLE IF EXISTS social_links CASCADE;
+DROP TABLE IF EXISTS project_images CASCADE;
+DROP TABLE IF EXISTS projects CASCADE;
+DROP TABLE IF EXISTS skills CASCADE;
+DROP TABLE IF EXISTS info CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS app_settings CASCADE;
+DROP TABLE IF EXISTS work_experience_responsibilities CASCADE;
+DROP TABLE IF EXISTS work_experience CASCADE;
+DROP TABLE IF EXISTS certificates CASCADE;
+DROP TABLE IF EXISTS portfolio_profile CASCADE;
 
 -- ==========================================
--- PART 2: SETUP (Tables, Functions, Seed Data)
+-- PART 2: INITIALIZATION
+-- ==========================================
+
+-- Ensure necessary extensions are enabled
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- ==========================================
+-- PART 3: TABLES SETUP
 -- ==========================================
 
 -- Profile table
@@ -148,6 +165,10 @@ CREATE TABLE app_settings (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- ==========================================
+-- PART 4: FUNCTIONS & TRIGGERS
+-- ==========================================
+
 -- Function to handle single active profile
 CREATE OR REPLACE FUNCTION set_single_active_profile()
 RETURNS TRIGGER AS $$
@@ -166,17 +187,22 @@ FOR EACH ROW
 WHEN (NEW.is_active = TRUE)
 EXECUTE FUNCTION set_single_active_profile();
 
+-- ==========================================
+-- PART 5: SEED DATA
+-- ==========================================
+
 -- Seed Initial Admin User (password is 'admin123' bcrypt hashed)
 INSERT INTO users (email, password, name) 
 VALUES ('admin@portfolio.com', '$2b$10$q3RpHU6qrVhvKLbbhCMa/u9KIZAzsC5s/SbFcqMKgOGQlqFxf.Xvy', 'Admin')
 ON CONFLICT (email) DO NOTHING;
 
--- Default App Settings
-INSERT INTO app_settings (theme, enable_global_theme) VALUES ('system', false);
-
+-- Default App Settings (using a fixed ID for idempotency)
+INSERT INTO app_settings (id, theme, enable_global_theme) 
+VALUES ('00000000-0000-0000-0000-000000000001', 'system', false)
+ON CONFLICT (id) DO NOTHING;
 
 -- ==========================================
--- PART 3: SECURITY & POLICIES (Disable/Enable & Policy)
+-- PART 6: SECURITY & RLS
 -- ==========================================
 
 -- Enable Row Level Security (RLS) on all tables
@@ -205,4 +231,6 @@ CREATE POLICY "Work experience responsibilities are viewable by everyone" ON wor
 CREATE POLICY "Certificates are viewable by everyone" ON certificates FOR SELECT USING (true);
 
 -- Note: Tables like 'users' and 'app_settings' stay locked (no public SELECT policy).
--- Access is granted only via 'service_role' key in backend APIs.
+-- Access is granted only via 'service_role' key or authenticated sessions.
+
+COMMIT;
